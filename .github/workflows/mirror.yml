@@ -1,0 +1,36 @@
+name: Mirror
+
+on:
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  no-test-job:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Check github repo
+            uses: actions/checkout@v4
+          - name: No test passed
+            run:  |
+              if [[ "${{ github.repository }}" == "EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-7" ]]; then
+                exit 1
+              else
+                exit 0
+              fi
+  sync-to-private:
+    needs: [no-test-job]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout public repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Push to Mirror
+      uses: pixta-dev/repository-mirroring-action@v1
+      with:
+        target_repo_url:
+          ${{ vars.MIRROR_URL }}
+        ssh_private_key:
+          ${{ secrets.GIT_SSH_PRIVATE_KEY }}
