@@ -1,0 +1,14 @@
+#pragma once
+
+#define SUCCESS 0
+#define FAILURE -1
+
+#define EPITECH_SUCCESS 0
+#define EPITECH_FAILURE 84
+
+#define NB_ARGS 1
+
+#define NETWORK_BUFFER_SIZE 4096
+
+#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH 1280

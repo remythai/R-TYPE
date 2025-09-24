@@ -1,0 +1,4 @@
+build.sh
+.build/
+a.out
+r-type_client
