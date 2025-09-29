@@ -6,7 +6,7 @@ public:
 	~IComponent ();
 
 private:
-    std::string _type;
+    std::string _tag;
 };
 
 IComponent ::IComponent () {
