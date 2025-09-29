@@ -9,6 +9,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <vector>
 
 namespace CLIENT {
 
@@ -18,16 +19,16 @@ public:
     ~Window();
 
     bool isOpen() const;
-
     void pollEvents();
-
     void clear();
     void display();
 
-    sf::RenderWindow &getHandle();
+    sf::RenderWindow &getWindow();
+    const std::vector<std::string> &getPendingActions() const;
 
 private:
     sf::RenderWindow _window;
+    std::vector<std::string> _pendingActions;
 };
 
-} // namespace Engine
+} // namespace CLIENT

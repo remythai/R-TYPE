@@ -7,11 +7,15 @@
 
 #pragma once
 
-#include "../macros.hpp"
 #include <exception>
 #include <memory>
 #include <string>
 #include <utility>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <queue>
+#include "../macros.hpp"
 #include "../network/NetworkClient.hpp"
 
 namespace CLIENT {
@@ -30,13 +34,22 @@ namespace CLIENT {
 
             void run();
 
-
         private:
+            void networkLoop();
+            void graphicsLoop();
+
             std::unique_ptr<NetworkClient> _networkClient;
-
             std::string _hostname;
-
             int _port;
+
+            std::thread _networkThread;
+            std::atomic<bool> _running;
+            
+            std::queue<std::string> _incomingMessages;
+            std::mutex _incomingMutex;
+            
+            std::queue<std::string> _outgoingMessages;
+            std::mutex _outgoingMutex;
     };
 } // namespace CLIENT
 
