@@ -8,13 +8,23 @@
 #pragma once
 #include <asio.hpp>
 
-class NetworkClient {
-    public:
-        NetworkClient(const std::string& host, unsigned short port);
-        void sendMessage(const std::string& msg);
-        std::string receiveMessage();
+namespace CLIENT {
+    class NetworkClient {
+        public:
+            NetworkClient(const std::string& host, unsigned short port);
+            class NetworkError : public std::exception {
+                private:
+                    std::string _message;
+                public:
+                    NetworkError(std::string  message) : _message(std::move(message)) {}
+                    [[nodiscard]] const char* what() const noexcept override { return _message.c_str(); }
+            };
+            
+            void sendMessage(const std::string& msg);
+            std::string receiveMessage();
 
-    private:
-        asio::io_context _ioContext;
-        asio::ip::tcp::socket _socket;
-};
+        private:
+            asio::io_context _ioContext;
+            asio::ip::tcp::socket _socket;
+    };
+}

@@ -9,8 +9,10 @@
 
 #include "../macros.hpp"
 #include <exception>
+#include <memory>
 #include <string>
 #include <utility>
+#include "../network/NetworkClient.hpp"
 
 namespace CLIENT {
     class Core {
@@ -23,12 +25,18 @@ namespace CLIENT {
                     [[nodiscard]] const char* what() const noexcept override { return _message.c_str(); }
             };
 
-            Core();
+            Core(char **argv);
             ~Core();
 
             void run();
 
+
         private:
+            std::unique_ptr<NetworkClient> _networkClient;
+
+            std::string _hostname;
+
+            int _port;
     };
 } // namespace CLIENT
 
