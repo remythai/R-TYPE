@@ -23,6 +23,8 @@ bool Window::isOpen() const {
 }
 
 void Window::pollEvents() {
+    _pendingActions.clear();
+    
     while (auto eventOpt = _window.pollEvent()) {
         const auto &event = *eventOpt;
 
@@ -37,15 +39,23 @@ void Window::pollEvents() {
                         break;
                     case sf::Keyboard::Key::Up:
                         std::cout << "Up\n";
+                        _pendingActions.push_back("MOVE_UP");
                         break;
                     case sf::Keyboard::Key::Down:
                         std::cout << "Down\n";
+                        _pendingActions.push_back("MOVE_DOWN");
                         break;
                     case sf::Keyboard::Key::Left:
                         std::cout << "Left\n";
+                        _pendingActions.push_back("MOVE_LEFT");
                         break;
                     case sf::Keyboard::Key::Right:
                         std::cout << "Right\n";
+                        _pendingActions.push_back("MOVE_RIGHT");
+                        break;
+                    case sf::Keyboard::Key::Space:
+                        std::cout << "Shoot\n";
+                        _pendingActions.push_back("SHOOT");
                         break;
                     default:
                         break;
@@ -63,8 +73,12 @@ void Window::display() {
     _window.display();
 }
 
-sf::RenderWindow &Window::getHandle() {
+sf::RenderWindow &Window::getWindow() {
     return _window;
+}
+
+const std::vector<std::string> &Window::getPendingActions() const {
+    return _pendingActions;
 }
 
 } // namespace CLIENT
