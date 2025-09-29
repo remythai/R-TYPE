@@ -36,6 +36,7 @@ namespace CLIENT {
 
             void run();
 
+
         private:
             void networkLoop();
             void graphicsLoop();
