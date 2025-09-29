@@ -22,10 +22,19 @@ set(SFML_BUILD_NETWORK FALSE)
 
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(
+    asio
+    GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
+    GIT_TAG asio-1-30-2
+)
+
+FetchContent_MakeAvailable(asio)
+
 set(SOURCES
     src/main.cpp
     src/core/Core.cpp
     src/graphics/Window.cpp
+    src/network/NetworkClient.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
@@ -40,4 +49,7 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/engine
     ${CMAKE_SOURCE_DIR}/include
+    ${asio_SOURCE_DIR}/asio/include
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ASIO_STANDALONE)
