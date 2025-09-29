@@ -25,7 +25,7 @@ static int check_args(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    // if (check_args(argc, argv) == 84)
-    //     return EPITECH_FAILURE;
+    if (check_args(argc, argv) == 84)
+        return EPITECH_FAILURE;
     return execute_rtypeClient(argv);
 }
