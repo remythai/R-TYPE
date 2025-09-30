@@ -7,6 +7,5 @@ public:
   ~IComponent();
     std::string get_tag();
 private:
-  std::string _tag;
 };
 } // namespace GameEngine
