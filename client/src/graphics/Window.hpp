@@ -24,7 +24,7 @@ public:
     void display();
 
     sf::RenderWindow &getWindow();
-    const std::vector<std::string>& getPendingActions() const;
+    const std::vector<std::string> &getPendingActions() const;
     float getDeltaTime() const;
 
 private:

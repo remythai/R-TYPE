@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** r-type-mirror
 ** File description:
-** NetworkClient.cpp - VERSION UDP
+** NetworkClient.cpp
 */
 
 #include "NetworkClient.hpp"
@@ -67,6 +67,16 @@ void NetworkClient::startReceiving()
     std::thread([this](){ _ioContext.run(); }).detach();
 }
 
+void NetworkClient::setOnPlayerIdReceived(std::function<void(uint8_t)> callback)
+{
+    _onPlayerIdReceived = callback;
+}
+
+void NetworkClient::setOnPlayerEvent(std::function<void(uint8_t, uint8_t)> callback)
+{
+    _onPlayerEvent = callback;
+}
+
 void NetworkClient::doReceive()
 {
     auto sender = std::make_shared<asio::ip::udp::endpoint>();
@@ -85,7 +95,8 @@ void NetworkClient::handlePacket(
     const std::vector<uint8_t>& buffer, size_t bytesReceived,
     const asio::ip::udp::endpoint& sender)
 {
-    if (bytesReceived < 7) return;
+    if (bytesReceived < 7)
+        return;
 
     rtype::PacketType type = static_cast<rtype::PacketType>(buffer[0]);
     uint16_t packetId = (buffer[1] << 8) | buffer[2];
@@ -100,6 +111,35 @@ void NetworkClient::handlePacket(
     std::cout << "[Timestamp=" << timestamp << "]";
 
     switch(type) {
+        case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
+            if (!payload.empty()) {
+                uint8_t playerId = payload[0];
+                std::cout << "[AssignedPlayerId=" << int(playerId) << "]";
+                
+                if (_onPlayerIdReceived) {
+                    _onPlayerIdReceived(playerId);
+                }
+            }
+            break;
+
+        case rtype::PacketType::PLAYER_EVENT:
+            if (payload.size() >= 2) {
+                uint8_t playerId = payload[0];
+                uint8_t eventType = payload[1];
+                
+                std::cout << "[PlayerId=" << int(playerId)
+                        << "][EventType=" << int(eventType);
+                
+                if (payload.size() > 2)
+                    std::cout << "][Score=" << int(payload[2]);
+                std::cout << "]";
+                
+                if (_onPlayerEvent) {
+                    _onPlayerEvent(playerId, eventType);
+                }
+            }
+            break;
+
         case rtype::PacketType::INPUT:
             if (payload.size() >= 3)
                 std::cout << "[PlayerId=" << int(payload[0])
@@ -127,13 +167,6 @@ void NetworkClient::handlePacket(
                 std::cout << "[EntityId=" << int(payload[0])
                         << "][EventType=" << int(payload[1])
                         << "][ExtraData=" << (payload.size() > 2 ? std::string(payload.begin()+2, payload.end()) : "") << "]";
-            break;
-
-        case rtype::PacketType::PLAYER_EVENT:
-            if (payload.size() >= 2)
-                std::cout << "[PlayerId=" << int(payload[0])
-                        << "][EventType=" << int(payload[1])
-                        << "][Score=" << (payload.size() > 2 ? int(payload[2]) : 0) << "]";
             break;
 
         default:
