@@ -10,26 +10,33 @@
 #include <string>
 #include <exception>
 #include <asio.hpp>
+#include <vector>
+#include <cstdint>
+#include <iostream>
+#include <functional>
+#include "../../server/Network/NetworkServer.hpp"
 
-namespace CLIENT {
-    class NetworkClient {
-        public:
-            class NetworkError : public std::exception {
-                private:
-                    std::string _message;
-                public:
-                    explicit NetworkError(std::string message) : _message(std::move(message)) {}
-                    [[nodiscard]] const char* what() const noexcept override { return _message.c_str(); }
-            };
+class NetworkClient {
+public:
+    NetworkClient(const std::string& host, unsigned short port);
 
-            NetworkClient(const std::string &host, unsigned short port);
-            
-            void sendMessage(const std::string &msg);
-            std::string receiveMessage();
+    void sendInput(uint8_t playerId, uint8_t keyCode, uint8_t action);
+    void sendJoin(const std::string& username);
+    void sendPing(uint16_t packetId);
 
-        private:
-            asio::io_context _ioContext;
-            asio::ip::udp::socket _socket;
-            asio::ip::udp::endpoint _serverEndpoint;
-    };
-}
+    void startReceiving();
+
+private:
+    asio::io_context _ioContext;
+    asio::ip::udp::socket _socket;
+    asio::ip::udp::endpoint _serverEndpoint;
+
+    std::vector<uint8_t> _recvBuffer;
+
+    void sendPacket(rtype::PacketType type, uint16_t packetId, uint32_t timestamp,
+                    const std::vector<uint8_t>& payload);
+
+    void doReceive();
+    void handlePacket(const std::vector<uint8_t>& buffer, size_t bytesReceived,
+                    const asio::ip::udp::endpoint& sender);
+};
