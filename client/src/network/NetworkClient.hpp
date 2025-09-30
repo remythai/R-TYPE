@@ -25,7 +25,6 @@ public:
     void sendPing(uint16_t packetId);
     void startReceiving();
 
-    // Callbacks pour communiquer avec Core
     void setOnPlayerIdReceived(std::function<void(uint8_t)> callback);
     void setOnPlayerEvent(std::function<void(uint8_t, uint8_t)> callback);
 
