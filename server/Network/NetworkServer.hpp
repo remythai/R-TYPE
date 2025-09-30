@@ -12,33 +12,46 @@
 #include <unordered_map>
 #include <vector>
 #include <mutex>
+#include <string>
 
-class NetworkServer {
-public:
-    NetworkServer(unsigned short port);
-    ~NetworkServer();
+namespace rtype {
+    enum class PacketType : uint8_t {
+        INPUT = 0x01,
+        JOIN = 0x02,
+        PING = 0x03,
+        SNAPSHOT = 0x10,
+        ENTITY_EVENT = 0x11,
+        PLAYER_EVENT = 0x12,
+        PING_RESPONSE = 0x13
+    };
 
-    void run();
-    void stop();
+    class NetworkServer {
+    public:
+        NetworkServer(unsigned short port, const std::string& hostname);
+        ~NetworkServer();
 
-    void broadcast(const std::string& message);
+        void run();
+        void stop();
+        void broadcast(const std::vector<uint8_t>& message);
 
-    void handleClientMessages(const std::string &message);
+    private:
+        void doReceive();
+        void handleClientPacket(const asio::ip::udp::endpoint& clientEndpoint,
+                                PacketType type, uint16_t packetId, uint32_t timestamp,
+                                const std::vector<uint8_t>& payload);
+        asio::io_context _ioContext;
+        asio::ip::udp::socket _socket;
+        std::unordered_map<int, asio::ip::udp::endpoint> _clients;
+        std::unordered_map<int, std::string> _clientNames;
+        std::mutex _clientsMutex;
+        std::atomic<int> _nextClientId{1};
+        bool _running;
 
-private:
-    void doAccept();
-    void handleClient(std::shared_ptr<asio::ip::tcp::socket> client, int clientId);
+        std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
 
-    asio::io_context _ioContext;
-    asio::ip::tcp::acceptor _acceptor;
+        std::string _hostname;
 
-    std::vector<std::shared_ptr<asio::ip::tcp::socket>> _clients;
-    std::unordered_map<int, std::shared_ptr<asio::ip::tcp::socket>> _clientMap;
-    std::mutex _clientsMutex;
-    std::atomic<int> _nextClientId{1};
+        std::string packetTypeToString(rtype::PacketType type);
 
-    std::unordered_map<std::string, std::function<void()>> _clientMessagesGame;
-    std::unordered_map<std::string, std::function<void()>> _clientMessagesMenu;
-
-    bool _running;
-};
+    };
+}

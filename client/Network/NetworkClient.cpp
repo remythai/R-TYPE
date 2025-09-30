@@ -6,24 +6,140 @@
 */
 
 #include "NetworkClient.hpp"
+#include <thread>
+#include <chrono>
+#include <cstring>
+
+template<typename T>
+std::vector<uint8_t> toBytes(T value)
+{
+    std::vector<uint8_t> bytes(sizeof(T));
+    for (size_t i = 0; i < sizeof(T); ++i)
+        bytes[sizeof(T) - 1 - i] = (value >> (i * 8)) & 0xFF;
+    return bytes;
+}
 
 NetworkClient::NetworkClient(const std::string& host, unsigned short port)
-    : _socket(_ioContext)
+    : _socket(_ioContext, asio::ip::udp::v4()),
+    _recvBuffer(1024)
 {
-    asio::ip::tcp::resolver resolver(_ioContext);
-    auto endpoints = resolver.resolve(host, std::to_string(port));
-    asio::connect(_socket, endpoints);
+    asio::ip::udp::resolver resolver(_ioContext);
+    auto endpoints = resolver.resolve(asio::ip::udp::v4(), host, std::to_string(port));
+    _serverEndpoint = *endpoints.begin();
 }
 
-void NetworkClient::sendMessage(const std::string& msg)
+void NetworkClient::sendPacket(rtype::PacketType type, uint16_t packetId, uint32_t timestamp, const std::vector<uint8_t>& payload)
 {
-    _socket.write_some(asio::buffer(msg));
+    std::vector<uint8_t> packet;
+    packet.push_back(static_cast<uint8_t>(type));
+
+    auto idBytes = toBytes(packetId);
+    packet.insert(packet.end(), idBytes.begin(), idBytes.end());
+
+    auto tsBytes = toBytes(timestamp);
+    packet.insert(packet.end(), tsBytes.begin(), tsBytes.end());
+
+    packet.insert(packet.end(), payload.begin(), payload.end());
+
+    _socket.send_to(asio::buffer(packet), _serverEndpoint);
 }
 
-std::string NetworkClient::receiveMessage()
+void NetworkClient::sendInput(uint8_t playerId, uint8_t keyCode, uint8_t action)
 {
-    char data[1024];
+    sendPacket(rtype::PacketType::INPUT, 0, 0, {playerId, keyCode, action});
+}
 
-    size_t length = _socket.read_some(asio::buffer(data));
-    return std::string(data, length);
+void NetworkClient::sendJoin(const std::string& username)
+{
+    std::vector<uint8_t> payload(32, 0);
+    std::memcpy(payload.data(), username.c_str(), std::min(size_t(32), username.size()));
+    sendPacket(rtype::PacketType::JOIN, 0, 0, payload);
+}
+
+void NetworkClient::sendPing(uint16_t packetId)
+{
+    sendPacket(rtype::PacketType::PING, packetId, 0, {});
+}
+
+void NetworkClient::startReceiving()
+{
+    doReceive();
+    std::thread([this](){ _ioContext.run(); }).detach();
+}
+
+void NetworkClient::doReceive()
+{
+    auto sender = std::make_shared<asio::ip::udp::endpoint>();
+    _socket.async_receive_from(
+        asio::buffer(_recvBuffer), *sender,
+        [this, sender](std::error_code ec, std::size_t bytesReceived) {
+            if (!ec && bytesReceived > 0) {
+                handlePacket(_recvBuffer, bytesReceived, *sender);
+            }
+            if (!ec) doReceive();
+        }
+    );
+}
+
+void NetworkClient::handlePacket(
+    const std::vector<uint8_t>& buffer, size_t bytesReceived,
+    const asio::ip::udp::endpoint& sender)
+{
+    if (bytesReceived < 7) return;
+
+    rtype::PacketType type = static_cast<rtype::PacketType>(buffer[0]);
+    uint16_t packetId = (buffer[1] << 8) | buffer[2];
+    uint32_t timestamp = (buffer[3] << 24) | (buffer[4] << 16) | (buffer[5] << 8) | buffer[6];
+
+    std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
+
+    std::cout << "[CLIENT] From " << sender << " -> ";
+
+    std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
+    std::cout << "[PacketId=" << packetId << "]";
+    std::cout << "[Timestamp=" << timestamp << "]";
+
+    switch(type) {
+        case rtype::PacketType::INPUT:
+            if (payload.size() >= 3)
+                std::cout << "[PlayerId=" << int(payload[0])
+                        << "][KeyCode=" << int(payload[1])
+                        << "][Action=" << int(payload[2]) << "]";
+            break;
+
+        case rtype::PacketType::JOIN:
+            std::cout << "[Username=" << std::string(payload.begin(), payload.end()) << "]";
+            break;
+
+        case rtype::PacketType::PING:
+        case rtype::PacketType::PING_RESPONSE:
+            std::cout << "[PacketId=" << packetId << "]";
+            break;
+
+        case rtype::PacketType::SNAPSHOT:
+            if (!payload.empty())
+                std::cout << "[NbEntities=" << int(payload[0])
+                        << "][EntityData=" << std::string(payload.begin()+1, payload.end()) << "]";
+            break;
+
+        case rtype::PacketType::ENTITY_EVENT:
+            if (payload.size() >= 2)
+                std::cout << "[EntityId=" << int(payload[0])
+                        << "][EventType=" << int(payload[1])
+                        << "][ExtraData=" << (payload.size() > 2 ? std::string(payload.begin()+2, payload.end()) : "") << "]";
+            break;
+
+        case rtype::PacketType::PLAYER_EVENT:
+            if (payload.size() >= 2)
+                std::cout << "[PlayerId=" << int(payload[0])
+                        << "][EventType=" << int(payload[1])
+                        << "][Score=" << (payload.size() > 2 ? int(payload[2]) : 0) << "]";
+            break;
+
+        default:
+            std::cout << "[Unknown packet]";
+            break;
+    }
+
+    std::cout << std::endl;
 }
