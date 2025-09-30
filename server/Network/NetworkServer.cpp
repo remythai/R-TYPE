@@ -8,149 +8,173 @@
 #include "NetworkServer.hpp"
 #include <thread>
 #include <iostream>
+#include <algorithm>
 
-NetworkServer::NetworkServer(unsigned short port)
-    : _acceptor(_ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), _running(false)
-    {
-        _clientMessagesGame = {
-        {"UP",    [this]() { broadcast("Player moved up"); }},
-        {"DOWN",  [this]() { broadcast("Player moved down"); }},
-        {"LEFT",  [this]() { broadcast("Player moved left"); }},
-        {"RIGHT", [this]() { broadcast("Player moved right"); }},
-        {"SPACE", [this]() { broadcast("Player shot"); }},
-        {"ESC",   [this]() { broadcast("Pause menu opened"); }},
-        };
+template<typename T>
+std::vector<uint8_t> toBytes(T value) {
+    std::vector<uint8_t> bytes(sizeof(T));
+    for (size_t i = 0; i < sizeof(T); ++i)
+        bytes[sizeof(T) - 1 - i] = (value >> (i * 8)) & 0xFF;
+    return bytes;
+}
 
-        _clientMessagesMenu = {
-            {"ENTER", [this]() { broadcast("Menu: validate choice"); }},
-            {"A",     [this]() { broadcast("Menu: pressed A"); }},
-            {"B",     [this]() { broadcast("Menu: pressed B"); }},
-            {"C",     [this]() { broadcast("Menu: pressed C"); }},
-            {"D",     [this]() { broadcast("Menu: pressed D"); }},
-            {"E",     [this]() { broadcast("Menu: pressed E"); }},
-            {"F",     [this]() { broadcast("Menu: pressed F"); }},
-            {"G",     [this]() { broadcast("Menu: pressed G"); }},
-            {"H",     [this]() { broadcast("Menu: pressed H"); }},
-            {"I",     [this]() { broadcast("Menu: pressed I"); }},
-            {"J",     [this]() { broadcast("Menu: pressed J"); }},
-            {"K",     [this]() { broadcast("Menu: pressed K"); }},
-            {"L",     [this]() { broadcast("Menu: pressed L"); }},
-            {"M",     [this]() { broadcast("Menu: pressed M"); }},
-            {"N",     [this]() { broadcast("Menu: pressed N"); }},
-            {"O",     [this]() { broadcast("Menu: pressed O"); }},
-            {"P",     [this]() { broadcast("Menu: pressed P"); }},
-            {"Q",     [this]() { broadcast("Menu: pressed Q"); }},
-            {"R",     [this]() { broadcast("Menu: pressed R"); }},
-            {"S",     [this]() { broadcast("Menu: pressed S"); }},
-            {"T",     [this]() { broadcast("Menu: pressed T"); }},
-            {"U",     [this]() { broadcast("Menu: pressed U"); }},
-            {"V",     [this]() { broadcast("Menu: pressed V"); }},
-            {"W",     [this]() { broadcast("Menu: pressed W"); }},
-            {"X",     [this]() { broadcast("Menu: pressed X"); }},
-            {"Y",     [this]() { broadcast("Menu: pressed Y"); }},
-            {"Z",     [this]() { broadcast("Menu: pressed Z"); }},
-        };
-    }
+template<typename T>
+T fromBytes(const uint8_t* data) {
+    T value = 0;
+    for (size_t i = 0; i < sizeof(T); ++i)
+        value |= data[i] << (8 * (sizeof(T) - 1 - i));
+    return value;
+}
 
-NetworkServer::~NetworkServer() {
+rtype::NetworkServer::NetworkServer(unsigned short port, std::string const &hostname)
+    : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)), _running(false), _hostname(hostname)
+{}
+
+rtype::NetworkServer::~NetworkServer() {
     stop();
 }
 
-void NetworkServer::run()
-{
+void rtype::NetworkServer::run() {
     _running = true;
-    doAccept();
-
-    std::cout << "Server running..." << std::endl;
+    doReceive();
+    std::cout << "UDP Server running..." << std::endl;
     _ioContext.run();
 }
 
-void NetworkServer::stop()
-{
+void rtype::NetworkServer::stop() {
     _running = false;
     _ioContext.stop();
-
     std::lock_guard<std::mutex> lock(_clientsMutex);
-    for (auto& client : _clients)
-        if (client->is_open())
-            client->close();
     _clients.clear();
     std::cout << "Server stopped." << std::endl;
 }
 
-void NetworkServer::doAccept()
-{
-    auto client = std::make_shared<asio::ip::tcp::socket>(_ioContext);
-    _acceptor.async_accept(*client, [this, client](std::error_code ec)
-    {
-        if (!ec) {
-            int clientId = _nextClientId++;
-            {
-                std::lock_guard<std::mutex> lock(_clientsMutex);
-                _clients.push_back(client);
-                _clientMap[clientId] = client;
-                std::cout << "Client " << clientId
-                    << " connected, Total clients: " << _clients.size() << std::endl;
+void rtype::NetworkServer::doReceive() {
+    auto buffer = std::make_shared<std::vector<uint8_t>>(1024);
+    auto clientEndpoint = std::make_shared<asio::ip::udp::endpoint>();
+
+    _socket.async_receive_from(
+        asio::buffer(*buffer), *clientEndpoint,
+        [this, buffer, clientEndpoint](std::error_code ec, std::size_t bytesReceived) {
+            if (!ec && bytesReceived >= 7) {
+                PacketType type = static_cast<PacketType>((*buffer)[0]);
+                uint16_t packetId = fromBytes<uint16_t>(buffer->data() + 1);
+                uint32_t timestamp = fromBytes<uint32_t>(buffer->data() + 3);
+
+                size_t payloadSize = bytesReceived - 7;
+                std::vector<uint8_t> payload(payloadSize);
+                std::copy(buffer->begin() + 7, buffer->begin() + 7 + payloadSize, payload.begin());
+
+                {
+                    std::lock_guard<std::mutex> lock(_clientsMutex);
+                    if (std::find_if(_clients.begin(), _clients.end(),
+                                     [clientEndpoint](auto& p){ return p.second == *clientEndpoint; }) == _clients.end()) {
+                        int clientId = _nextClientId++;
+                        _clients[clientId] = *clientEndpoint;
+                        std::cout << "Client " << clientId << " connected, Total clients: " << _clients.size() << std::endl;
+                    }
+                }
+
+                handleClientPacket(*clientEndpoint, type, packetId, timestamp, payload);
             }
-
-            std::thread(&NetworkServer::handleClient, this, client, clientId).detach();
-        } else
-            std::cerr << "Accept error: " << ec.message() << std::endl;
-
-        if (_running)
-            doAccept();
-    });
-}
-
-void NetworkServer::handleClient(std::shared_ptr<asio::ip::tcp::socket> client, int clientId)
-{
-    try {
-        asio::streambuf buf;
-        while (_running && client->is_open()) {
-            asio::read_until(*client, buf, '\n');
-            std::istream is(&buf);
-            std::string line;
-            std::getline(is, line);
-
-            if (!line.empty()) {
-                std::cout << "Received from client " << clientId << ": " << line << std::endl;
-                handleClientMessages(line);
-            }
+            if (_running)
+                doReceive();
         }
-    } catch (std::exception& e) {
-        std::cerr << "Client " << clientId << " error: " << e.what() << std::endl;
-    }
+    );
+}
 
-    std::lock_guard<std::mutex> lock(_clientsMutex);
-    auto it = std::find(_clients.begin(), _clients.end(), client);
-    if (it != _clients.end()) {
-        _clients.erase(it);
-        _clientMap.erase(clientId);
-        std::cout << "Client " << clientId << " disconnected! Total clients: " << _clients.size() << std::endl;
+std::string rtype::NetworkServer::packetTypeToString(rtype::PacketType type)
+{
+    switch(type) {
+        case rtype::PacketType::INPUT: return "INPUT";
+        case rtype::PacketType::JOIN: return "JOIN";
+        case rtype::PacketType::PING: return "PING";
+        case rtype::PacketType::SNAPSHOT: return "SNAPSHOT";
+        case rtype::PacketType::ENTITY_EVENT: return "ENTITY_EVENT";
+        case rtype::PacketType::PLAYER_EVENT: return "PLAYER_EVENT";
+        case rtype::PacketType::PING_RESPONSE: return "PING_RESPONSE";
+        default: return "UNKNOWN";
     }
 }
 
-void NetworkServer::handleClientMessages(const std::string &message)
+void rtype::NetworkServer::handleClientPacket(
+    const asio::ip::udp::endpoint& clientEndpoint,
+    PacketType type, uint16_t packetId, uint32_t timestamp,
+    const std::vector<uint8_t>& payload)
 {
-    auto itGame = _clientMessagesGame.find(message);
-    if (itGame != _clientMessagesGame.end()) {
-        itGame->second();
-        return;
+    std::cout << "[SERVER] From " << clientEndpoint << " -> ";
+
+    std::cout << "[Type=" << std::hex << packetTypeToString(type) << "]";
+    std::cout << "[PacketId=" << packetId << "]";
+    std::cout << "[Timestamp=" << timestamp << "]";
+
+    switch(type) {
+        case PacketType::INPUT:
+            if (payload.size() >= 3)
+                std::cout << "[PlayerId=" << int(payload[0])
+                        << "][KeyCode=" << int(payload[1])
+                        << "][Action=" << int(payload[2]) << "]";
+            break;
+
+        case PacketType::JOIN:
+            std::cout << "[Username=" << std::string(payload.begin(), payload.end()) << "]";
+            break;
+
+        case PacketType::PING:
+            std::cout << "[PacketId=" << packetId << "]";
+            break;
+
+        case PacketType::SNAPSHOT:
+            if (!payload.empty())
+                std::cout << "[NbEntities=" << int(payload[0])
+                        << "][EntityData=" << std::string(payload.begin()+1, payload.end()) << "]";
+            break;
+
+        case PacketType::ENTITY_EVENT:
+            if (payload.size() >= 2)
+                std::cout << "[EntityId=" << int(payload[0])
+                        << "][EventType=" << int(payload[1])
+                        << "][ExtraData=" << (payload.size() > 2 ? std::string(payload.begin()+2, payload.end()) : "") << "]";
+            break;
+
+        case PacketType::PLAYER_EVENT:
+            if (payload.size() >= 2)
+                std::cout << "[PlayerId=" << int(payload[0])
+                        << "][EventType=" << int(payload[1])
+                        << "][Score=" << (payload.size() > 2 ? int(payload[2]) : 0) << "]";
+            break;
+
+        case PacketType::PING_RESPONSE:
+            std::cout << "[PacketId=" << packetId << "]";
+            break;
+
+        default:
+            std::cout << "[Unknown packet]";
+            break;
     }
 
-    auto itMenu = _clientMessagesMenu.find(message);
-    if (itMenu != _clientMessagesMenu.end()) {
-        itMenu->second();
-        return;
+    std::cout << std::endl;
+
+    if(type == PacketType::PING) {
+        auto response = serializePingResponse(packetId, timestamp);
+        _socket.send_to(asio::buffer(response), clientEndpoint);
     }
+}
 
-    broadcast("Unknown command: " + message);
-};
 
-void NetworkServer::broadcast(const std::string& message)
-{
+std::vector<uint8_t> rtype::NetworkServer::serializePingResponse(uint16_t packetId, uint32_t timestamp) {
+    std::vector<uint8_t> packet;
+    packet.push_back(static_cast<uint8_t>(PacketType::PING_RESPONSE));
+    auto idBytes = toBytes(packetId);
+    packet.insert(packet.end(), idBytes.begin(), idBytes.end());
+    auto tsBytes = toBytes(timestamp);
+    packet.insert(packet.end(), tsBytes.begin(), tsBytes.end());
+    return packet;
+}
+
+void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message) {
     std::lock_guard<std::mutex> lock(_clientsMutex);
-    for (auto& client : _clients)
-        if (client->is_open())
-            asio::write(*client, asio::buffer(message + "\n"));
+    for (auto& [id, endpoint] : _clients) {
+        _socket.send_to(asio::buffer(message), endpoint);
+    }
 }
