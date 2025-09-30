@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Core.cpp
+** Core.cpp - Avec gestion des IDs joueurs uniques
 */
 
 #include "Core.hpp"
@@ -12,7 +12,6 @@
 #include <iostream>
 #include <memory>
 #include <chrono>
-#include <array>
 #include <thread>
 #include <array>
 
@@ -30,7 +29,7 @@ enum class InputAction : uint8_t {
 };
 
 CLIENT::Core::Core(char **argv)
-    : _port(0), _running(false), _myPlayerId(255) // modif le magic number pour que ce soit propre !!
+    : _port(0), _running(false), _myPlayerId(255) // remplacer 255 par unknownid (tfaçons ça va changer mais bsn d'une valeur de base qui n'est pas 0)
 {
     for (int i = 1; argv[i]; ++i) {
         std::string arg = argv[i];
@@ -62,7 +61,7 @@ CLIENT::Core::Core(char **argv)
         std::lock_guard<std::mutex> lock(_incomingMutex);
         if (eventType == 0) { // JOIN
             _incomingMessages.push("PLAYER_JOIN:" + std::to_string(playerId));
-        } else if (eventType == 1) {
+        } else if (eventType == 1) { // LEAVE
             _incomingMessages.push("PLAYER_LEAVE:" + std::to_string(playerId));
         }
     });
@@ -171,7 +170,6 @@ void CLIENT::Core::graphicsLoop()
             players[i].sprite.setScale(2.0f, 2.0f);
         }
     }
-
     std::map<std::string, bool> keyStates = {
         {"MOVE_UP", false},
         {"MOVE_DOWN", false},
@@ -232,7 +230,7 @@ void CLIENT::Core::graphicsLoop()
 
         window.pollEvents();
         
-        const auto &actions = window.getPendingActions();
+        const auto& actions = window.getPendingActions();
         
         for (const auto& action : actions) {
             if (!keyStates[action]) {
@@ -327,77 +325,6 @@ void CLIENT::Core::graphicsLoop()
                                                    players[_myPlayerId].position.y);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-            players[0].position.x += 200.0f * deltaTime;
-            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-        }
-        
-        if (!actions.empty()) {
-            std::lock_guard<std::mutex> lock(_outgoingMutex);
-            for (const auto& action : actions) {
-                _outgoingMessages.push(action);
-            }
-        window.pollEvents();
-
-        window.pollEvents();
-        
-        const auto& actions = window.getPendingActions();
-        
-        bool movingUp = false;
-        bool movingDown = false;
-        
-        for (const auto& action : actions) {
-            if (action == "MOVE_UP") {
-                movingUp = true;
-            } else if (action == "MOVE_DOWN") {
-                movingDown = true;
-            } else if (action == "MOVE_LEFT") {
-                players[0].position.x -= 5.0f;
-                players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-            } else if (action == "MOVE_RIGHT") {
-                players[0].position.x += 5.0f;
-                players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-            } else if (action == "SHOOT") {
-                std::cout << "Piou piou piou\n";
-            }
-        }
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-            if (players[0].currentRotation < 3) {
-                players[0].currentRotation++;
-                players[0].sprite.setFrame(players[0].currentRotation);
-            }
-            players[0].position.y -= 200.0f * deltaTime;
-            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-        } 
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-            if (players[0].currentRotation > 0) {
-                players[0].currentRotation--;
-                players[0].sprite.setFrame(players[0].currentRotation);
-            }
-            players[0].position.y += 200.0f * deltaTime;
-            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-        }
-        else {
-            if (players[0].currentRotation > 0) {
-                players[0].currentRotation--;
-                players[0].sprite.setFrame(players[0].currentRotation);
-            }
-        }
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-            players[0].position.x -= 200.0f * deltaTime;
-            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-            players[0].position.x += 200.0f * deltaTime;
-            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
-        }
-        
-        if (!actions.empty()) {
-            std::lock_guard<std::mutex> lock(_outgoingMutex);
-            for (const auto& action : actions) {
-                _outgoingMessages.push(action);
-            }
             players[_myPlayerId].position.x += 200.0f * deltaTime;
             players[_myPlayerId].sprite.setPosition(players[_myPlayerId].position.x, 
                                                    players[_myPlayerId].position.y);
@@ -415,7 +342,6 @@ void CLIENT::Core::graphicsLoop()
     }
 
     _running = false;
-}
 }
 
 int execute_rtypeClient(char **argv)
