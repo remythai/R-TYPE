@@ -55,6 +55,8 @@ namespace CLIENT {
             
             std::queue<std::string> _outgoingMessages;
             std::mutex _outgoingMutex;
+
+            std::string _username;
     };
 } // namespace CLIENT
 

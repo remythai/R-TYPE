@@ -42,9 +42,9 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-target_link_libraries(${PROJECT_NAME} 
-    sfml-graphics 
-    sfml-window 
+target_link_libraries(${PROJECT_NAME}
+    sfml-graphics
+    sfml-window
     sfml-system
     sfml-audio
 )

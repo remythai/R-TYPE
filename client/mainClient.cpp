@@ -1,4 +1,11 @@
-#include "Network/NetworkClient.hpp"
+/*
+** EPITECH PROJECT, 2025
+** r-type-mirror
+** File description:
+** mainClient.cpp
+*/
+
+#include "src/network/NetworkClient.hpp"
 #include <iostream>
 #include <string>
 
