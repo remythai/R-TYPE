@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Core.cpp - Avec gestion des IDs joueurs uniques
+** Core.cpp
 */
 
 #include "Core.hpp"
@@ -29,7 +29,7 @@ enum class InputAction : uint8_t {
 };
 
 CLIENT::Core::Core(char **argv)
-    : _port(0), _running(false), _myPlayerId(255) // remplacer 255 par unknownid (tfaçons ça va changer mais bsn d'une valeur de base qui n'est pas 0)
+    : _port(0), _running(false), _myPlayerId(255)
 {
     for (int i = 1; argv[i]; ++i) {
         std::string arg = argv[i];
@@ -96,6 +96,16 @@ void CLIENT::Core::loadResources()
 {
     auto &rm = ResourceManager::getInstance();
     rm.loadTexture("player_ships", "sprites/r-typesheet42.png");
+
+    _backgroundMusic = std::make_unique<sf::Music>();
+    if (!_backgroundMusic->openFromFile("sound/backgroundmusic.wav")) {
+        std::cerr << "Failed to load background music\n";
+    } else {
+        _backgroundMusic->setLooping(true);
+        _backgroundMusic->setVolume(100);
+        _backgroundMusic->play();
+    }
+
     std::cout << "Resources loaded\n";
 }
 
@@ -170,6 +180,7 @@ void CLIENT::Core::graphicsLoop()
             players[i].sprite.setScale(2.0f, 2.0f);
         }
     }
+    
     std::map<std::string, bool> keyStates = {
         {"MOVE_UP", false},
         {"MOVE_DOWN", false},
@@ -177,8 +188,6 @@ void CLIENT::Core::graphicsLoop()
         {"MOVE_RIGHT", false},
         {"SHOOT", false}
     };
-
-    bool waitingForPlayerId = true;
 
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();
@@ -193,10 +202,11 @@ void CLIENT::Core::graphicsLoop()
                 
                 if (msg.find("PLAYER_ID:") == 0) {
                     _myPlayerId = std::stoi(msg.substr(10));
-                    players[_myPlayerId].active = true;
-                    waitingForPlayerId = false;
-                    std::cout << "*** Assigned Player ID: " << int(_myPlayerId) << " ***\n";
-                    std::cout << "*** Using ship " << int(_myPlayerId) + 1 << "/4 ***\n";
+                    if (_myPlayerId < 4) {
+                        players[_myPlayerId].active = true;
+                        std::cout << "*** Assigned Player ID: " << int(_myPlayerId) << " ***\n";
+                        std::cout << "*** Using ship " << int(_myPlayerId) + 1 << "/4 ***\n";
+                    }
                 }
                 else if (msg.find("PLAYER_JOIN:") == 0) {
                     int playerId = std::stoi(msg.substr(12));
@@ -229,6 +239,19 @@ void CLIENT::Core::graphicsLoop()
         }
 
         window.pollEvents();
+        
+        if (_myPlayerId >= 4) {
+            window.clear();
+            
+            for (const auto& player : players) {
+                if (player.active) {
+                    player.sprite.draw(window.getWindow());
+                }
+            }
+            
+            window.display();
+            continue;
+        }
         
         const auto& actions = window.getPendingActions();
         
@@ -293,7 +316,6 @@ void CLIENT::Core::graphicsLoop()
                 }
             }
         }
-        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             if (players[_myPlayerId].currentRotation < 3) {
                 players[_myPlayerId].currentRotation++;
