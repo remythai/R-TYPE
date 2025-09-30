@@ -17,6 +17,8 @@
 #include <queue>
 #include "../macros.hpp"
 #include "../network/NetworkClient.hpp"
+#include "../graphics/AnimatedSprite.hpp"
+#include "../graphics/ResourceManager.hpp"
 
 namespace CLIENT {
     class Core {
@@ -37,6 +39,8 @@ namespace CLIENT {
         private:
             void networkLoop();
             void graphicsLoop();
+
+            void loadResources();
 
             std::unique_ptr<NetworkClient> _networkClient;
             std::string _hostname;

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Window.cpp
+** Window.cpp - SFML 3.0.2
 */
 
 #include "Window.hpp"
@@ -11,7 +11,7 @@
 namespace CLIENT {
 
 Window::Window(const std::string &title, unsigned int width, unsigned int height)
-: _window(sf::VideoMode(sf::Vector2u{width, height}), title)
+: _window(sf::VideoMode(sf::Vector2u{width, height}), title), _deltaTime(0.0f)
 {
     _window.setFramerateLimit(60);
 }
@@ -23,6 +23,8 @@ bool Window::isOpen() const {
 }
 
 void Window::pollEvents() {
+    _deltaTime = _clock.restart().asSeconds();
+    
     _pendingActions.clear();
     
     while (auto eventOpt = _window.pollEvent()) {
@@ -79,6 +81,10 @@ sf::RenderWindow &Window::getWindow() {
 
 const std::vector<std::string> &Window::getPendingActions() const {
     return _pendingActions;
+}
+
+float Window::getDeltaTime() const {
+    return _deltaTime;
 }
 
 } // namespace CLIENT
