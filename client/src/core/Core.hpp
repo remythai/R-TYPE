@@ -7,57 +7,52 @@
 
 #pragma once
 
-#include <exception>
-#include <memory>
 #include <string>
-#include <utility>
+#include <memory>
 #include <thread>
-#include <atomic>
 #include <mutex>
 #include <queue>
-#include "../macros.hpp"
 #include "../network/NetworkClient.hpp"
-#include "../graphics/AnimatedSprite.hpp"
-#include "../graphics/ResourceManager.hpp"
+#include "../macros.hpp"
 
 namespace CLIENT {
-    class Core {
-        public:
-            class CoreError : public std::exception {
-                private:
-                    std::string _message;
-                public:
-                    CoreError(std::string  message) : _message(std::move(message)) {}
-                    [[nodiscard]] const char* what() const noexcept override { return _message.c_str(); }
-            };
 
-            Core(char **argv);
-            ~Core();
-
-            void run();
-
-
-        private:
-            void networkLoop();
-            void graphicsLoop();
-
-            void loadResources();
-
-            std::unique_ptr<NetworkClient> _networkClient;
-            std::string _hostname;
-            int _port;
-
-            std::thread _networkThread;
-            std::atomic<bool> _running;
-            
-            std::queue<std::string> _incomingMessages;
-            std::mutex _incomingMutex;
-            
-            std::queue<std::string> _outgoingMessages;
-            std::mutex _outgoingMutex;
-
-            std::string _username;
+class Core {
+public:
+    class CoreError : public std::exception {
+    private:
+        std::string _message;
+    public:
+        explicit CoreError(const std::string& msg) : _message(msg) {}
+        const char* what() const noexcept override { return _message.c_str(); }
     };
+
+    Core(char **argv);
+    ~Core();
+    
+    void run();
+
+private:
+    void loadResources();
+    void networkLoop();
+    void graphicsLoop();
+
+    std::string _hostname;
+    unsigned short _port;
+    std::string _username;
+    uint8_t _myPlayerId;
+    
+    std::unique_ptr<NetworkClient> _networkClient;
+    
+    std::thread _networkThread;
+    bool _running;
+    
+    std::queue<std::string> _incomingMessages;
+    std::queue<std::string> _outgoingMessages;
+    std::mutex _incomingMutex;
+    std::mutex _outgoingMutex;
+};
+
 } // namespace CLIENT
 
 int execute_rtypeClient(char **argv);
