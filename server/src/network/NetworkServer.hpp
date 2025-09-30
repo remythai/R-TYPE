@@ -8,6 +8,7 @@
 #pragma once
 #include <asio.hpp>
 #include <atomic>
+#include <map>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -22,36 +23,64 @@ namespace rtype {
         SNAPSHOT = 0x10,
         ENTITY_EVENT = 0x11,
         PLAYER_EVENT = 0x12,
-        PING_RESPONSE = 0x13
+        PING_RESPONSE = 0x13,
+        PLAYER_ID_ASSIGNMENT = 0x08
     };
 
-    class NetworkServer {
-    public:
-        NetworkServer(unsigned short port, const std::string& hostname);
-        ~NetworkServer();
-
-        void run();
-        void stop();
-        void broadcast(const std::vector<uint8_t>& message);
-
-    private:
-        void doReceive();
-        void handleClientPacket(const asio::ip::udp::endpoint& clientEndpoint,
-                                PacketType type, uint16_t packetId, uint32_t timestamp,
-                                const std::vector<uint8_t>& payload);
-        asio::io_context _ioContext;
-        asio::ip::udp::socket _socket;
-        std::unordered_map<int, asio::ip::udp::endpoint> _clients;
-        std::unordered_map<int, std::string> _clientNames;
-        std::mutex _clientsMutex;
-        std::atomic<int> _nextClientId{1};
-        bool _running;
-
-        std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
-
-        std::string _hostname;
-
-        std::string packetTypeToString(rtype::PacketType type);
-
+    struct PlayerSlot {
+        bool isUsed;
+        uint8_t playerId;
+        asio::ip::udp::endpoint endpoint;
+        std::string username;
     };
+
+class NetworkServer {
+public:
+    NetworkServer(unsigned short port, std::string const &hostname);
+    ~NetworkServer();
+
+    void run();
+    void stop();
+    void broadcast(const std::vector<uint8_t>& message);
+
+private:
+    void doReceive();
+    void handleClientPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        PacketType type, uint16_t packetId, uint32_t timestamp,
+        const std::vector<uint8_t>& payload
+    );
+    
+    void handleJoinPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload
+    );
+    
+    void sendPlayerIdAssignment(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        uint8_t playerId
+    );
+    
+    void sendPlayerJoinEvent(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        uint8_t playerId
+    );
+    
+    uint8_t findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint);
+    int countActivePlayers() const;
+    
+    std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
+    std::string packetTypeToString(PacketType type);
+
+    asio::io_context _ioContext;
+    asio::ip::udp::socket _socket;
+    std::map<int, asio::ip::udp::endpoint> _clients;
+    std::mutex _clientsMutex;
+    bool _running;
+    int _nextClientId = 1;
+    std::string _hostname;
+    
+    std::array<PlayerSlot, 4> _playerSlots;
+};
 }
+
