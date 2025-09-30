@@ -96,6 +96,16 @@ void CLIENT::Core::loadResources()
 {
     auto &rm = ResourceManager::getInstance();
     rm.loadTexture("player_ships", "sprites/r-typesheet42.png");
+
+    _backgroundMusic = std::make_unique<sf::Music>();
+    if (!_backgroundMusic->openFromFile("sound/backgroundmusic.wav")) {
+        std::cerr << "Failed to load background music\n";
+    } else {
+        _backgroundMusic->setLooping(true);
+        _backgroundMusic->setVolume(100);
+        _backgroundMusic->play();
+    }
+
     std::cout << "Resources loaded\n";
 }
 

@@ -14,6 +14,7 @@
 #include <queue>
 #include "../network/NetworkClient.hpp"
 #include "../macros.hpp"
+#include <SFML/Audio/Music.hpp>
 
 namespace CLIENT {
 
@@ -51,6 +52,9 @@ private:
     std::queue<std::string> _outgoingMessages;
     std::mutex _incomingMutex;
     std::mutex _outgoingMutex;
+
+    std::unique_ptr<sf::Music> _backgroundMusic;
+
 };
 
 } // namespace CLIENT
