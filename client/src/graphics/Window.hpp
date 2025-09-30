@@ -24,11 +24,14 @@ public:
     void display();
 
     sf::RenderWindow &getWindow();
-    const std::vector<std::string> &getPendingActions() const;
+    const std::vector<std::string>& getPendingActions() const;
+    float getDeltaTime() const;
 
 private:
     sf::RenderWindow _window;
     std::vector<std::string> _pendingActions;
+    sf::Clock _clock;
+    float _deltaTime;
 };
 
 } // namespace CLIENT

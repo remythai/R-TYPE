@@ -34,7 +34,10 @@ set(SOURCES
     src/main.cpp
     src/core/Core.cpp
     src/graphics/Window.cpp
+    src/graphics/AnimatedSprite.cpp
+    src/graphics/ResourceManager.cpp
     src/network/NetworkClient.cpp
+
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
