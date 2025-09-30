@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** RTypeClient
-** File description:
-** Core.cpp - Avec système d'animation pour 4 joueurs
-*/
-
 #include "Core.hpp"
 #include "../graphics/Window.hpp"
 #include "../graphics/ResourceManager.hpp"
@@ -13,56 +6,52 @@
 #include <memory>
 #include <chrono>
 #include <array>
+#include <thread>
 
 CLIENT::Core::Core(char **argv)
     : _port(0), _running(false)
 {
-    for (int i = 1; i <= 3; ++i) {
+    for (int i = 1; argv[i]; ++i) {
         std::string arg = argv[i];
         if (arg == "-p") {
-            try {
-                _port = std::stoi(argv[i + 1]);
-            } catch (const std::invalid_argument &) {
-                throw CoreError("Invalid port: not a number");
-            } catch (const std::out_of_range &) {
-                throw CoreError("Invalid port: number out of range");
-            }
-        } else if (arg == "-h")
-            _hostname = argv[i + 1];
+            if (!argv[i + 1]) throw CoreError("Missing value for -p");
+            _port = std::stoi(argv[++i]);
+        } else if (arg == "-h") {
+            if (!argv[i + 1]) throw CoreError("Missing value for -h");
+            _hostname = argv[++i];
+        }
     }
 
     if (_port == 0 || _hostname.empty())
         throw CoreError("Missing -p or -h argument");
-    
+
+    std::cout << "Enter username: ";
+    std::getline(std::cin, _username);
+    if (_username.empty())
+        _username = "Player";
+
     _networkClient = std::make_unique<NetworkClient>(_hostname, _port);
-    _networkClient->sendMessage("connected");
+    _networkClient->sendJoin(_username);
+    _networkClient->startReceiving();
 
-    loadResources();
-
-    std::cout << "aujourd'hui je suis\n";
+    std::cout << "[Core] Client initialized with username: " << _username << "\n";
 }
 
 CLIENT::Core::~Core()
 {
     _running = false;
-    
-    if (_networkThread.joinable()) {
+    if (_networkThread.joinable())
         _networkThread.join();
-    }
-    
-    std::cout << "je t'ai regardé dormir\n";
 }
 
 void CLIENT::Core::run()
 {
     _running = true;
-    
     _networkThread = std::thread(&Core::networkLoop, this);
     graphicsLoop();
     _running = false;
-    if (_networkThread.joinable()) {
+    if (_networkThread.joinable())
         _networkThread.join();
-    }
 }
 
 void CLIENT::Core::loadResources()
@@ -77,34 +66,11 @@ void CLIENT::Core::loadResources()
 void CLIENT::Core::networkLoop()
 {
     std::cout << "[Network Thread] Started\n";
-    
+
     while (_running) {
-        try {
-            {
-                std::lock_guard<std::mutex> lock(_outgoingMutex);
-                while (!_outgoingMessages.empty()) {
-                    std::string msg = _outgoingMessages.front();
-                    _outgoingMessages.pop();
-                    
-                    std::cout << "[Network] Sending: " << msg << "\n";
-                    _networkClient->sendMessage(msg);
-                }
-            }
-            
-            std::string received = _networkClient->receiveMessage();
-            if (!received.empty()) {
-                std::lock_guard<std::mutex> lock(_incomingMutex);
-                _incomingMessages.push(received);
-                std::cout << "[Network] Received: " << received << "\n";
-            }
-            
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            
-        } catch (const NetworkClient::NetworkError &e) {
-            std::cerr << "[Network Thread] Error: " << e.what() << "\n";
-        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    
+
     std::cout << "[Network Thread] Stopped\n";
 }
 
@@ -249,6 +215,12 @@ void CLIENT::Core::graphicsLoop()
             for (const auto& action : actions) {
                 _outgoingMessages.push(action);
             }
+        window.pollEvents();
+
+        static int frame = 0;
+        if (++frame % 60 == 0) {
+            _networkClient->sendInput(1, 1, 1);
+            std::cout << "[Graphics] Sent simulated INPUT\n";
         }
 
         window.clear();
@@ -261,8 +233,9 @@ void CLIENT::Core::graphicsLoop()
         
         window.display();
     }
-    
+
     _running = false;
+}
 }
 
 int execute_rtypeClient(char **argv)
@@ -273,8 +246,8 @@ int execute_rtypeClient(char **argv)
     } catch (const CLIENT::Core::CoreError &error) {
         std::cerr << "Core error: " << error.what() << std::endl;
         return 1;
-    } catch (const CLIENT::NetworkClient::NetworkError &error) {
-        std::cerr << "Network error: " << error.what() << std::endl;
+    } catch (const std::exception &error) {
+        std::cerr << "Unexpected error: " << error.what() << std::endl;
         return 1;
     }
 

@@ -5,7 +5,7 @@
 ** mainServer.cpp
 */
 
-#include "Network/NetworkServer.hpp"
+#include "src/network/NetworkServer.hpp"
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
