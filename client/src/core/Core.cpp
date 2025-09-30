@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** RTypeClient
+** File description:
+** Core.cpp - Avec système d'animation pour 4 joueurs
+*/
+
 #include "Core.hpp"
 #include "../graphics/Window.hpp"
 #include "../graphics/ResourceManager.hpp"
@@ -7,6 +14,7 @@
 #include <chrono>
 #include <array>
 #include <thread>
+#include <array>
 
 CLIENT::Core::Core(char **argv)
     : _port(0), _running(false)
@@ -35,6 +43,9 @@ CLIENT::Core::Core(char **argv)
     _networkClient->startReceiving();
 
     std::cout << "[Core] Client initialized with username: " << _username << "\n";
+    loadResources();
+
+    std::cout << "aujourd'hui je suis\n";
 }
 
 CLIENT::Core::~Core()
@@ -217,10 +228,66 @@ void CLIENT::Core::graphicsLoop()
             }
         window.pollEvents();
 
-        static int frame = 0;
-        if (++frame % 60 == 0) {
-            _networkClient->sendInput(1, 1, 1);
-            std::cout << "[Graphics] Sent simulated INPUT\n";
+        window.pollEvents();
+        
+        const auto& actions = window.getPendingActions();
+        
+        bool movingUp = false;
+        bool movingDown = false;
+        
+        for (const auto& action : actions) {
+            if (action == "MOVE_UP") {
+                movingUp = true;
+            } else if (action == "MOVE_DOWN") {
+                movingDown = true;
+            } else if (action == "MOVE_LEFT") {
+                players[0].position.x -= 5.0f;
+                players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
+            } else if (action == "MOVE_RIGHT") {
+                players[0].position.x += 5.0f;
+                players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
+            } else if (action == "SHOOT") {
+                std::cout << "Piou piou piou\n";
+            }
+        }
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
+            if (players[0].currentRotation < 3) {
+                players[0].currentRotation++;
+                players[0].sprite.setFrame(players[0].currentRotation);
+            }
+            players[0].position.y -= 200.0f * deltaTime;
+            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
+        } 
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
+            if (players[0].currentRotation > 0) {
+                players[0].currentRotation--;
+                players[0].sprite.setFrame(players[0].currentRotation);
+            }
+            players[0].position.y += 200.0f * deltaTime;
+            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
+        }
+        else {
+            if (players[0].currentRotation > 0) {
+                players[0].currentRotation--;
+                players[0].sprite.setFrame(players[0].currentRotation);
+            }
+        }
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+            players[0].position.x -= 200.0f * deltaTime;
+            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
+            players[0].position.x += 200.0f * deltaTime;
+            players[0].sprite.setPosition(players[0].position.x, players[0].position.y);
+        }
+        
+        if (!actions.empty()) {
+            std::lock_guard<std::mutex> lock(_outgoingMutex);
+            for (const auto& action : actions) {
+                _outgoingMessages.push(action);
+            }
         }
 
         window.clear();
