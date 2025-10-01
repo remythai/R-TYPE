@@ -15,17 +15,17 @@
 #include <thread>
 #include <array>
 
-enum class KeyCode : uint8_t {
-    UP = 0,
-    DOWN = 1,
-    LEFT = 2,
-    RIGHT = 3,
-    SHOOT = 4
+struct InputMapping {
+    std::string action;
+    CLIENT::KeyCode keyCode;
 };
 
-enum class InputAction : uint8_t {
-    PRESSED = 1,
-    RELEASED = 0
+static const std::vector<InputMapping> INPUT_MAPPINGS = {
+    {"MOVE_UP", CLIENT::KeyCode::UP},
+    {"MOVE_DOWN", CLIENT::KeyCode::DOWN},
+    {"MOVE_LEFT", CLIENT::KeyCode::LEFT},
+    {"MOVE_RIGHT", CLIENT::KeyCode::RIGHT},
+    {"SHOOT", CLIENT::KeyCode::SHOOT}
 };
 
 CLIENT::Core::Core(char **argv)
@@ -144,6 +144,36 @@ void CLIENT::Core::networkLoop()
     std::cout << "[Network Thread] Stopped\n";
 }
 
+void CLIENT::Core::sendInput(CLIENT::KeyCode keyCode, CLIENT::InputAction action)
+{
+    std::string inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(keyCode)) + ":" 
+                         + std::to_string(static_cast<uint8_t>(action));
+    
+    std::lock_guard<std::mutex> lock(_outgoingMutex);
+    _outgoingMessages.push(inputMsg);
+}
+
+void CLIENT::Core::handleKeyStateChange(const std::string& action, bool isPressed, 
+                                       std::map<std::string, bool>& keyStates)
+{
+    if (keyStates[action] == isPressed)
+        return;
+    
+    keyStates[action] = isPressed;
+    
+    for (const auto& mapping : INPUT_MAPPINGS) {
+        if (mapping.action == action) {
+            CLIENT::InputAction inputAction = isPressed ? CLIENT::InputAction::PRESSED : CLIENT::InputAction::RELEASED;
+            sendInput(mapping.keyCode, inputAction);
+            
+            if (action == "SHOOT" && isPressed) {
+                std::cout << "Piou piou piou\n";
+            }
+            break;
+        }
+    }
+}
+
 void CLIENT::Core::graphicsLoop()
 {
     CLIENT::Window window("R-Type Client", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -243,73 +273,24 @@ void CLIENT::Core::graphicsLoop()
         const auto& actions = window.getPendingActions();
         
         for (const auto& action : actions) {
-            if (!keyStates[action]) {
-                keyStates[action] = true;
-                
-                std::string inputMsg;
-                if (action == "MOVE_UP") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::UP)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::PRESSED));
-                } else if (action == "MOVE_DOWN") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::DOWN)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::PRESSED));
-                } else if (action == "MOVE_LEFT") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::LEFT)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::PRESSED));
-                } else if (action == "MOVE_RIGHT") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::RIGHT)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::PRESSED));
-                } else if (action == "SHOOT") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::SHOOT)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::PRESSED));
-                    std::cout << "Piou piou piou\n";
-                }
-                
-                if (!inputMsg.empty()) {
-                    std::lock_guard<std::mutex> lock(_outgoingMutex);
-                    _outgoingMessages.push(inputMsg);
-                }
-            }
+            handleKeyStateChange(action, true, keyStates);
         }
         
-        std::vector<std::string> allKeys = {"MOVE_UP", "MOVE_DOWN", "MOVE_LEFT", "MOVE_RIGHT", "SHOOT"};
-        for (const auto& key : allKeys) {
-            bool isPressed = std::find(actions.begin(), actions.end(), key) != actions.end();
-            
-            if (keyStates[key] && !isPressed) {
-                keyStates[key] = false;
-                
-                std::string inputMsg;
-                if (key == "MOVE_UP") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::UP)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::RELEASED));
-                } else if (key == "MOVE_DOWN") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::DOWN)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::RELEASED));
-                } else if (key == "MOVE_LEFT") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::LEFT)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::RELEASED));
-                } else if (key == "MOVE_RIGHT") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::RIGHT)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::RELEASED));
-                } else if (key == "SHOOT") {
-                    inputMsg = "INPUT:" + std::to_string(static_cast<uint8_t>(KeyCode::SHOOT)) + ":" 
-                             + std::to_string(static_cast<uint8_t>(InputAction::RELEASED));
-                }
-                
-                if (!inputMsg.empty()) {
-                    std::lock_guard<std::mutex> lock(_outgoingMutex);
-                    _outgoingMessages.push(inputMsg);
-                }
+        for (const auto& mapping : INPUT_MAPPINGS) {
+            bool isPressed = std::find(actions.begin(), actions.end(), mapping.action) != actions.end();
+            if (!isPressed) {
+                handleKeyStateChange(mapping.action, false, keyStates);
             }
         }
-        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             if (players[_myPlayerId].currentRotation < 3) {
                 players[_myPlayerId].currentRotation++;
                 players[_myPlayerId].sprite.setFrame(players[_myPlayerId].currentRotation);
             }
             players[_myPlayerId].position.y -= 200.0f * deltaTime;
+            if (players[_myPlayerId].position.y < 0) {
+                players[_myPlayerId].position.y = 0;
+            }
             players[_myPlayerId].sprite.setPosition(players[_myPlayerId].position.x, 
                                                    players[_myPlayerId].position.y);
         } 
@@ -319,6 +300,9 @@ void CLIENT::Core::graphicsLoop()
                 players[_myPlayerId].sprite.setFrame(players[_myPlayerId].currentRotation);
             }
             players[_myPlayerId].position.y += 200.0f * deltaTime;
+            if (players[_myPlayerId].position.y > WINDOW_HEIGHT) {
+                players[_myPlayerId].position.y = WINDOW_HEIGHT;
+            }
             players[_myPlayerId].sprite.setPosition(players[_myPlayerId].position.x, 
                                                    players[_myPlayerId].position.y);
         }
@@ -331,11 +315,17 @@ void CLIENT::Core::graphicsLoop()
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
             players[_myPlayerId].position.x -= 200.0f * deltaTime;
+            if (players[_myPlayerId].position.x < 0) {
+                players[_myPlayerId].position.x = 0;
+            }
             players[_myPlayerId].sprite.setPosition(players[_myPlayerId].position.x, 
                                                    players[_myPlayerId].position.y);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
             players[_myPlayerId].position.x += 200.0f * deltaTime;
+            if (players[_myPlayerId].position.x > WINDOW_WIDTH) {
+                players[_myPlayerId].position.x = WINDOW_WIDTH;
+            }
             players[_myPlayerId].sprite.setPosition(players[_myPlayerId].position.x, 
                                                    players[_myPlayerId].position.y);
         }

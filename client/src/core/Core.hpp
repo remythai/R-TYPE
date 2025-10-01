@@ -12,11 +12,25 @@
 #include <thread>
 #include <mutex>
 #include <queue>
+#include <map>
 #include "../network/NetworkClient.hpp"
 #include "../macros.hpp"
 #include <SFML/Audio/Music.hpp>
 
 namespace CLIENT {
+
+enum class KeyCode : uint8_t {
+    UP = 0,
+    DOWN = 1,
+    LEFT = 2,
+    RIGHT = 3,
+    SHOOT = 4
+};
+
+enum class InputAction : uint8_t {
+    PRESSED = 1,
+    RELEASED = 0
+};
 
 class Core {
 public:
@@ -37,6 +51,11 @@ private:
     void loadResources();
     void networkLoop();
     void graphicsLoop();
+    
+    // Nouvelles méthodes pour gérer les inputs
+    void sendInput(KeyCode keyCode, InputAction action);
+    void handleKeyStateChange(const std::string& action, bool isPressed, 
+                             std::map<std::string, bool>& keyStates);
 
     std::string _hostname;
     unsigned short _port;
@@ -54,7 +73,6 @@ private:
     std::mutex _outgoingMutex;
 
     std::unique_ptr<sf::Music> _backgroundMusic;
-
 };
 
 } // namespace CLIENT
