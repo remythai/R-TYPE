@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 set(SOURCES
     src/main.cpp
+    src/network/NetworkServer.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
