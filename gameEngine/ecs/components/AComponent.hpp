@@ -3,11 +3,8 @@
 namespace GameEngine {
 class AComponent : public IComponent {
 public:
-	AComponent(std::string tag);
+	AComponent();
 	~AComponent();
-    std::string get_tag() const;
-
 private:
-    std::string _tag;
 };
 }
