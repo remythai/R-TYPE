@@ -1,3 +1,4 @@
+#pragma once
 #include "IComponent.hpp"
 
 namespace GameEngine {

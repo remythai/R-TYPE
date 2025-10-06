@@ -3,10 +3,10 @@
 #include <iostream>
 
 namespace GameEngine {
-class IComponent {
+class ISystem {
 public:
-  IComponent();
-  ~IComponent();
+  ISystem();
+  ~ISystem();
 private:
 };
 } // namespace GameEngine
