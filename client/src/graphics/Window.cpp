@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Window.cpp - SFML 3.0.2
+** Window.cpp
 */
 
 #include "Window.hpp"

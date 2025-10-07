@@ -36,8 +36,9 @@ set(SOURCES
     src/graphics/Window.cpp
     src/graphics/AnimatedSprite.cpp
     src/graphics/ResourceManager.cpp
+    src/graphics/EntityManager.cpp
+    src/graphics/ParallaxSystem.cpp
     src/network/NetworkClient.cpp
-
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})

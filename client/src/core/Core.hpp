@@ -15,6 +15,9 @@
 #include <map>
 #include "../network/NetworkClient.hpp"
 #include "../macros.hpp"
+#include "../graphics/EntityManager.hpp"
+#include "../graphics/ParallaxSystem.hpp"
+#include "../graphics/AnimatedSprite.hpp"
 #include <SFML/Audio/Music.hpp>
 
 namespace CLIENT {
@@ -30,6 +33,14 @@ enum class KeyCode : uint8_t {
 enum class InputAction : uint8_t {
     PRESSED = 1,
     RELEASED = 0
+};
+
+struct Player {
+    AnimatedSprite sprite;
+    int playerId;
+    bool active;
+    sf::Vector2f position;
+    int currentRotation;
 };
 
 class Core {
@@ -52,7 +63,6 @@ private:
     void networkLoop();
     void graphicsLoop();
     
-    // Nouvelles méthodes pour gérer les inputs
     void sendInput(KeyCode keyCode, InputAction action);
     void handleKeyStateChange(const std::string& action, bool isPressed, 
                              std::map<std::string, bool>& keyStates);
@@ -73,6 +83,9 @@ private:
     std::mutex _outgoingMutex;
 
     std::unique_ptr<sf::Music> _backgroundMusic;
+    std::unique_ptr<EntityManager> _entityManager;
+    std::unique_ptr<ParallaxSystem> _parallaxSystem;
+
 };
 
 } // namespace CLIENT

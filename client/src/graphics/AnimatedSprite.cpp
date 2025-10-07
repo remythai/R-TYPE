@@ -7,9 +7,7 @@
 
 #include "AnimatedSprite.hpp"
 
-namespace CLIENT {
-
-AnimatedSprite::AnimatedSprite()
+CLIENT::AnimatedSprite::AnimatedSprite()
     : _sprite(nullptr)
     , _texture(nullptr)
     , _currentFrame(0)
@@ -21,7 +19,7 @@ AnimatedSprite::AnimatedSprite()
     , _row(0)
 {}
 
-void AnimatedSprite::setAnimation(sf::Texture *texture, 
+void CLIENT::AnimatedSprite::setAnimation(sf::Texture *texture, 
                                   const sf::Vector2u &frameSize,
                                   int frameCount,
                                   int row,
@@ -49,7 +47,7 @@ void AnimatedSprite::setAnimation(sf::Texture *texture,
     }
 }
 
-void AnimatedSprite::update(float deltaTime) {
+void CLIENT::AnimatedSprite::update(float deltaTime) {
     if (!_isPlaying || _frames.empty() || !_sprite)
         return;
 
@@ -72,65 +70,76 @@ void AnimatedSprite::update(float deltaTime) {
     }
 }
 
-void AnimatedSprite::draw(sf::RenderWindow &window) const {
+void CLIENT::AnimatedSprite::draw(sf::RenderWindow &window) const {
     if (_sprite)
         window.draw(*_sprite);
 }
 
-void AnimatedSprite::play() {
+void CLIENT::AnimatedSprite::play() {
     _isPlaying = true;
 }
 
-void AnimatedSprite::pause() {
+void CLIENT::AnimatedSprite::pause() {
     _isPlaying = false;
 }
 
-void AnimatedSprite::stop() { 
+void CLIENT::AnimatedSprite::stop() { 
     _isPlaying = false; 
     _currentFrame = 0;
     if (!_frames.empty() && _sprite)
         _sprite->setTextureRect(_frames[0]);
 }
 
-void AnimatedSprite::setLoop(bool loop) {
+void CLIENT::AnimatedSprite::setLoop(bool loop) {
     _loop = loop;
 }
 
-void AnimatedSprite::setFrameDuration(float duration) {
+void CLIENT::AnimatedSprite::setFrameDuration(float duration) {
     _frameDuration = duration;
 }
 
-void AnimatedSprite::setFrame(int frame) {
+void CLIENT::AnimatedSprite::setFrame(int frame) {
     if (frame >= 0 && frame < _frameCount && _sprite && !_frames.empty()) {
         _currentFrame = frame;
         _sprite->setTextureRect(_frames[_currentFrame]);
     }
 }
 
-int AnimatedSprite::getCurrentFrame() const {
+int CLIENT::AnimatedSprite::getCurrentFrame() const {
     return _currentFrame;
 }
 
-int AnimatedSprite::getFrameCount() const {
+int CLIENT::AnimatedSprite::getFrameCount() const {
     return _frameCount;
 }
 
-sf::Sprite *AnimatedSprite::getSprite() {
+sf::Sprite *CLIENT::AnimatedSprite::getSprite() {
     return _sprite.get();
 }
 
-void AnimatedSprite::setPosition(float x, float y) { 
+void CLIENT::AnimatedSprite::setPosition(float x, float y) { 
     if (_sprite)
         _sprite->setPosition(sf::Vector2f(x, y)); 
 }
 
-void AnimatedSprite::setScale(float x, float y) { 
+void CLIENT::AnimatedSprite::setScale(float x, float y) { 
     if (_sprite) 
         _sprite->setScale(sf::Vector2f(x, y)); 
 }
 
-sf::Vector2f AnimatedSprite::getPosition() const { 
+sf::Vector2f CLIENT::AnimatedSprite::getPosition() const { 
     return _sprite ? _sprite->getPosition() : sf::Vector2f(0, 0); 
 }
 
-} // namespace CLIENT
+void CLIENT::AnimatedSprite::setPosition(const sf::Vector2f& pos)
+{
+    if (_sprite)
+        _sprite->setPosition(pos);
+}
+
+sf::FloatRect CLIENT::AnimatedSprite::getGlobalBounds() const
+{
+    if (_sprite)
+        return _sprite->getGlobalBounds();
+    return sf::FloatRect();
+}
