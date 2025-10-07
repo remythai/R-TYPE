@@ -1,181 +1,219 @@
 # 🛸 R-Type — Online Multiplayer Game (C++ / Asio / ECS)
 
-## Présentation du projet
+## Project Overview
 
-**R-Type** est un projet réalisé dans le cadre du module **Advanced C++ / Network Programming** à **Epitech Technology**.  
-L’objectif est de **recréer un jeu multijoueur inspiré du classique R-Type**, en mettant en œuvre :
-- Une **architecture client / serveur** en **C++17** (ou supérieur)
-- Une communication réseau en **UDP** (via **Asio**)
-- Un **moteur de jeu modulaire** basé sur un **ECS (Entity Component System)**
+**R-Type** is a project developed as part of the **Advanced C++ / Network Programming** module at **Epitech Technology**.  
+The goal is to **recreate a multiplayer game inspired by the classic R-Type**, implementing:
+- A **client/server architecture** in **C++17** (or higher)
+- **UDP** network communication (via **Asio**)
+- A **modular game engine** based on an **ECS (Entity Component System)**
 
-Le jeu permet à plusieurs joueurs de se connecter, de se déplacer, de tirer et d’affronter des vagues d’ennemis en temps réel.
-
----
-
-## Fonctionnalités principales
-
-### Côté Joueur (Client)
-- Connexion au serveur (JOIN)
-- Gestion des inputs clavier
-- Envoi des actions en temps réel via UDP
-- Affichage du monde de jeu et des entités (vaisseaux, tirs, ennemis)
-- Synchronisation des positions via snapshots réseau
-
-### Côté Serveur
-- Gestion de la boucle réseau Asio (async)
-- Réception et traitement des paquets clients
-- Attribution dynamique d’un PlayerID
-- Broadcast des événements de jeu à tous les clients
-- Système de slots de joueurs (max. 4)
-- Gestion des événements : spawn, déplacement, tir, collision, mort
-
-### Architecture interne
-- **ECS (Entity Component System)** pour une gestion modulaire du gameplay
-- **Thread principal réseau** asynchrone (Asio)
-- **Système de sérialisation binaire** pour les paquets réseau
-- **Gestion des timestamps et packetIds** pour la synchronisation
+The game allows multiple players to connect, move, shoot, and face waves of enemies in real-time.
 
 ---
 
-## Structure du projet
+## Main Features
 
+### Player Side (Client)
+- Server connection (JOIN)
+- Keyboard input management
+- Real-time action sending via UDP
+- Game world and entity display (ships, shots, enemies)
+- Position synchronization via network snapshots
+
+### Server Side
+- Asio network loop management (async)
+- Client packet reception and processing
+- Dynamic PlayerID assignment
+- Game event broadcasting to all clients
+- Player slot system (max. 4 players)
+- Event management: spawn, movement, shooting, collision, death
+
+### Internal Architecture
+- **ECS (Entity Component System)** for modular gameplay management
+- **Main asynchronous network thread** (Asio)
+- **Binary serialization system** for network packets
+- **Timestamp and packetId management** for synchronization
+
+---
+
+## Project Structure
+
+```
 R-Type/
 ├── CMakeLists.txt
 ├── README.md
 ├── docs/
-│ ├── architecture.md
-│ ├── protocol.md
-│ ├── comparative-study.md
-│ └── accessibility.md
+│   ├── architecture.md
+│   ├── protocol.md
+│   ├── comparative-study.md
+│   └── accessibility.md
 ├── src/
-│ ├── client/
-│ │ ├── main.cpp
-│ │ └── ...
-│ ├── server/
-│ │ ├── NetworkServer.cpp
-│ │ └── ...
-│ └── engine/
-│ ├── ecs/
-│ └── components/
+│   ├── client/
+│   │   ├── main.cpp
+│   │   └── ...
+│   ├── server/
+│   │   ├── NetworkServer.cpp
+│   │   └── ...
+│   └── engine/
+│       ├── ecs/
+│       └── components/
 ├── assets/
-│ └── sprites/
+│   └── sprites/
 └── tests/
+```
 
 ---
 
-## ⚙️ Installation et compilation
+## ⚙️ Installation and Compilation
 
-### Dépendances
-Assure-toi d’avoir :
+### Dependencies
+Make sure you have:
 - **CMake ≥ 3.20**
-- **C++17** (ou supérieur)
-- **Asio** (ou Boost.Asio)
-- **SFML** ou **Raylib** (selon ton moteur de rendu)
-- **Conan** ou **Vcpkg** (facultatif, pour la gestion des libs)
+- **C++17** (or higher)
+- **Asio** (or Boost.Asio)
+- **SFML** or **Raylib** (depending on your rendering engine)
+- **Conan** or **Vcpkg** (optional, for library management)
 
 ### Compilation
 
-#### 1. Cloner le projet :
+#### 1. Clone the project:
 ```bash
 git clone https://github.com/EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-7.git
 cd G-CPP-500-BDX-5-1-rtype-7
 ```
 
-#### 2. Compiler et lancer le serveur :
-
+#### 2. Compile and run the server:
 ```bash
 cd server
 ./build.sh
-./r-type_server -h [port] -p [port]
+./r-type_server -h [hostname] -p [port]
 ```
 
-#### 3. Compiler et lancer le client :
-
+#### 3. Compile and run the client:
 ```bash
 cd client
 ./build.sh
-./r-type_client -h [port] -p [port]
+./r-type_client -h [hostname] -p [port]
 ```
 
-### 🔌 Communication réseau
+---
 
-Le protocole est basé sur UDP avec une structure binaire fixe :
+## 🔌 Network Communication
+
+The protocol is based on UDP with a fixed binary structure:
 
 ```
 [Type:1][PacketID:2][Timestamp:4][Payload:n]
 ```
 
-Exemples de paquets :
+Packet examples:
 
-| Type | Nom                  | Description                          |
-| ---- | -------------------- | ------------------------------------ |
-| 0x01 | JOIN                 | Un joueur rejoint la partie          |
-| 0x02 | INPUT                | Action clavier envoyée               |
-| 0x03 | PING                 | Vérification de latence              |
-| 0x04 | SNAPSHOT             | Synchronisation du monde             |
-| 0x05 | PLAYER_EVENT         | Événements liés aux joueurs          |
-| 0x06 | ENTITY_EVENT         | Événements liés aux entités          |
-| 0x07 | PLAYER_ID_ASSIGNMENT | Attribution d’un ID unique au joueur |
+| Type | Name                 | Description                    |
+|------|----------------------|--------------------------------|
+| 0x01 | INPUT                | Keyboard action sent           |
+| 0x02 | JOIN                 | A player joins the game        |
+| 0x03 | PING                 | Latency check                  |
+| 0x08 | PLAYER_ID_ASSIGNMENT | Unique ID assignment to player |
+| 0x10 | SNAPSHOT             | World synchronization          |
+| 0x11 | ENTITY_EVENT         | Entity-related events          |
+| 0x12 | PLAYER_EVENT         | Player-related events          |
+| 0x13 | PING_RESPONSE        | Response to ping request       |
 
+For detailed protocol documentation, see [docs/protocol.md](docs/protocol.md)
 
-### 🧩 Architecture technique
+---
 
-🔹 Côté Serveur
+## 🧩 Technical Architecture
 
-NetworkServer : gère la réception et l’envoi de paquets
+### 🔹 Server Side
+- **NetworkServer**: Handles packet reception and transmission
+- **PlayerSlot**: Connected player structure
+- **PacketHandler**: Processing logic (JOIN, INPUT, etc.)
+- **GameWorld**: Game logic and synchronization
 
-PlayerSlot : structure d’un joueur connecté
+### 🔹 Client Side
+- **NetworkClient**: Handles server communication
+- **Renderer**: Game display
+- **InputManager**: Keyboard event reading
+- **ECS**: Entity and component management
 
-PacketHandler : logique de traitement (JOIN, INPUT, etc.)
+---
 
-GameWorld : logique de jeu et synchronisation
+## 👥 Team
 
-🔹 Côté Client
+| Name                      | Role                              |
+|---------------------------|-----------------------------------|
+| **Antton Ducos**          | ECS Developer / Backend           |
+| **Louka Ortega-cand**     | ECS Developer / Game Logic        |
+| **Rémy Thai**             | Client Developer / Game Interface |
+| **Simon Maigrot**         | Network Developer / UDP Server    |
 
-NetworkClient : gère la communication avec le serveur
+---
 
-Renderer : affichage du jeu
+## 🧪 Testing
 
-InputManager : lecture des événements clavier
-
-ECS : gestion des entités et composants
-
-### 👥 Équipe
-
-| Nom               | Rôle                             |
-| ----------------- | -------------------------------- |
-| **Antton Ducos** | Stagiaire ECS / branleur |
-| **Louka Ortega-cand** | Stagiaire ECS / Kassos |
-| **Rémy Thai** | Développeur client / Interface de jeu |
-| **Simon Maigrot** | Développeur réseau / Serveur UDP |
-
-### 🧪 Tests
-Les tests unitaires peuvent être exécutés avec :
-```
+Unit tests can be run with:
+```bash
 cd build
 ctest
 ```
 
-Ils couvrent :
+They cover:
+- Packet serialization
+- Client/server interactions
+- ECS components
 
-La sérialisation des paquets
+---
 
-Les interactions client/serveur
+## 🧭 Technical Resources
 
-Les composants ECS
+- **Asio Documentation**: https://think-async.com
+- **ECS Pattern**: https://skypjack.github.io/entt/
+- **UDP Game Networking**: Valve Developer Wiki
+- **SFML / Raylib Docs**: https://www.sfml-dev.org / https://www.raylib.com
 
-### 🧭 Ressources techniques
+---
 
-Documentation Asio : https://think-async.com
+## 📚 Documentation
 
-ECS Pattern : https://skypjack.github.io/entt/
+- [Network Protocol Specification](docs/protocol.md)
+- [Server Architecture](docs/server-architecture.md)
+- [ECS Engine Design](docs/architecture.md)
+- [Comparative Technical Study](docs/comparative-study.md)
+- [Accessibility Guidelines](docs/accessibility.md)
 
-UDP Game Networking : Valve Developer Wiki
+---
 
-SFML / Raylib Docs : https://www.sfml-dev.org
- / https://www.raylib.com
+## 🚀 Roadmap
 
-### ⚖️ Licence
+### Part 1 (Prototype - Week 4)
+- [x] Basic UDP server with player management
+- [x] Binary protocol implementation
+- [x] Client connection and input handling
+- [ ] Game world rendering
+- [ ] Basic enemy spawning
+- [ ] Shooting mechanics
 
-Projet développé dans le cadre pédagogique d’Epitech.
-Usage réservé à des fins d’apprentissage et de démonstration technique.
+### Part 2 (Advanced Features - Week 7)
+- [ ] Multi-instance server (multiple game rooms)
+- [ ] Lobby system
+- [ ] Advanced networking (compression, reliability)
+- [ ] Complete gameplay (bosses, levels, weapons)
+- [ ] Level editor
+- [ ] Performance optimization
+
+---
+
+## ⚖️ License
+
+Project developed as part of Epitech's educational curriculum.  
+Use restricted to learning and technical demonstration purposes.
+
+---
+
+## 📞 Contact
+
+For questions or contributions, please open an issue on the GitHub repository or contact the development team.
+
+**Project Repository**: https://github.com/EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-7
