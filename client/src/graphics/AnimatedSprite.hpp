@@ -39,8 +39,11 @@ public:
     sf::Sprite *getSprite();
 
     void setPosition(float x, float y);
+    void setPosition(const sf::Vector2f& pos);
     void setScale(float x, float y);
     sf::Vector2f getPosition() const;
+
+    sf::FloatRect getGlobalBounds() const;
 
 private:
     std::unique_ptr<sf::Sprite> _sprite;
