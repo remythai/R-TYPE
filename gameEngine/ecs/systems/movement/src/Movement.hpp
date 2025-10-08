@@ -1,17 +1,27 @@
 #pragma once
 
-#include "../../ASystem.hpp"
-#include "../../../components/position/src/Position.hpp"
-#include "../../../components/speed/src/Speed.hpp"
-#include <memory>
+#include "../../Registry.hpp"
+#include "../../System.hpp"
+
+
+using namespace GameEngine;
 
 namespace GameEngine {
-class Movement : public ASystem {
-public:
-	Movement ();
-	~Movement ();
-    
-    void compute(std::unique_ptr<Position> &, std::unique_ptr<Speed> &);
-private:
-};
+    class MovementSystem : public System<MovementSystem> {
+    public:
+        MovementSystem() {
+            requireComponents<Position, Velocity>();
+        }
+        
+        void onUpdate(Registry& registry, float dt) {
+            updateCount++;
+            
+            registry.each<Position, Velocity>([dt](auto e, Position& pos, Velocity& vel) {
+                pos.x += vel.x * dt;
+                pos.y += vel.y * dt;
+            });
+        }
+        
+        int updateCount = 0;
+    };
 }
