@@ -45,30 +45,57 @@ public:
 
 private:
     void doReceive();
+
+    // Handle client packets
     void handleClientPacket(
         const asio::ip::udp::endpoint& clientEndpoint,
         PacketType type, uint16_t packetId, uint32_t timestamp,
         const std::vector<uint8_t>& payload
     );
-    
+
+    void handleInputPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload
+    );
+
+    void handlePingPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        uint16_t packetId, uint32_t timestamp
+    );
+
+    void handleSnapshotPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload
+    );
+
     void handleJoinPacket(
         const asio::ip::udp::endpoint& clientEndpoint,
         const std::vector<uint8_t>& payload
     );
-    
+
+    void handleEntityEventPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload
+    );
+
+    void handlePlayerEventPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload
+    );
+
     void sendPlayerIdAssignment(
         const asio::ip::udp::endpoint& clientEndpoint,
         uint8_t playerId
     );
-    
+
     void sendPlayerJoinEvent(
         const asio::ip::udp::endpoint& clientEndpoint,
         uint8_t playerId
     );
-    
+
     uint8_t findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint);
     int countActivePlayers() const;
-    
+
     std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
     std::string packetTypeToString(PacketType type);
 
