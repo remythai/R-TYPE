@@ -49,7 +49,38 @@ void rtype::NetworkServer::run()
     _running = true;
     doReceive();
     std::cout << "UDP Server running..." << std::endl;
+    std::thread([this]() {
+        while (_running) {
+            cleanInactivePlayers();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }).detach();
     _ioContext.run();
+}
+
+void rtype::NetworkServer::cleanInactivePlayers()
+{
+    std::lock_guard<std::mutex> lock(_playerSlotsMutex);
+
+    auto now = std::chrono::steady_clock::now();
+    for (auto& slot : _playerSlots) {
+        if (slot.isUsed) {
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - slot.lastActive).count();
+            if (duration > 500) { // 5 secondes d'inactivité = déconnexion
+                std::cout << "[SERVER] Player " << int(slot.playerId)
+                        << " (" << slot.username << ") timed out." << std::endl;
+
+                std::vector<uint8_t> leaveEvent = {
+                    static_cast<uint8_t>(rtype::PacketType::PLAYER_EVENT),
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // packetId + timestamp
+                    slot.playerId, 1 // eventType = 1 = LEAVE
+                };
+                broadcast(leaveEvent);
+
+                slot.isUsed = false;
+            }
+        }
+    }
 }
 
 void rtype::NetworkServer::stop()

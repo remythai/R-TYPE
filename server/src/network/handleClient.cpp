@@ -10,10 +10,73 @@
 
 uint8_t rtype::NetworkServer::findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint)
 {
+    std::lock_guard<std::mutex> lock(_playerSlotsMutex);
     for (const auto& slot : _playerSlots)
         if (slot.isUsed && slot.endpoint == endpoint)
             return slot.playerId;
     return 255;
+}
+
+void rtype::NetworkServer::handleJoinPacket(
+    const asio::ip::udp::endpoint& clientEndpoint,
+    const std::vector<uint8_t>& payload)
+{
+    std::string username(payload.begin(), payload.end());
+    std::cout << "[Username=" << username << "]";
+
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+
+    for (const auto& slot : _playerSlots) {
+        if (slot.isUsed && slot.endpoint == clientEndpoint) {
+            std::cout << " [Already connected as Player " << int(slot.playerId) << "]" << std::endl;
+            sendPlayerIdAssignment(clientEndpoint, slot.playerId);
+            return;
+        }
+    }
+
+    if (countActivePlayers() >= 4) {
+        std::cout << " -> Connection refused: server full" << std::endl;
+
+        std::vector<uint8_t> fullPacket = {
+            static_cast<uint8_t>(rtype::PacketType::PLAYER_ID_ASSIGNMENT),
+            0, 0, 0, 0, 0, 0,
+            255
+        };
+        _socket.send_to(asio::buffer(fullPacket), clientEndpoint);
+        return;
+    }
+
+    uint8_t assignedPlayerId = 255;
+    for (auto& slot : _playerSlots) {
+        if (!slot.isUsed) {
+            slot.isUsed = true;
+            slot.endpoint = clientEndpoint;
+            slot.username = username;
+            slot.lastActive = std::chrono::steady_clock::now();
+            assignedPlayerId = slot.playerId;
+            break;
+        }
+    }
+
+    int clientId = _nextClientId++;
+    _clients[clientId] = clientEndpoint;
+
+    std::cout << " -> Assigned Player ID " << int(assignedPlayerId)
+            << ", Total players: " << countActivePlayers() << "/4" << std::endl;
+
+    sendPlayerIdAssignment(clientEndpoint, assignedPlayerId);
+
+    for (const auto& slot : _playerSlots) {
+        if (slot.isUsed && slot.playerId != assignedPlayerId) {
+            sendPlayerJoinEvent(clientEndpoint, slot.playerId);
+        }
+    }
+
+    for (const auto& slot : _playerSlots) {
+        if (slot.isUsed && slot.playerId != assignedPlayerId) {
+            sendPlayerJoinEvent(slot.endpoint, assignedPlayerId);
+        }
+    }
 }
 
 void rtype::NetworkServer::handleInputPacket(
@@ -86,6 +149,10 @@ void rtype::NetworkServer::handleClientPacket(
     std::cout << "[Type=" << packetTypeToString(type) << "]";
     std::cout << "[PacketId=" << packetId << "]";
     std::cout << "[Timestamp=" << timestamp << "]";
+
+    uint8_t playerId = findPlayerIdByEndpoint(clientEndpoint);
+    if (playerId != 255)
+        _playerSlots[playerId].lastActive = std::chrono::steady_clock::now();
 
     switch(type) {
         case PacketType::JOIN:
