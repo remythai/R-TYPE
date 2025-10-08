@@ -116,9 +116,10 @@ void NetworkClient::handlePacket(
                 uint8_t playerId = payload[0];
                 std::cout << "[AssignedPlayerId=" << int(playerId) << "]";
 
-                if (playerId == 30) {
+                if (playerId == 255) {
                     std::cout << "\n[Error] Server full, cannot join." << std::endl;
-                    std::exit(1);
+                    _ioContext.stop();
+                    return; 
                 }
 
                 if (_onPlayerIdReceived) {

@@ -278,6 +278,11 @@ void CLIENT::Core::graphicsLoop()
                     if (playerId >= 0 && playerId < 4) {
                         players[playerId].active = false;
                         std::cout << "Player " << playerId << " left\n";
+
+                        if (playerId == _myPlayerId) {
+                            std::cout << "You left or got disconnected, closing the game...\n";
+                            window.getWindow().close();
+                        }
                     }
                 }
                 else if (msg.find("PLAYER_MOVE:") == 0) {
