@@ -1,16 +1,13 @@
 #pragma once
 
-#include "../../Registry.hpp"
-#include "../../System.hpp"
-
-
-using namespace GameEngine;
+#include "../../../Registry.hpp"
+#include "../../../System.hpp"
 
 namespace GameEngine {
     class MovementSystem : public System<MovementSystem> {
     public:
         MovementSystem() {
-            requireComponents<Position, Velocity>();
+            requireComponents<GameEngine::Position, GameEngine::Velocity>();
         }
         
         void onUpdate(Registry& registry, float dt) {
