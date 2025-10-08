@@ -15,6 +15,7 @@
 #include <thread>
 #include <array>
 #include <algorithm>
+#include <random>
 
 struct InputMapping {
     std::string action;
@@ -31,6 +32,15 @@ static const std::vector<InputMapping> INPUT_MAPPINGS = {
 
 struct LocalProjectile {
     uint32_t id;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    CLIENT::AnimatedSprite sprite;
+};
+
+struct Enemy {
+    uint32_t entityId;
+    uint8_t enemyType;
+    bool active;
     sf::Vector2f position;
     sf::Vector2f velocity;
     CLIENT::AnimatedSprite sprite;
@@ -112,6 +122,11 @@ void CLIENT::Core::loadResources()
 
     rm.loadTexture("projectiles_sheet", "sprites/playerProjectiles.png");
 
+    rm.loadTexture("enemy_type0", "sprites/r-typesheet5.png");
+    rm.loadTexture("enemy_type1", "sprites/r-typesheet9.png");
+    rm.loadTexture("enemy_type2", "sprites/r-typesheet10.png");
+    rm.loadTexture("enemy_type3", "sprites/r-typesheet11.png");
+
     _backgroundMusic = std::make_unique<sf::Music>();
     if (!_backgroundMusic->openFromFile("sound/backgroundmusic.wav")) {
         std::cerr << "Failed to load background music\n";
@@ -189,6 +204,58 @@ void CLIENT::Core::handleKeyStateChange(const std::string& action, bool isPresse
     }
 }
 
+Enemy createTestEnemy(uint32_t id, uint8_t type, float x, float y, CLIENT::ResourceManager& rm) {
+    Enemy enemy;
+    enemy.entityId = id;
+    enemy.enemyType = type;
+    enemy.active = true;
+    enemy.position = sf::Vector2f(x, y);
+    enemy.velocity = sf::Vector2f(-100.0f, 0.0f);
+    
+    std::string textureName = "enemy_type" + std::to_string(type);
+    if (auto* tex = rm.getTexture(textureName)) {
+        sf::Vector2u frameSize;
+        int frameCount;
+        int row = 0;
+        float animSpeed;
+        
+        switch (type) {32
+            case 0:
+                frameSize = sf::Vector2u(33.31, 36);
+                frameCount = 8;
+                animSpeed = 0.1f;
+                break;
+            case 1:
+                frameSize = sf::Vector2u(55.33, 54);
+                frameCount = 3;
+                animSpeed = 0.15f;
+                break;
+            case 2:
+                frameSize = sf::Vector2u(33.17, 30);
+                frameCount = 6;
+                animSpeed = 0.12f;
+                break;
+            case 3:
+                frameSize = sf::Vector2u(33.33, 34);
+                frameCount = 3;
+                animSpeed = 0.2f;
+                break;
+            default:
+                frameSize = sf::Vector2u(33.33, 34);
+                frameCount = 3;
+                animSpeed = 0.1f;
+        }
+        
+        enemy.sprite.setAnimation(tex, frameSize, frameCount, row, animSpeed);
+        enemy.sprite.play();
+        enemy.sprite.setLoop(true);
+        enemy.sprite.setScale(2.0f, 2.0f);
+        enemy.sprite.setPosition(x, y);
+    }
+    
+    return enemy;
+}
+
 void CLIENT::Core::graphicsLoop()
 {
     CLIENT::Window window("R-Type Client", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -201,7 +268,6 @@ void CLIENT::Core::graphicsLoop()
 
     std::cout << "Parallax system initialized with 4 layers\n";
 
-
     std::array<Player, 4> players;
 
     if (auto* tex = rm.getTexture("player_ships")) {
@@ -210,13 +276,7 @@ void CLIENT::Core::graphicsLoop()
             players[i].active = false;
             players[i].currentRotation = 2;
             
-            players[i].sprite.setAnimation(
-                tex,
-                sf::Vector2u(33.2, 17.2),
-                5,
-                i,
-                1.5f 
-            );
+            players[i].sprite.setAnimation(tex, sf::Vector2u(33.2, 17.2), 5, i, 1.5f);
             players[i].sprite.pause();
             players[i].sprite.setFrame(2);
             
@@ -226,6 +286,31 @@ void CLIENT::Core::graphicsLoop()
         }
     }
     
+    std::unordered_map<uint32_t, Enemy> enemies;
+    
+    // TEST TEST TEST TEST 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> typeDist(0, 3);
+    std::uniform_real_distribution<> yDist(50, WINDOW_HEIGHT - 100);
+    
+    uint32_t nextEnemyId = 1000;
+    float enemySpawnTimer = 0.0f;
+    const float ENEMY_SPAWN_INTERVAL = 2.0f;
+    
+    for (int i = 0; i < 5; ++i) {
+        uint8_t type = typeDist(gen);
+        float y = yDist(gen);
+        float x = WINDOW_WIDTH + 100 + (i * 150);
+        
+        Enemy enemy = createTestEnemy(nextEnemyId++, type, x, y, rm);
+        enemies[enemy.entityId] = std::move(enemy);
+        
+        std::cout << "[TEST] Created enemy type " << int(type) 
+                  << " at (" << x << ", " << y << ")\n";
+    }
+    // FIN DE TEST TEST TEST
+    
     std::map<std::string, bool> keyStates = {
         {"MOVE_UP", false},
         {"MOVE_DOWN", false},
@@ -234,8 +319,8 @@ void CLIENT::Core::graphicsLoop()
         {"SHOOT", false}
     };
 
+    // TEST TEST TEST
     std::unordered_map<uint32_t, CLIENT::AnimatedSprite> projectileSprites;
-    
     std::vector<LocalProjectile> localProjectiles;
     uint32_t nextProjectileId = 10000;
     
@@ -243,6 +328,11 @@ void CLIENT::Core::graphicsLoop()
     const float SHOOT_DELAY = 0.2f;
 
     bool waitingForPlayerId = true;
+    
+    _myPlayerId = 0;
+    players[0].active = true;
+    waitingForPlayerId = false;
+    // testtest
 
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();
@@ -251,6 +341,21 @@ void CLIENT::Core::graphicsLoop()
             shootCooldown -= deltaTime;
         }
         
+        enemySpawnTimer += deltaTime;
+        if (enemySpawnTimer >= ENEMY_SPAWN_INTERVAL) {
+            enemySpawnTimer = 0.0f;
+            
+            uint8_t type = typeDist(gen);
+            float y = yDist(gen);
+            float x = WINDOW_WIDTH + 100;
+            
+            Enemy enemy = createTestEnemy(nextEnemyId++, type, x, y, rm);
+            enemies[enemy.entityId] = std::move(enemy);
+            
+            std::cout << "[TEST] Spawned enemy type " << int(type) 
+                      << " at (" << x << ", " << y << ")\n";
+        }
+        // FIN TEST TEST TEST et testtest
         {
             std::lock_guard<std::mutex> lock(_incomingMutex);
             while (!_incomingMessages.empty()) {
@@ -297,141 +402,6 @@ void CLIENT::Core::graphicsLoop()
                         players[playerId].position = sf::Vector2f(x, y);
                         players[playerId].sprite.setPosition(x, y);
                     }
-                }
-                else if (msg.find("ENEMY_SPAWN:") == 0) {
-                    size_t pos1 = msg.find(':', 12);
-                    size_t pos2 = msg.find(':', pos1 + 1);
-                    size_t pos3 = msg.find(':', pos2 + 1);
-                    
-                    uint32_t entityId = std::stoi(msg.substr(12, pos1 - 12));
-                    float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
-                    float y = std::stof(msg.substr(pos2 + 1, pos3 - pos2 - 1));
-                    uint8_t enemyType = std::stoi(msg.substr(pos3 + 1));
-                    
-                    _entityManager->createServerEntity(entityId, EntityType::ENEMY, RenderLayer::ENEMIES);
-                    auto* enemy = _entityManager->getEntity(entityId);
-                    
-                    if (enemy) {
-                        std::string textureName = "enemy_type" + std::to_string(enemyType);
-                        if (auto* tex = rm.getTexture(textureName)) {
-                            enemy->sprite = sf::Sprite(*tex);
-                            enemy->sprite->setScale(sf::Vector2f(2.0f, 2.0f));
-                        }
-                        
-                        enemy->position = sf::Vector2f(x, y);
-                        if (enemy->sprite.has_value())
-                            enemy->sprite->setPosition(enemy->position);
-                        
-                        std::cout << "Enemy " << entityId << " spawned at (" << x << ", " << y << ")\n";
-                    }
-                }
-                else if (msg.find("ENEMY_MOVE:") == 0) {
-                    size_t pos1 = msg.find(':', 11);
-                    size_t pos2 = msg.find(':', pos1 + 1);
-                    
-                    uint32_t entityId = std::stoi(msg.substr(11, pos1 - 11));
-                    float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
-                    float y = std::stof(msg.substr(pos2 + 1));
-                    
-                    auto* enemy = _entityManager->getEntity(entityId);
-                    if (enemy && enemy->sprite.has_value()) {
-                        enemy->position = sf::Vector2f(x, y);
-                        enemy->sprite->setPosition(enemy->position);
-                    }
-                }
-                else if (msg.find("ENEMY_DESTROY:") == 0) {
-                    uint32_t entityId = std::stoi(msg.substr(14));
-                    _entityManager->removeEntity(entityId);
-                    std::cout << "Enemy " << entityId << " destroyed\n";
-                }
-                else if (msg.find("OBSTACLE_SPAWN:") == 0) {
-                    size_t pos1 = msg.find(':', 15);
-                    size_t pos2 = msg.find(':', pos1 + 1);
-                    size_t pos3 = msg.find(':', pos2 + 1);
-                    
-                    uint32_t entityId = std::stoi(msg.substr(15, pos1 - 15));
-                    float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
-                    float y = std::stof(msg.substr(pos2 + 1, pos3 - pos2 - 1));
-                    uint8_t obstacleType = std::stoi(msg.substr(pos3 + 1));
-                    
-                    std::string textureName = "asteroid" + std::to_string(obstacleType % 2 + 1);
-                    _parallaxSystem->createObstacle(entityId, x, y, textureName, obstacleType);
-                    
-                    std::cout << "Obstacle " << entityId << " spawned at (" << x << ", " << y << ")\n";
-                }
-                else if (msg.find("OBSTACLE_MOVE:") == 0) {
-                    size_t pos1 = msg.find(':', 14);
-                    size_t pos2 = msg.find(':', pos1 + 1);
-                    
-                    uint32_t entityId = std::stoi(msg.substr(14, pos1 - 14));
-                    float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
-                    float y = std::stof(msg.substr(pos2 + 1));
-                    
-                    auto* obstacle = _entityManager->getEntity(entityId);
-                    if (obstacle && obstacle->sprite.has_value()) {
-                        obstacle->position = sf::Vector2f(x, y);
-                        obstacle->sprite->setPosition(obstacle->position);
-                    }
-                }
-                else if (msg.find("OBSTACLE_DESTROY:") == 0) {
-                    uint32_t entityId = std::stoi(msg.substr(17));
-                    _entityManager->removeEntity(entityId);
-                    std::cout << "Obstacle " << entityId << " destroyed\n";
-                }
-                else if (msg.find("PROJECTILE_SPAWN:") == 0) {
-                    size_t pos1 = msg.find(':', 17);
-                    size_t pos2 = msg.find(':', pos1 + 1);
-                    size_t pos3 = msg.find(':', pos2 + 1);
-                    
-                    uint32_t entityId = std::stoi(msg.substr(17, pos1 - 17));
-                    float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
-                    float y = std::stof(msg.substr(pos2 + 1, pos3 - pos2 - 1));
-                    uint8_t ownerId = std::stoi(msg.substr(pos3 + 1));
-                    
-                    std::cout << ">>> PROJECTILE_SPAWN: ID=" << entityId << " at (" << x << ", " << y << ")\n";
-                    
-                    if (auto* tex = rm.getTexture("projectiles_sheet")) {
-                        CLIENT::AnimatedSprite animSprite;
-                        
-                        animSprite.setAnimation(
-                            tex,
-                sf::Vector2u(22.8, 22.8),
-                3,
-                      0,
-            0.05f
-                        );
-                        
-                        animSprite.play();
-                        animSprite.setLoop(true);
-                        animSprite.setScale(2.0f, 2.0f);
-                        animSprite.setPosition(x, y);
-                        
-                        projectileSprites[entityId] = std::move(animSprite);
-                        
-                        std::cout << "    Projectile sprite created (total: " 
-                                << projectileSprites.size() << ")\n";
-                    } else {
-                        std::cerr << "    ERROR: projectiles_sheet texture not found!\n";
-                    }
-                }
-                else if (msg.find("PROJECTILE_MOVE:") == 0) {
-                    size_t pos1 = msg.find(':', 16);
-                    size_t pos2 = msg.find(':', pos1 + 1);
-                    
-                    uint32_t entityId = std::stoi(msg.substr(16, pos1 - 16));
-                    float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
-                    float y = std::stof(msg.substr(pos2 + 1));
-                    
-                    auto it = projectileSprites.find(entityId);
-                    if (it != projectileSprites.end()) {
-                        it->second.setPosition(x, y);
-                    }
-                }
-                else if (msg.find("PROJECTILE_DESTROY:") == 0) {
-                    uint32_t entityId = std::stoi(msg.substr(19));
-                    projectileSprites.erase(entityId);
-                    std::cout << "Projectile " << entityId << " destroyed (remaining: " 
-                              << projectileSprites.size() << ")\n";
                 }
             }
         }
@@ -523,13 +493,7 @@ void CLIENT::Core::graphicsLoop()
                 projectile.velocity = sf::Vector2f(500.0f, 0.0f);
                 
                 if (auto* tex = rm.getTexture("projectiles_sheet")) {
-                    projectile.sprite.setAnimation(
-                tex,
-                sf::Vector2u(22.8, 22.8),
-                3,
-                0,
-                0.05f
-            );
+                    projectile.sprite.setAnimation(tex, sf::Vector2u(22.8, 22.8), 3, 0, 0.05f);
                     projectile.sprite.play();
                     projectile.sprite.setLoop(true);
                     projectile.sprite.setScale(2.0f, 2.0f);
@@ -540,6 +504,23 @@ void CLIENT::Core::graphicsLoop()
                 shootCooldown = SHOOT_DELAY;
                 
                 std::cout << "Piou piou piou! (Local projectile " << (nextProjectileId - 1) << ")\n";
+            }
+        }
+        
+        for (auto& [id, enemy] : enemies) {
+            enemy.position += enemy.velocity * deltaTime;
+            enemy.sprite.setPosition(enemy.position.x, enemy.position.y);
+            enemy.sprite.update(deltaTime);
+        }
+        
+        // ça supprime les ennemis qui vont trop loin à modifier si jamais !!!
+        auto it = enemies.begin();
+        while (it != enemies.end()) {
+            if (it->second.position.x < -100) {
+                std::cout << "[TEST] Enemy " << it->first << " removed (off screen)\n";
+                it = enemies.erase(it);
+            } else {
+                ++it;
             }
         }
         
@@ -573,8 +554,13 @@ void CLIENT::Core::graphicsLoop()
             }
         }
 
+        for (auto& [id, enemy] : enemies) {
+            if (enemy.active) {
+                enemy.sprite.draw(window.getWindow());
+            }
+        }
+
         if (!projectileSprites.empty()) {
-            std::cout << "[Render] Drawing " << projectileSprites.size() << " projectiles\n";
             for (auto& [id, animSprite] : projectileSprites) {
                 animSprite.draw(window.getWindow());
             }
@@ -604,4 +590,4 @@ int execute_rtypeClient(char **argv)
     }
 
     return 0;
-}      
+}
