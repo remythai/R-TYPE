@@ -27,7 +27,6 @@ This library is designed to be **compiled as a shared library** using **CMake**,
 
 ## 💻 Installation & Setup
 
-```
 1. **Clone the repository**:
    ```sh
    git clone https://github.com/your-username/GameEngineComponents.git
@@ -51,7 +50,6 @@ This library is designed to be **compiled as a shared library** using **CMake**,
    #include <GameEngine/components/Health.hpp>
    #include <GameEngine/components/Weapon.hpp>
    ```
-```
 
 ---
 
