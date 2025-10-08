@@ -219,7 +219,7 @@ Enemy createTestEnemy(uint32_t id, uint8_t type, float x, float y, CLIENT::Resou
         int row = 0;
         float animSpeed;
         
-        switch (type) {32
+        switch (type) {
             case 0:
                 frameSize = sf::Vector2u(33.31, 36);
                 frameCount = 8;
