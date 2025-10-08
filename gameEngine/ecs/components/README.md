@@ -141,7 +141,6 @@ int main() {
 2. Include it in your ECS or logic systems as needed.
 
 3. The build system (CMake) automatically detects header-only components.
-```
 
 ---
 
