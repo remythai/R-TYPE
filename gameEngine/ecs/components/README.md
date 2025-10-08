@@ -166,7 +166,7 @@ This project is open-source under the **MIT License**.
 ## 💡 Credits
 
 ```
-- Created by [Your Name]  
+- Created by LoukaLeBambou  
 - Built with C++ and CMake 🧩  
 - Designed for modern ECS-based Game Engines  
 ```
