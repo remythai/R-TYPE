@@ -109,16 +109,34 @@ The protocol is based on UDP with a fixed binary structure:
 
 Packet examples:
 
-| Type | Name                 | Description                    |
-|------|----------------------|--------------------------------|
-| 0x01 | INPUT                | Keyboard action sent           |
-| 0x02 | JOIN                 | A player joins the game        |
-| 0x03 | PING                 | Latency check                  |
-| 0x08 | PLAYER_ID_ASSIGNMENT | Unique ID assignment to player |
-| 0x10 | SNAPSHOT             | World synchronization          |
-| 0x11 | ENTITY_EVENT         | Entity-related events          |
-| 0x12 | PLAYER_EVENT         | Player-related events          |
-| 0x13 | PING_RESPONSE        | Response to ping request       |
+Client to Server:
+| **Type (hex)** | **Name**      | **Payload Structure**                             | **Description**                          |
+| -------------- | ------------- | ------------------------------------------------- | ---------------------------------------- |
+| `0x01`         | INPUT         | `[PlayerID:1][InputMask:1]`                       | Player keyboard input (movement, shoot). |
+| `0x02`         | JOIN          | `[UsernameLength:1][Username:variable]`           | Request to join a game.                  |
+| `0x03`         | PING          | `[Timestamp:4]`                                   | Latency test.                            |
+| `0x04`         | DISCONNECT    | `[PlayerID:1]`                                    | Player leaving game.                     |
+| `0x14`         | SPAWN_REQUEST | `[EntityType:1][X:4][Y:4]`                        | Request to spawn entity (e.g., bullet).  |
+| `0x1B`         | CHAT_MESSAGE  | `[PlayerID:1][MessageLength:1][Message:variable]` | Send in-game chat message.               |
+
+Server to Client:
+| **Type (hex)** | **Name**             | **Payload Structure**                                                                                    | **Description**                                           |
+| -------------- | -------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `0x08`         | PLAYER_ID_ASSIGNMENT | `[PlayerID:1]`                                                                                           | Assign unique player ID.                                  |
+| `0x09`         | PLAYER_LIST          | `[Count:1][Players:(ID:1)(X:4)(Y:4)]×Count`                                                              | List of players and positions.                            |
+| `0x10`         | SNAPSHOT             | `[EntityCount:2][Entities:[EntityID:2][Type:1][X:4][Y:4][Rotation:2][HP:1][Extra:variable]]×EntityCount` | Full world sync (players, enemies, bullets, power-ups).   |
+| `0x11`         | ENTITY_EVENT         | `[EventType:1][EntityID:2][EntityType:1][X:4][Y:4]`                                                      | Entity spawn, shoot, destroy, collision.                  |
+| `0x12`         | PLAYER_EVENT         | `[PlayerID:1][EventType:1][Value:4]`                                                                     | Player-specific events (death, respawn, score, power-up). |
+| `0x13`         | PING_RESPONSE        | `[Timestamp:4]`                                                                                          | Ping reply for RTT calculation.                           |
+| `0x15`         | SPAWN_CONFIRMATION   | `[EntityID:2][EntityType:1][X:4][Y:4]`                                                                   | Confirms entity creation.                                 |
+| `0x16`         | HIT_EVENT            | `[EntityHit:2][EntitySource:2][Damage:1]`                                                                | Entity took damage.                                       |
+| `0x17`         | ENTITY_REMOVE        | `[EntityID:2]`                                                                                           | Remove entity from world.                                 |
+| `0x18`         | GAME_STATE           | `[State:1]`                                                                                              | Global game state (Lobby, InGame, GameOver, Victory).     |
+| `0x19`         | LEVEL_EVENT          | `[LevelID:1][EventType:1]`                                                                               | Level-specific events (boss, wave end).                   |
+| `0x1A`         | SCORE_UPDATE         | `[PlayerID:1][Score:4]`                                                                                  | Update player score.                                      |
+| `0x1C`         | POWERUP_COLLECTED    | `[PlayerID:1][PowerUpType:1]`                                                                            | Player picked up a power-up.                              |
+| `0x1D`         | RESPAWN_PLAYER       | `[PlayerID:1][X:4][Y:4]`                                                                                 | Respawn dead player.                                      |
+| `0x1E`         | SERVER_SHUTDOWN      | —                                                                                                        | Server is shutting down.                                  |
 
 For detailed protocol documentation, see [docs/protocol.md](docs/protocol.md)
 
