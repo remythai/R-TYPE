@@ -7,7 +7,6 @@ This library is designed to be **compiled as a shared library** using **CMake**,
 
 ## 📖 How to Use
 
-```
 1. Include the desired components in your game project:
    ```cpp
    #include "GameEngine/components/Position.hpp"
@@ -21,13 +20,8 @@ This library is designed to be **compiled as a shared library** using **CMake**,
    ```
 
 3. Use them in your ECS system or logic loop:
-   ```cpp
-   pos.x += vel.x * deltaTime;
-   pos.y += vel.y * deltaTime;
-   ```
 
 4. Compile and link your project against the shared library built via CMake.
-```
 
 ---
 
