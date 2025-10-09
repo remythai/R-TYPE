@@ -14,6 +14,8 @@ namespace GameEngine {
             updateCount++;
             registry.each<InputControlled, Acceleration>([dt](auto e, InputControlled& inputs, Acceleration& acceleration) {
                 float accelerationValue = 10.0;
+                acceleration.x = 0;
+                acceleration.y = 0;
                 for (auto &it : inputs.inputs) {
                     switch (it) {
                         case 0:
