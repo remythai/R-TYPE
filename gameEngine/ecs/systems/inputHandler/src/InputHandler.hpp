@@ -4,9 +4,9 @@
 #include "../../../System.hpp"
 
 namespace GameEngine {
-    class InputHandler : public System<InputHandler> {
+    class InputHandlerSystem : public System<InputHandlerSystem> {
     public:
-        InputHandler() {
+        InputHandlerSystem() {
             requireComponents<GameEngine::InputControlled, GameEngine::Acceleration>();
         }
         
