@@ -26,7 +26,6 @@ namespace GameEngine {
                 pos.y = std::clamp(pos.y + vel.y * dt, float(0), render.screenSizeY);
             });
         }
-
         int updateCount = 0;
     };
 }
