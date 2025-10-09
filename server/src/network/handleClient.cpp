@@ -54,6 +54,9 @@ void rtype::NetworkServer::handleJoinPacket(
             slot.username = username;
             slot.lastActive = std::chrono::steady_clock::now();
             assignedPlayerId = slot.playerId;
+
+            slot.entity = createPlayerEntity(assignedPlayerId);
+            
             break;
         }
     }
@@ -96,6 +99,9 @@ void rtype::NetworkServer::handleInputPacket(
         if (expectedPlayerId != playerId) {
             std::cout << " [WARNING: PlayerId mismatch! Expected "
                     << int(expectedPlayerId) << "]";
+        } else {
+            applyInputToEntity(playerId, keyCode, action);
+            std::cout << " [Input applied to ECS]";
         }
     }
 }

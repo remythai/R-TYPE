@@ -6,6 +6,7 @@
 class EntityManager {
     public:
         using Entity = uint32_t;
+        static constexpr Entity INVALID_ENTITY = static_cast<Entity>(-1);
 
         Entity create() {
             if (!freeList.empty()) {

@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** r-type-mirror
-** File description:
-** NetworkServer.hpp
-*/
-
 #pragma once
 #include <asio.hpp>
 #include <atomic>
@@ -14,6 +7,14 @@
 #include <vector>
 #include <mutex>
 #include <string>
+#include "../../../gameEngine/ecs/Registry.hpp"
+#include "../../../gameEngine/ecs/components/inputControlled/src/InputControlled.hpp"
+#include "../../../gameEngine/ecs/components/acceleration/src/Acceleration.hpp"
+#include "../../../gameEngine/ecs/components/position/src/Position.hpp"
+#include "../../../gameEngine/ecs/components/velocity/src/Velocity.hpp"
+#include "../../../gameEngine/ecs/components/renderable/src/Renderable.hpp"
+#include "../../../gameEngine/ecs/systems/inputHandler/src/InputHandler.hpp"
+#include "../../../gameEngine/ecs/systems/motion/src/Motion.hpp"
 
 namespace rtype {
     enum class PacketType : uint8_t {
@@ -35,6 +36,7 @@ namespace rtype {
         asio::ip::udp::endpoint endpoint;
         std::string username;
         std::chrono::steady_clock::time_point lastActive;
+        EntityManager::Entity entity;
     };
 
     class NetworkServer {
@@ -49,7 +51,12 @@ namespace rtype {
         private:
             void doReceive();
 
-            // Handle client packets
+            void initECS();
+            void updateECS(float dt);
+            EntityManager::Entity createPlayerEntity(uint8_t playerId);
+            void destroyPlayerEntity(uint8_t playerId);
+            void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
+
             void handleClientPacket(
                 const asio::ip::udp::endpoint& clientEndpoint,
                 PacketType type, uint16_t packetId, uint32_t timestamp,
@@ -115,5 +122,8 @@ namespace rtype {
 
             std::array<PlayerSlot, 4> _playerSlots;
             std::mutex _playerSlotsMutex;
+
+            std::unique_ptr<Registry> _registry;
+            std::chrono::steady_clock::time_point _lastUpdate;
     };
 }

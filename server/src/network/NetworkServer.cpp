@@ -31,12 +31,16 @@ T fromBytes(const uint8_t* data)
 rtype::NetworkServer::NetworkServer(unsigned short port, std::string const &hostname)
     : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
     _running(false),
-    _hostname(hostname)
+    _hostname(hostname),
+    _registry(std::make_unique<Registry>())
 {
     for (int i = 0; i < 4; ++i) {
         _playerSlots[i].isUsed = false;
         _playerSlots[i].playerId = i;
+        _playerSlots[i].entity = EntityManager::INVALID_ENTITY;
     }
+    
+    initECS();
 }
 
 rtype::NetworkServer::~NetworkServer()
@@ -44,17 +48,106 @@ rtype::NetworkServer::~NetworkServer()
     stop();
 }
 
+void rtype::NetworkServer::initECS()
+{
+    _registry->addSystem<GameEngine::InputHandlerSystem>(0);
+    _registry->addSystem<GameEngine::MotionSystem>(1);
+    
+    std::cout << "[SERVER] ECS initialized with InputHandlerSystem and MotionSystem" << std::endl;
+}
+
+EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
+{
+    auto entity = _registry->create();
+
+    _registry->emplace<GameEngine::InputControlled>(entity);
+    _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
+    _registry->emplace<GameEngine::Position>(entity, 100.0f + playerId * 50.0f, 100.0f);
+    _registry->emplace<GameEngine::Velocity>(entity, 200.0f, 0.0f, 0.0f);
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f);
+    
+    std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
+    
+    return entity;
+}
+
+void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
+{
+    if (playerId < 4 && _playerSlots[playerId].entity != EntityManager::INVALID_ENTITY) {
+        _registry->destroy(_playerSlots[playerId].entity);
+        _playerSlots[playerId].entity = EntityManager::INVALID_ENTITY;
+        std::cout << "[SERVER] Destroyed ECS entity for Player " << int(playerId) << std::endl;
+    }
+}
+
+void rtype::NetworkServer::applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action)
+{
+    if (playerId >= 4 || !_playerSlots[playerId].isUsed) {
+        return;
+    }
+    
+    auto entity = _playerSlots[playerId].entity;
+    if (entity == EntityManager::INVALID_ENTITY) {
+        return;
+    }
+    
+    if (!_registry->has<GameEngine::InputControlled>(entity)) {
+        return;
+    }
+    
+    auto& inputCtrl = _registry->get<GameEngine::InputControlled>(entity);
+
+    if (action == 1) {
+        if (std::find(inputCtrl.inputs.begin(), inputCtrl.inputs.end(), keyCode) == inputCtrl.inputs.end()) {
+            inputCtrl.inputs.push_back(keyCode);
+        }
+    } else if (action == 0) {
+        inputCtrl.inputs.erase(
+            std::remove(inputCtrl.inputs.begin(), inputCtrl.inputs.end(), keyCode),
+            inputCtrl.inputs.end()
+        );
+    }
+}
+
+void rtype::NetworkServer::updateECS(float dt)
+{
+    _registry->update(dt);
+}
+
 void rtype::NetworkServer::run()
 {
     _running = true;
+    _lastUpdate = std::chrono::steady_clock::now();
+    
     doReceive();
     std::cout << "UDP Server running..." << std::endl;
+
     std::thread([this]() {
         while (_running) {
             cleanInactivePlayers();
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }).detach();
+
+    std::thread([this]() {
+        const float targetDt = 1.0f / 60.0f;
+        
+        while (_running) {
+            auto now = std::chrono::steady_clock::now();
+            float dt = std::chrono::duration<float>(now - _lastUpdate).count();
+            _lastUpdate = now;
+            
+            updateECS(dt);
+
+            auto elapsed = std::chrono::duration<float>(std::chrono::steady_clock::now() - now).count();
+            if (elapsed < targetDt) {
+                std::this_thread::sleep_for(
+                    std::chrono::duration<float>(targetDt - elapsed)
+                );
+            }
+        }
+    }).detach();
+    
     _ioContext.run();
 }
 
@@ -77,6 +170,8 @@ void rtype::NetworkServer::cleanInactivePlayers()
                 };
                 broadcast(leaveEvent);
 
+                destroyPlayerEntity(slot.playerId);
+
                 slot.isUsed = false;
             }
         }
@@ -87,11 +182,17 @@ void rtype::NetworkServer::stop()
 {
     _running = false;
     _ioContext.stop();
+    
     std::lock_guard<std::mutex> lock(_clientsMutex);
     _clients.clear();
+
     for (auto& slot : _playerSlots) {
+        if (slot.isUsed) {
+            destroyPlayerEntity(slot.playerId);
+        }
         slot.isUsed = false;
     }
+    
     std::cout << "Server stopped." << std::endl;
 }
 
