@@ -1,0 +1,5 @@
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+       -Wno-compare-distinct-pointer-types
+       -ferror-limit=0
+  Remove: [-fanalyzer]
