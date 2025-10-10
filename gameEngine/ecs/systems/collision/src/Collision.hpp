@@ -38,7 +38,7 @@ class MotionSystem : public System<MotionSystem>
     {
         requireComponents<
             GameEngine::Position, GameEngine::Renderable,
-            GameEngine::Collider>();
+            GameEngine::Collider, GameEngine::Damage, GameEngine::Health>();
     }
 
     void onUpdate(Registry& registry, float dt)
@@ -76,30 +76,27 @@ class MotionSystem : public System<MotionSystem>
             for (size_t j = 0; j < grid[i].size(); j++) {
                 while (grid[i][j].size() > 1) {
                     for (size_t k = 1; k < grid[i][j].size(); k++) {
-                        // collide(grid[i][j][0], grid[i][j][k]);
+                        collide(grid[i][j][0], grid[i][j][k], registry);
                     }
-                    if (i + 1 <= grid.size()) {
+                    if (i + 1 < grid.size()) {
                         for (size_t k = 0; k < grid[i + 1][j].size(); k++) {
-                            // collide(grid[i][j][0], grid[i + 1][j][k]);
+                            collide(grid[i][j][0], grid[i + 1][j][k], registry);
                         }
                     }
-                    if (j + 1 <= grid[i].size()) {
+                    if (j + 1 < grid[i].size()) {
                         for (size_t k = 0; k < grid[i][j + 1].size(); k++) {
-                            // collide(grid[i][j][0], grid[i][j + 1][k]);
+                            collide(grid[i][j][0], grid[i][j + 1][k], registry);
                         }
                     }
-                    if (i + 1 <= grid.size() && j + 1 <= grid[i].size()) {
+                    if (i + 1 < grid.size() && j + 1 < grid[i].size()) {
                         for (size_t k = 0; k < grid[i + 1][j + 1].size();
                              k++) {
-                            // collide(grid[i][j][0], grid[i + 1][j +
-                            // 1][k]);
+                            collide(grid[i][j][0], grid[i + 1][j + 1][k], registry);
                         }
                     }
-                    if (i - 1 >= 0 && j + 1 <= grid[i].size()) {
-                        for (size_t k = 0; k < grid[i - 1][j + 1].size();
-                             k++) {
-                            // collide(grid[i][j][0], grid[i - 1][j +
-                            // 1][k]);
+                    if (i - 1 >= 0 && j + 1 < grid[i].size()) {
+                        for (size_t k = 0; k < grid[i - 1][j + 1].size(); k++) {
+                            collide(grid[i][j][0], grid[i - 1][j + 1][k], registry);
                         }
                     }
                     grid[i][j].erase(grid[i][j].begin());
