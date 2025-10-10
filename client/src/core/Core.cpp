@@ -436,7 +436,9 @@ void CLIENT::Core::graphicsLoop()
                     float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
                     float y = std::stof(msg.substr(pos2 + 1));
                     
-                    if (playerId >= 0 && playerId < 4) {
+                    std::cout << "[SNAPSHOT] Player " << playerId << " at (" << x << ", " << y << ")\n";
+                    
+                    if (playerId >= 0 && playerId < 4 && playerId != _myPlayerId) {
                         players[playerId].position = sf::Vector2f(x, y);
                         players[playerId].sprite.setPosition(x, y);
                     }
