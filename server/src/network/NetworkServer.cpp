@@ -28,6 +28,18 @@ T fromBytes(const uint8_t* data)
     return value;
 }
 
+std::vector<uint8_t> floatToBytes(float value)
+{
+    std::vector<uint8_t> bytes(4);
+    uint32_t temp;
+    std::memcpy(&temp, &value, sizeof(float));
+    bytes[0] = (temp >> 24) & 0xFF;
+    bytes[1] = (temp >> 16) & 0xFF;
+    bytes[2] = (temp >> 8) & 0xFF;
+    bytes[3] = temp & 0xFF;
+    return bytes;
+}
+
 rtype::NetworkServer::NetworkServer(unsigned short port, std::string const &hostname)
     : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
     _running(false),
@@ -118,6 +130,7 @@ void rtype::NetworkServer::run()
 {
     _running = true;
     _lastUpdate = std::chrono::steady_clock::now();
+    _lastSnapshot = std::chrono::steady_clock::now();
     
     doReceive();
     std::cout << "UDP Server running..." << std::endl;
@@ -145,6 +158,20 @@ void rtype::NetworkServer::run()
                     std::chrono::duration<float>(targetDt - elapsed)
                 );
             }
+        }
+    }).detach();
+    
+    std::thread([this]() {
+        while (_running) {
+            auto now = std::chrono::steady_clock::now();
+            float elapsed = std::chrono::duration<float>(now - _lastSnapshot).count();
+            
+            if (elapsed >= SNAPSHOT_RATE) {
+                broadcastSnapshot();
+                _lastSnapshot = now;
+            }
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }).detach();
     
@@ -271,7 +298,7 @@ void rtype::NetworkServer::sendPlayerJoinEvent(
     packet.insert(packet.end(), tsBytes.begin(), tsBytes.end());
 
     packet.push_back(playerId);
-    packet.push_back(0); // 0 = JOIN event
+    packet.push_back(0);
 
     _socket.send_to(asio::buffer(packet), clientEndpoint);
 
@@ -304,5 +331,106 @@ void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
     std::lock_guard<std::mutex> lock(_clientsMutex);
     for (auto& [id, endpoint] : _clients) {
         _socket.send_to(asio::buffer(message), endpoint);
+    }
+}
+
+std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
+{
+    std::vector<uint8_t> snapshot;
+    
+    snapshot.push_back(static_cast<uint8_t>(PacketType::SNAPSHOT));
+    
+    auto idBytes = toBytes<uint16_t>(0);
+    snapshot.insert(snapshot.end(), idBytes.begin(), idBytes.end());
+    
+    auto now = std::chrono::steady_clock::now();
+    uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()
+    ).count();
+    auto tsBytes = toBytes<uint32_t>(timestamp);
+    snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
+    
+    uint8_t entityCount = 0;
+    for (const auto& slot : _playerSlots) {
+        if (slot.isUsed && slot.entity != EntityManager::INVALID_ENTITY) {
+            entityCount++;
+        }
+    }
+    snapshot.push_back(entityCount);
+    
+    for (const auto& slot : _playerSlots) {
+        if (!slot.isUsed || slot.entity == EntityManager::INVALID_ENTITY) {
+            continue;
+        }
+        
+        auto entity = slot.entity;
+        
+        snapshot.push_back(slot.playerId);
+        
+        if (_registry->has<GameEngine::Position>(entity)) {
+            auto& pos = _registry->get<GameEngine::Position>(entity);
+            
+            auto xBytes = floatToBytes(pos.x);
+            snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
+            
+            auto yBytes = floatToBytes(pos.y);
+            snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
+        } else {
+            auto xBytes = floatToBytes(0.0f);
+            snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
+            
+            auto yBytes = floatToBytes(0.0f);
+            snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
+        }
+        
+        if (_registry->has<GameEngine::Velocity>(entity)) {
+            auto& vel = _registry->get<GameEngine::Velocity>(entity);
+            
+            auto vxBytes = floatToBytes(vel.x);
+            snapshot.insert(snapshot.end(), vxBytes.begin(), vxBytes.end());
+            
+            auto vyBytes = floatToBytes(vel.y);
+            snapshot.insert(snapshot.end(), vyBytes.begin(), vyBytes.end());
+        } else {
+            auto vxBytes = floatToBytes(0.0f);
+            snapshot.insert(snapshot.end(), vxBytes.begin(), vxBytes.end());
+            
+            auto vyBytes = floatToBytes(0.0f);
+            snapshot.insert(snapshot.end(), vyBytes.begin(), vyBytes.end());
+        }
+        
+        if (_registry->has<GameEngine::Acceleration>(entity)) {
+            auto& acc = _registry->get<GameEngine::Acceleration>(entity);
+            
+            auto axBytes = floatToBytes(acc.x);
+            snapshot.insert(snapshot.end(), axBytes.begin(), axBytes.end());
+            
+            auto ayBytes = floatToBytes(acc.y);
+            snapshot.insert(snapshot.end(), ayBytes.begin(), ayBytes.end());
+        } else {
+            auto axBytes = floatToBytes(0.0f);
+            snapshot.insert(snapshot.end(), axBytes.begin(), axBytes.end());
+            
+            auto ayBytes = floatToBytes(0.0f);
+            snapshot.insert(snapshot.end(), ayBytes.begin(), ayBytes.end());
+        }
+    }
+    
+    return snapshot;
+}
+
+void rtype::NetworkServer::sendSnapshot(const asio::ip::udp::endpoint& clientEndpoint)
+{
+    auto snapshot = serializeSnapshot();
+    _socket.send_to(asio::buffer(snapshot), clientEndpoint);
+}
+
+void rtype::NetworkServer::broadcastSnapshot()
+{
+    auto snapshot = serializeSnapshot();
+    
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+    for (auto& [id, endpoint] : _clients) {
+        _socket.send_to(asio::buffer(snapshot), endpoint);
     }
 }

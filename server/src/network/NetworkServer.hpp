@@ -112,6 +112,10 @@ namespace rtype {
 
             void cleanInactivePlayers();
 
+            void sendSnapshot(const asio::ip::udp::endpoint& clientEndpoint);
+            void broadcastSnapshot();
+            std::vector<uint8_t> serializeSnapshot();
+
             bool _running;
             asio::io_context _ioContext;
             asio::ip::udp::socket _socket;
@@ -125,5 +129,8 @@ namespace rtype {
 
             std::unique_ptr<Registry> _registry;
             std::chrono::steady_clock::time_point _lastUpdate;
+
+            std::chrono::steady_clock::time_point _lastSnapshot;
+            static constexpr float SNAPSHOT_RATE = 1.0f / 20.0f;
     };
 }

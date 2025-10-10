@@ -9,6 +9,7 @@
 #include <thread>
 #include <chrono>
 #include <cstring>
+#include <iomanip>
 
 template<typename T>
 std::vector<uint8_t> toBytes(T value)
@@ -105,12 +106,53 @@ void NetworkClient::handlePacket(
     std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
 
     std::cout << "[CLIENT] From " << sender << " -> ";
-
     std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
     std::cout << "[PacketId=" << packetId << "]";
     std::cout << "[Timestamp=" << timestamp << "]";
 
     switch(type) {
+        case rtype::PacketType::SNAPSHOT:
+            if (!payload.empty()) {
+                uint8_t entityCount = payload[0];
+                std::cout << "[Entities=" << int(entityCount) << "]";
+                
+                size_t offset = 1;
+                
+                const size_t ENTITY_SIZE = 25;
+                
+                for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
+                    uint8_t playerId = payload[offset];
+                    offset += 1;
+                    
+                    auto readFloat = [&payload, &offset]() -> float {
+                        uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
+                                    (static_cast<uint32_t>(payload[offset+1]) << 16) | 
+                                    (static_cast<uint32_t>(payload[offset+2]) << 8) | 
+                                    static_cast<uint32_t>(payload[offset+3]);
+                        offset += 4;
+                        float result;
+                        std::memcpy(&result, &temp, sizeof(float));
+                        return result;
+                    };
+                    
+                    float x = readFloat();
+                    float y = readFloat();
+                    float vx = readFloat();
+                    float vy = readFloat();
+                    float ax = readFloat();
+                    float ay = readFloat();
+                    
+                    std::cout << " [P" << int(playerId) 
+                            << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
+                            << " vel:(" << vx << "," << vy << ")"
+                            << " acc:(" << ax << "," << ay << ")]";
+                    
+                    // Mettre a jour affiche player ici
+                    // updatePlayerPosition(playerId, x, y);
+                }
+            }
+            break;
+
         case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
             if (!payload.empty()) {
                 uint8_t playerId = payload[0];
@@ -160,12 +202,6 @@ void NetworkClient::handlePacket(
         case rtype::PacketType::PING:
         case rtype::PacketType::PING_RESPONSE:
             std::cout << "[PacketId=" << packetId << "]";
-            break;
-
-        case rtype::PacketType::SNAPSHOT:
-            if (!payload.empty())
-                std::cout << "[NbEntities=" << int(payload[0])
-                        << "][EntityData=" << std::string(payload.begin()+1, payload.end()) << "]";
             break;
 
         case rtype::PacketType::ENTITY_EVENT:
