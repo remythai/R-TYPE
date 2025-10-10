@@ -20,14 +20,19 @@ namespace GameEngine {
                     switch (it) {
                         case 0:
                             // registry add entity (shoot)
+                            break;
                         case 1:
-                            acceleration.y = accelerationValue;
+                            acceleration.y += accelerationValue;
+                            break;
                         case 2:
-                            acceleration.x = -accelerationValue;
+                            acceleration.x -= accelerationValue;
+                            break;
                         case 3:
-                            acceleration.y = -accelerationValue;
+                            acceleration.y -= accelerationValue;
+                            break;
                         case 4:
-                            acceleration.x = accelerationValue;
+                            acceleration.x += accelerationValue;
+                            break;
                         default:
                             break;
                     }
