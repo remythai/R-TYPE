@@ -2,3 +2,5 @@ build.sh
 .build/
 a.out
 r-type_client
+r-type_server
+server
