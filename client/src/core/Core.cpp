@@ -393,7 +393,6 @@ void CLIENT::Core::graphicsLoop()
                 std::string msg = _incomingMessages.front();
                 _incomingMessages.pop();
                 
-                std::cout << "[Graphics] Received from network: " << msg << "\n";
                 
                 if (msg.find("PLAYER_ID:") == 0) {
                     _myPlayerId = std::stoi(msg.substr(10));
@@ -442,7 +441,6 @@ void CLIENT::Core::graphicsLoop()
                                     players[playerId].position.x, 
                                     players[playerId].position.y
                                 );
-                                std::cout << "[SYNC] Corrected position: (" 
                                         << players[playerId].position.x << "," 
                                         << players[playerId].position.y << ")\n";
                             }
