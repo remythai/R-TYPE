@@ -78,6 +78,11 @@ void NetworkClient::setOnPlayerEvent(std::function<void(uint8_t, uint8_t)> callb
     _onPlayerEvent = callback;
 }
 
+void NetworkClient::setOnSnapshot(std::function<void(const std::vector<uint8_t>&)> callback) {
+    _onSnapshot = callback;
+}
+
+
 void NetworkClient::doReceive()
 {
     auto sender = std::make_shared<asio::ip::udp::endpoint>();
@@ -105,10 +110,10 @@ void NetworkClient::handlePacket(
 
     std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
 
-    std::cout << "[CLIENT] From " << sender << " -> ";
-    std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
-    std::cout << "[PacketId=" << packetId << "]";
-    std::cout << "[Timestamp=" << timestamp << "]";
+    // std::cout << "[CLIENT] From " << sender << " -> ";
+    // std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
+    // std::cout << "[PacketId=" << packetId << "]";
+    // std::cout << "[Timestamp=" << timestamp << "]";
 
     switch(type) {
         case rtype::PacketType::SNAPSHOT:
@@ -117,7 +122,6 @@ void NetworkClient::handlePacket(
                 std::cout << "[Entities=" << int(entityCount) << "]";
                 
                 size_t offset = 1;
-                
                 const size_t ENTITY_SIZE = 25;
                 
                 for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
@@ -146,9 +150,10 @@ void NetworkClient::handlePacket(
                             << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
                             << " vel:(" << vx << "," << vy << ")"
                             << " acc:(" << ax << "," << ay << ")]";
-                    
-                    // Mettre a jour affiche player ici
-                    // updatePlayerPosition(playerId, x, y);
+                }
+                
+                if (_onSnapshot) {
+                    _onSnapshot(payload);
                 }
             }
             break;

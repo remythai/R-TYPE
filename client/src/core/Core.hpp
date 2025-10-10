@@ -62,6 +62,8 @@ private:
     void loadResources();
     void networkLoop();
     void graphicsLoop();
+
+    void parseGameState(const std::string& stateData);
     
     void sendInput(KeyCode keyCode, InputAction action);
     void handleKeyStateChange(const std::string& action, bool isPressed, 

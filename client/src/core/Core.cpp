@@ -83,7 +83,44 @@ CLIENT::Core::Core(char **argv)
             _incomingMessages.push("PLAYER_LEAVE:" + std::to_string(playerId));
         }
     });
-    
+
+    _networkClient->setOnSnapshot([this](const std::vector<uint8_t>& payload) {
+        std::lock_guard<std::mutex> lock(_incomingMutex);
+        
+        if (payload.empty()) return;
+        
+        uint8_t entityCount = payload[0];
+        size_t offset = 1;
+        const size_t ENTITY_SIZE = 25;
+        
+        for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
+            uint8_t playerId = payload[offset];
+            offset += 1;
+            
+            auto readFloat = [&payload, &offset]() -> float {
+                uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
+                            (static_cast<uint32_t>(payload[offset+1]) << 16) | 
+                            (static_cast<uint32_t>(payload[offset+2]) << 8) | 
+                            static_cast<uint32_t>(payload[offset+3]);
+                offset += 4;
+                float result;
+                std::memcpy(&result, &temp, sizeof(float));
+                return result;
+            };
+            
+            float x = readFloat();
+            float y = readFloat();
+            float vx = readFloat();
+            float vy = readFloat();
+            float ax = readFloat();
+            float ay = readFloat();
+            
+            std::string moveMsg = "PLAYER_MOVE:" + std::to_string(playerId) + ":" 
+                                + std::to_string(x) + ":" + std::to_string(y);
+            _incomingMessages.push(moveMsg);
+        }
+    });
+        
     _networkClient->sendJoin(_username);
     _networkClient->startReceiving();
 
@@ -161,9 +198,9 @@ void CLIENT::Core::networkLoop()
                     uint8_t action = std::stoi(msg.substr(pos1 + 1));
                     
                     _networkClient->sendInput(_myPlayerId, keyCode, action);
-                    std::cout << "[Network] Sent INPUT: playerId=" << int(_myPlayerId)
-                              << ", keyCode=" << int(keyCode) 
-                              << ", action=" << int(action) << "\n";
+                    // std::cout << "[Network] Sent INPUT: playerId=" << int(_myPlayerId)
+                    //           << ", keyCode=" << int(keyCode) 
+                    //           << ", action=" << int(action) << "\n";
                 }
             }
         }
@@ -329,9 +366,9 @@ void CLIENT::Core::graphicsLoop()
 
     bool waitingForPlayerId = true;
     
-    _myPlayerId = 0;
-    players[0].active = true;
-    waitingForPlayerId = false;
+    // _myPlayerId = 0;
+    // players[0].active = true;
+    // waitingForPlayerId = false;
     // testtest
 
     while (window.isOpen() && _running) {
@@ -362,8 +399,6 @@ void CLIENT::Core::graphicsLoop()
                 std::string msg = _incomingMessages.front();
                 _incomingMessages.pop();
                 
-                std::cout << "[Graphics] Received from network: " << msg << "\n";
-                
                 if (msg.find("PLAYER_ID:") == 0) {
                     _myPlayerId = std::stoi(msg.substr(10));
                     players[_myPlayerId].active = true;
@@ -388,6 +423,9 @@ void CLIENT::Core::graphicsLoop()
                             std::cout << "You left or got disconnected, closing the game...\n";
                             window.getWindow().close();
                         }
+                    } else if (msg.find("GAME_STATE:") == 0) {
+                        std::string stateData = msg.substr(11);
+                        parseGameState(stateData);
                     }
                 }
                 else if (msg.find("PLAYER_MOVE:") == 0) {
@@ -574,6 +612,38 @@ void CLIENT::Core::graphicsLoop()
     }
 
     _running = false;
+}
+
+void CLIENT::Core::parseGameState(const std::string& stateData)
+{
+    
+    size_t pos = 0;
+    while ((pos = stateData.find("[P", pos)) != std::string::npos) {
+        size_t idStart = pos + 2;
+        size_t idEnd = stateData.find(" ", idStart);
+        if (idEnd == std::string::npos) break;
+        
+        int playerId = std::stoi(stateData.substr(idStart, idEnd - idStart));
+        
+        size_t posStart = stateData.find("pos:(", pos);
+        if (posStart == std::string::npos) break;
+        posStart += 5;
+        
+        size_t comma = stateData.find(",", posStart);
+        size_t posEnd = stateData.find(")", comma);
+        if (comma == std::string::npos || posEnd == std::string::npos) break;
+        
+        float x = std::stof(stateData.substr(posStart, comma - posStart));
+        float y = std::stof(stateData.substr(comma + 1, posEnd - comma - 1));
+        
+        std::string moveMsg = "PLAYER_MOVE:" + std::to_string(playerId) + ":" 
+                            + std::to_string(x) + ":" + std::to_string(y);
+        
+        std::lock_guard<std::mutex> lock(_incomingMutex);
+        _incomingMessages.push(moveMsg);
+        
+        pos = posEnd + 1;
+    }
 }
 
 int execute_rtypeClient(char **argv)

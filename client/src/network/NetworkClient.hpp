@@ -27,6 +27,7 @@ public:
 
     void setOnPlayerIdReceived(std::function<void(uint8_t)> callback);
     void setOnPlayerEvent(std::function<void(uint8_t, uint8_t)> callback);
+    void setOnSnapshot(std::function<void(const std::vector<uint8_t>&)> callback);
 
 private:
     void doReceive();
@@ -38,7 +39,7 @@ private:
     asio::ip::udp::endpoint _serverEndpoint;
     std::vector<uint8_t> _recvBuffer;
 
-    // Callbacks
     std::function<void(uint8_t)> _onPlayerIdReceived;
     std::function<void(uint8_t, uint8_t)> _onPlayerEvent;
+    std::function<void(const std::vector<uint8_t>&)> _onSnapshot;
 };
