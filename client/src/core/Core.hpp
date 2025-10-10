@@ -23,8 +23,8 @@
 namespace CLIENT {
 
 enum class KeyCode : uint8_t {
-    UP = 0,
-    DOWN = 1,
+    DOWN = 0,
+    UP = 1,
     LEFT = 2,
     RIGHT = 3,
     SHOOT = 4
