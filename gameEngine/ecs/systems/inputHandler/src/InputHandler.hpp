@@ -19,7 +19,7 @@ namespace GameEngine {
         void onUpdate(Registry& registry, float dt) {
             updateCount++;
             registry.each<InputControlled, Acceleration>([dt, &registry](auto e, InputControlled& inputs, Acceleration& acceleration) {
-                float accelerationValue = 10.0;
+                float accelerationValue = 1000.0;
                 acceleration.x = 0;
                 acceleration.y = 0;
                 for (auto &it : inputs.inputs) {
@@ -28,8 +28,8 @@ namespace GameEngine {
                             uint32_t e = registry.create();
                             registry.emplace<GameEngine::Health>(e, 1, 1);
                             registry.emplace<GameEngine::Damage>(e, 1);
-                            registry.emplace<GameEngine::Velocity>(e, 1000, 1000);
-                            registry.emplace<GameEngine::Acceleration>(e, 1000);
+                            registry.emplace<GameEngine::Velocity>(e, 1000.0, 1000.0);
+                            registry.emplace<GameEngine::Acceleration>(e, 1000.0);
                             GameEngine::Position playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(e, playerPos.x, playerPos.y);
                             break;
