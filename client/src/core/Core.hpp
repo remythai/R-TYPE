@@ -58,6 +58,8 @@ public:
     
     void run();
 
+    void parseServerState(const std::string& message);
+
 private:
     void loadResources();
     void networkLoop();

@@ -105,53 +105,55 @@ void NetworkClient::handlePacket(
 
     std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
 
-    std::cout << "[CLIENT] From " << sender << " -> ";
-    std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
-    std::cout << "[PacketId=" << packetId << "]";
-    std::cout << "[Timestamp=" << timestamp << "]";
+    // std::cout << "[CLIENT] From " << sender << " -> ";
+    // std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
+    // std::cout << "[PacketId=" << packetId << "]";
+    // std::cout << "[Timestamp=" << timestamp << "]";
 
     switch(type) {
         case rtype::PacketType::SNAPSHOT:
-            if (!payload.empty()) {
-                uint8_t entityCount = payload[0];
-                std::cout << "[Entities=" << int(entityCount) << "]";
+        if (!payload.empty()) {
+            uint8_t entityCount = payload[0];
+            std::cout << "[Entities=" << int(entityCount) << "]";
+            
+            size_t offset = 1;
+            const size_t ENTITY_SIZE = 25;
+            
+            for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
+                uint8_t playerId = payload[offset];
+                offset += 1;
                 
-                size_t offset = 1;
+                auto readFloat = [&payload, &offset]() -> float {
+                    uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
+                                (static_cast<uint32_t>(payload[offset+1]) << 16) | 
+                                (static_cast<uint32_t>(payload[offset+2]) << 8) | 
+                                static_cast<uint32_t>(payload[offset+3]);
+                    offset += 4;
+                    float result;
+                    std::memcpy(&result, &temp, sizeof(float));
+                    return result;
+                };
                 
-                const size_t ENTITY_SIZE = 25;
+                float x = readFloat();
+                float y = readFloat();
+                float vx = readFloat();
+                float vy = readFloat();
+                float ax = readFloat();
+                float ay = readFloat();
                 
-                for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
-                    uint8_t playerId = payload[offset];
-                    offset += 1;
-                    
-                    auto readFloat = [&payload, &offset]() -> float {
-                        uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
-                                    (static_cast<uint32_t>(payload[offset+1]) << 16) | 
-                                    (static_cast<uint32_t>(payload[offset+2]) << 8) | 
-                                    static_cast<uint32_t>(payload[offset+3]);
-                        offset += 4;
-                        float result;
-                        std::memcpy(&result, &temp, sizeof(float));
-                        return result;
-                    };
-                    
-                    float x = readFloat();
-                    float y = readFloat();
-                    float vx = readFloat();
-                    float vy = readFloat();
-                    float ax = readFloat();
-                    float ay = readFloat();
-                    
-                    std::cout << " [P" << int(playerId) 
-                            << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
-                            << " vel:(" << vx << "," << vy << ")"
-                            << " acc:(" << ax << "," << ay << ")]";
-                    
-                    // Mettre a jour affiche player ici
-                    // updatePlayerPosition(playerId, x, y);
-                }
+                std::cout << " [P" << int(playerId) 
+                        << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
+                        << " vel:(" << vx << "," << vy << ")"
+                        << " acc:(" << ax << "," << ay << ")]";
             }
-            break;
+            
+            std::cout << std::endl;
+            
+            if (_onSnapshot) {
+                _onSnapshot(payload);
+            }
+        }
+        break;
 
         case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
             if (!payload.empty()) {
@@ -217,4 +219,9 @@ void NetworkClient::handlePacket(
     }
 
     std::cout << std::endl;
+}
+
+void NetworkClient::setOnSnapshot(std::function<void(const std::vector<uint8_t>&)> callback)
+{
+    _onSnapshot = callback;
 }

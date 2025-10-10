@@ -84,6 +84,40 @@ CLIENT::Core::Core(char **argv)
         }
     });
     
+    _networkClient->setOnSnapshot([this](const std::vector<uint8_t>& payload) {
+        if (payload.empty()) return;
+        
+        uint8_t entityCount = payload[0];
+        size_t offset = 1;
+        const size_t ENTITY_SIZE = 25;
+        
+        for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
+            uint8_t playerId = payload[offset];
+            offset += 1;
+            
+            auto readFloat = [&payload, &offset]() -> float {
+                uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
+                            (static_cast<uint32_t>(payload[offset+1]) << 16) | 
+                            (static_cast<uint32_t>(payload[offset+2]) << 8) | 
+                            static_cast<uint32_t>(payload[offset+3]);
+                offset += 4;
+                float result;
+                std::memcpy(&result, &temp, sizeof(float));
+                return result;
+            };
+            
+            float x = readFloat();
+            float y = readFloat();
+            offset += 16;
+            
+            std::lock_guard<std::mutex> lock(_incomingMutex);
+            std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
+                                   ":" + std::to_string(x) + 
+                                   ":" + std::to_string(y);
+            _incomingMessages.push(updateMsg);
+        }
+    });
+    
     _networkClient->sendJoin(_username);
     _networkClient->startReceiving();
 
@@ -161,9 +195,6 @@ void CLIENT::Core::networkLoop()
                     uint8_t action = std::stoi(msg.substr(pos1 + 1));
                     
                     _networkClient->sendInput(_myPlayerId, keyCode, action);
-                    std::cout << "[Network] Sent INPUT: playerId=" << int(_myPlayerId)
-                              << ", keyCode=" << int(keyCode) 
-                              << ", action=" << int(action) << "\n";
                 }
             }
         }
@@ -398,9 +429,27 @@ void CLIENT::Core::graphicsLoop()
                     float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
                     float y = std::stof(msg.substr(pos2 + 1));
                     
-                    if (playerId >= 0 && playerId < 4 && playerId != _myPlayerId) {
-                        players[playerId].position = sf::Vector2f(x, y);
-                        players[playerId].sprite.setPosition(x, y);
+                    if (playerId >= 0 && playerId < 4) {
+                        if (playerId == _myPlayerId) {
+                            float dx = x - players[playerId].position.x;
+                            float dy = y - players[playerId].position.y;
+                            float distSq = dx*dx + dy*dy;
+                            
+                            if (distSq > 25.0f) {
+                                players[playerId].position.x += dx * 0.3f;
+                                players[playerId].position.y += dy * 0.3f;
+                                players[playerId].sprite.setPosition(
+                                    players[playerId].position.x, 
+                                    players[playerId].position.y
+                                );
+                                std::cout << "[SYNC] Corrected position: (" 
+                                        << players[playerId].position.x << "," 
+                                        << players[playerId].position.y << ")\n";
+                            }
+                        } else {
+                            players[playerId].position = sf::Vector2f(x, y);
+                            players[playerId].sprite.setPosition(x, y);
+                        }
                     }
                 }
             }
@@ -436,6 +485,8 @@ void CLIENT::Core::graphicsLoop()
 
             bool movingUp = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
             bool movingDown = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down);
+            bool movingLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left);
+            bool movingRight = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right);
 
             if (movingUp) {
                 if (player.currentRotation < 4) {
@@ -462,10 +513,10 @@ void CLIENT::Core::graphicsLoop()
                 }
             }
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+            if (movingLeft) {
                 player.position.x -= speed;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
+            if (movingRight) {
                 player.position.x += speed;
             }
 
@@ -478,35 +529,9 @@ void CLIENT::Core::graphicsLoop()
                 player.position.y = 0;
             if (player.position.y > WINDOW_HEIGHT - spriteSize.y)
                 player.position.y = WINDOW_HEIGHT - spriteSize.y;
-
             player.sprite.setPosition(player.position.x, player.position.y);
-            
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && shootCooldown <= 0.0f) {
-                LocalProjectile projectile;
-                projectile.id = nextProjectileId++;
-                
-                projectile.position = sf::Vector2f(
-                    player.position.x + spriteSize.x,
-                    player.position.y + spriteSize.y / 2.0f - 8.0f
-                );
-                
-                projectile.velocity = sf::Vector2f(500.0f, 0.0f);
-                
-                if (auto* tex = rm.getTexture("projectiles_sheet")) {
-                    projectile.sprite.setAnimation(tex, sf::Vector2u(22.8, 22.8), 3, 0, 0.05f);
-                    projectile.sprite.play();
-                    projectile.sprite.setLoop(true);
-                    projectile.sprite.setScale(2.0f, 2.0f);
-                    projectile.sprite.setPosition(projectile.position.x, projectile.position.y);
-                }
-                
-                localProjectiles.push_back(std::move(projectile));
-                shootCooldown = SHOOT_DELAY;
-                
-                std::cout << "Piou piou piou! (Local projectile " << (nextProjectileId - 1) << ")\n";
-            }
         }
-        
+                
         for (auto& [id, enemy] : enemies) {
             enemy.position += enemy.velocity * deltaTime;
             enemy.sprite.setPosition(enemy.position.x, enemy.position.y);
@@ -574,6 +599,38 @@ void CLIENT::Core::graphicsLoop()
     }
 
     _running = false;
+}
+
+void CLIENT::Core::parseServerState(const std::string& message)
+{
+    std::lock_guard<std::mutex> lock(_incomingMutex);
+    
+    size_t pos = 0;
+    while ((pos = message.find("[P", pos)) != std::string::npos) {
+        size_t idStart = pos + 2;
+        size_t idEnd = message.find(" ", idStart);
+        if (idEnd == std::string::npos) break;
+        
+        int playerId = std::stoi(message.substr(idStart, idEnd - idStart));
+        
+        size_t posStart = message.find("pos:(", pos);
+        if (posStart == std::string::npos) break;
+        posStart += 5;
+        
+        size_t commaPos = message.find(",", posStart);
+        size_t posEnd = message.find(")", commaPos);
+        if (commaPos == std::string::npos || posEnd == std::string::npos) break;
+        
+        float x = std::stof(message.substr(posStart, commaPos - posStart));
+        float y = std::stof(message.substr(commaPos + 1, posEnd - commaPos - 1));
+        
+        std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
+                               ":" + std::to_string(x) + 
+                               ":" + std::to_string(y);
+        _incomingMessages.push(updateMsg);
+        
+        pos = posEnd;
+    }
 }
 
 int execute_rtypeClient(char **argv)
