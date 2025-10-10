@@ -28,6 +28,18 @@ namespace GameEngine {
                 for (auto &it : inputs.inputs) {
                     switch (it) {
                         case 0:
+                            acceleration.y = accelerationValue;
+                            break;
+                        case 1:
+                            acceleration.y = -accelerationValue;
+                            break;
+                        case 2:
+                            acceleration.x = -accelerationValue;
+                            break;
+                        case 3:
+                            acceleration.x = accelerationValue;
+                            break;
+                        case 4:
                             shoot = registry.create();
                             registry.emplace<GameEngine::Health>(shoot, 1, 1);
                             registry.emplace<GameEngine::Damage>(shoot, 1);
@@ -35,18 +47,6 @@ namespace GameEngine {
                             registry.emplace<GameEngine::Acceleration>(shoot, 1000.0);
                             playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(shoot, playerPos.x, playerPos.y);
-                            break;
-                        case 1:
-                            acceleration.y = accelerationValue;
-                            break;
-                        case 2:
-                            acceleration.x = -accelerationValue;
-                            break;
-                        case 3:
-                            acceleration.y = -accelerationValue;
-                            break;
-                        case 4:
-                            acceleration.x = accelerationValue;
                             break;
                         default:
                             break;
