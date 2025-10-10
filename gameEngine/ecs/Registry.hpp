@@ -9,6 +9,7 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
+#include "Clock.hpp"
 
 class Registry {
     public:
@@ -173,11 +174,20 @@ class Registry {
             );
         }
 
-        void update(float dt) {
-            for (auto& system : systems) {
-                system->update(*this, dt);
+        void update(float realDt) {
+            int steps = gameClock.update(realDt);
+
+            for (int i = 0; i < steps; i++) {
+                float fixedDt = gameClock.getFixedDeltaTime();
+                
+                for (auto& system : systems) {
+                    system->update(*this, fixedDt);
+                }
             }
         }
+        
+        const GameEngine::GameClock& getClock() const { return gameClock; }
+        GameEngine::GameClock& getClock() { return gameClock; }
 
         void updateSystemAvailability() {
             std::cout << "[Registry] Updating system availability...\n";
@@ -226,6 +236,8 @@ class Registry {
         }
 
     private:
+        GameEngine::GameClock gameClock;
+
         struct IComponentPool {
             virtual ~IComponentPool() = default;
             virtual void remove(Entity e) = 0;
