@@ -441,8 +441,6 @@ void CLIENT::Core::graphicsLoop()
                                     players[playerId].position.x, 
                                     players[playerId].position.y
                                 );
-                                        << players[playerId].position.x << "," 
-                                        << players[playerId].position.y << ")\n";
                             }
                         } else {
                             players[playerId].position = sf::Vector2f(x, y);
