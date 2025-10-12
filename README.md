@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**R-Type** is a project developed as part of the **Advanced C++ / Network Programming** module at **Epitech Technology**.  
+**R-Type** is a project developed as part of the **Advanced C++ / Network Programming** module at **Epitech Technology**.
 The goal is to **recreate a multiplayer game inspired by the classic R-Type**, implementing:
 - A **client/server architecture** in **C++17** (or higher)
 - **UDP** network communication (via **Asio**)
@@ -11,6 +11,17 @@ The goal is to **recreate a multiplayer game inspired by the classic R-Type**, i
 The game allows multiple players to connect, move, shoot, and face waves of enemies in real-time.
 
 ---
+
+## dependancies
+- **CMake ≥ 3.20**
+- **C++17** (or higher)
+- **Asio**
+- **SFML** (depending on your rendering engine)
+- **Conan** (optional, for library management)
+
+## supported plateforms
+- Linux
+- Windows
 
 ## Main Features
 
@@ -189,7 +200,7 @@ They cover:
 - **Asio Documentation**: https://think-async.com
 - **ECS Pattern**: https://skypjack.github.io/entt/
 - **UDP Game Networking**: Valve Developer Wiki
-- **SFML / Raylib Docs**: https://www.sfml-dev.org / https://www.raylib.com
+- **SFML doc**: https://www.sfml-dev.org /
 
 ---
 
@@ -203,29 +214,9 @@ They cover:
 
 ---
 
-## 🚀 Roadmap
-
-### Part 1 (Prototype - Week 4)
-- [x] Basic UDP server with player management
-- [x] Binary protocol implementation
-- [x] Client connection and input handling
-- [ ] Game world rendering
-- [ ] Basic enemy spawning
-- [ ] Shooting mechanics
-
-### Part 2 (Advanced Features - Week 7)
-- [ ] Multi-instance server (multiple game rooms)
-- [ ] Lobby system
-- [ ] Advanced networking (compression, reliability)
-- [ ] Complete gameplay (bosses, levels, weapons)
-- [ ] Level editor
-- [ ] Performance optimization
-
----
-
 ## ⚖️ License
 
-Project developed as part of Epitech's educational curriculum.  
+Project developed as part of Epitech's educational curriculum.
 Use restricted to learning and technical demonstration purposes.
 
 ---

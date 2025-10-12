@@ -76,7 +76,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
     _registry->emplace<GameEngine::Velocity>(entity, 100.0f);
-    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f);
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
     
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
     
