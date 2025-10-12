@@ -9,17 +9,19 @@
 #include "../../../components/velocity/src/Velocity.hpp"
 #include "../../../components/acceleration/src/Acceleration.hpp"
 #include "../../../components/inputControlled/src/InputControlled.hpp"
+#include "../../../components/renderable/src/Renderable.hpp"
+#include "../../../components/domain/src/Domain.hpp"
 
 namespace GameEngine {
     class InputHandlerSystem : public System<InputHandlerSystem> {
     public:
         InputHandlerSystem() {
-            requireComponents<GameEngine::InputControlled, GameEngine::Acceleration>();
+            requireComponents<GameEngine::InputControlled, GameEngine::Acceleration, GameEngine::Renderable>();
         }
         
         void onUpdate(Registry& registry, float dt) {
             updateCount++;
-            registry.each<InputControlled, Acceleration>([dt, &registry](auto e, InputControlled& inputs, Acceleration& acceleration) {
+            registry.each<InputControlled, Acceleration, Renderable>([dt, &registry](auto e, InputControlled& inputs, Acceleration& acceleration, Renderable& renderable) {
                 float accelerationValue = 1000.0;
                 GameEngine::Position playerPos;
                 uint32_t shoot = -1;
@@ -47,6 +49,8 @@ namespace GameEngine {
                             registry.emplace<GameEngine::Acceleration>(shoot, 1000.0);
                             playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(shoot, playerPos.x, playerPos.y);
+                            registry.emplace<GameEngine::Renderable>(renderable.screenSizeX, renderable.screenSizeY);
+                            registry.emplace<GameEngine::Domain>(0, 0, renderable.screenSizeX - 1, renderable.screenSizeY - 1);
                             break;
                         default:
                             break;

@@ -16,8 +16,8 @@ namespace GameEngine {
             
             registry.each<Position, Velocity, Acceleration, Renderable>([dt](auto e, Position& pos, Velocity& vel, Acceleration& acc, Renderable& render) {
                 // decceleration
-                vel.x = vel.x > 0 ? std::max(vel.x - (vel.x / 5) - (vel.speedMax / 5), float(0)) : std::min(vel.x + (vel.x / 5) + (vel.speedMax / 5), float(0));
-                vel.y = vel.y > 0 ? std::max(vel.y - (vel.y / 5) - (vel.speedMax / 5), float(0)) : std::min(vel.y + (vel.y / 5) + (vel.speedMax / 5), float(0));
+                vel.x = vel.x > 0 ? std::max(vel.x - (vel.x / 5), float(0)) : std::min(vel.x + (vel.x / 5), float(0));
+                vel.y = vel.y > 0 ? std::max(vel.y - (vel.y / 5), float(0)) : std::min(vel.y + (vel.y / 5), float(0));
                 // acceleration
                 vel.x = std::clamp(vel.x + acc.x * dt, -vel.speedMax, vel.speedMax);
                 vel.y = std::clamp(vel.y + acc.y * dt, -vel.speedMax, vel.speedMax);
