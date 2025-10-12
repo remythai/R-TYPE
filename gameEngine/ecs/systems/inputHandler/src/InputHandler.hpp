@@ -20,7 +20,7 @@ namespace GameEngine {
         void onUpdate(Registry& registry, float dt) {
             updateCount++;
             registry.each<InputControlled, Acceleration>([dt, &registry](auto e, InputControlled& inputs, Acceleration& acceleration) {
-                float accelerationValue = 1000000.0;
+                float accelerationValue = 5.0;
                 GameEngine::Position playerPos;
                 uint32_t shoot = -1;
                 acceleration.x = 0;
