@@ -89,7 +89,7 @@ CLIENT::Core::Core(char **argv)
         
         uint8_t entityCount = payload[0];
         size_t offset = 1;
-        const size_t ENTITY_SIZE = 25;
+        const size_t ENTITY_SIZE = 1 + 4 + 4;
         
         for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
             uint8_t playerId = payload[offset];
