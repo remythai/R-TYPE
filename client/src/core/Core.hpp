@@ -13,11 +13,13 @@
 #include <mutex>
 #include <queue>
 #include <map>
+#include <unordered_map>
 #include "../network/NetworkClient.hpp"
 #include "../macros.hpp"
 #include "../graphics/EntityManager.hpp"
 #include "../graphics/ParallaxSystem.hpp"
 #include "../graphics/AnimatedSprite.hpp"
+#include "../graphics/Window.hpp"
 #include <SFML/Audio/Music.hpp>
 
 namespace CLIENT {
@@ -43,6 +45,22 @@ struct Player {
     int currentRotation;
 };
 
+struct Enemy {
+    uint32_t entityId;
+    uint8_t enemyType;
+    bool active;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    AnimatedSprite sprite;
+};
+
+struct LocalProjectile {
+    uint32_t id;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    AnimatedSprite sprite;
+};
+
 class Core {
 public:
     class CoreError : public std::exception {
@@ -58,16 +76,40 @@ public:
     
     void run();
 
-    void parseServerEntities(const std::string& message);
-
 private:
+    void parseCommandLineArgs(char **argv);
+    void initializeNetwork();
+    void setupNetworkCallbacks();
     void loadResources();
+    
     void networkLoop();
     void graphicsLoop();
     
+    void processOutgoingMessages();
+    void processIncomingMessages(std::array<Player, 4>& players, Window& window);
     void sendInput(KeyCode keyCode, InputAction action);
+    
     void handleKeyStateChange(const std::string& action, bool isPressed, 
                              std::map<std::string, bool>& keyStates);
+    void processInputs(Window& window, std::map<std::string, bool>& keyStates);
+    
+    void initializePlayers(std::array<Player, 4>& players);
+    void updateEnemies(std::unordered_map<uint32_t, Enemy>& enemies, float deltaTime);
+    void cleanupEnemies(std::unordered_map<uint32_t, Enemy>& enemies);
+    void updateProjectiles(std::vector<LocalProjectile>& projectiles, float deltaTime);
+    void cleanupProjectiles(std::vector<LocalProjectile>& projectiles);
+    
+    void spawnTestEnemies(std::unordered_map<uint32_t, Enemy>& enemies, 
+                         uint32_t& nextEnemyId);
+    void updateEnemySpawning(std::unordered_map<uint32_t, Enemy>& enemies,
+                            uint32_t& nextEnemyId, float& spawnTimer, float deltaTime);
+    
+    void renderScene(Window& window, const std::array<Player, 4>& players,
+                    const std::unordered_map<uint32_t, Enemy>& enemies,
+                    const std::vector<LocalProjectile>& projectiles);
+    
+    void parseServerEntities(const std::string& message);
+    void parseSnapshot(const std::vector<uint8_t>& payload);
 
     std::string _hostname;
     unsigned short _port;
@@ -87,8 +129,10 @@ private:
     std::unique_ptr<sf::Music> _backgroundMusic;
     std::unique_ptr<EntityManager> _entityManager;
     std::unique_ptr<ParallaxSystem> _parallaxSystem;
-
 };
+
+Enemy createTestEnemy(uint32_t id, uint8_t type, float x, float y, 
+                     ResourceManager& rm);
 
 } // namespace CLIENT
 
