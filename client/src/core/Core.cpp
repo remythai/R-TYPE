@@ -429,8 +429,10 @@ void CLIENT::Core::graphicsLoop()
                     float y = std::stof(msg.substr(pos2 + 1));
                     
                     if (playerId >= 0 && playerId < 4) {
-                        players[playerId].position = sf::Vector2f(x, y);
-                        players[playerId].sprite.setPosition(x, y);
+                        if (playerId >= 0 && playerId < 4) {
+                            players[playerId].position = sf::Vector2f(x, y);
+                            players[playerId].sprite.setPosition(x, y);
+                        }
                     }
                 }
             }
