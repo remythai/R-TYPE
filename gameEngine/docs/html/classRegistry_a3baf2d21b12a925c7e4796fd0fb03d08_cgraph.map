@@ -1,0 +1,7 @@
+<map id="Registry::addSystemDynamic" name="Registry::addSystemDynamic">
+<area shape="rect" id="Node000001" title="Adds a dynamically created system (type&#45;erased)." alt="" coords="5,31,202,57"/>
+<area shape="rect" id="Node000002" href="$classRegistry.html#ae90736c3327063202e3e04ff5860cb36" title="Sorts systems by priority (ascending order)." alt="" coords="286,5,438,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="202,32,270,25,271,30,202,37"/>
+<area shape="rect" id="Node000003" href="$classRegistry.html#a45f5c5548ea374a04a46308b2e1c5455" title="Updates which systems are active based on available component types." alt="" coords="250,56,475,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="202,51,234,54,234,59,202,56"/>
+</map>

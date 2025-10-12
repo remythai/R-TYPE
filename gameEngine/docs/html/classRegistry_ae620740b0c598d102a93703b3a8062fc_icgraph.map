@@ -1,0 +1,5 @@
+<map id="Registry::destroy" name="Registry::destroy">
+<area shape="rect" id="Node000001" title="Destroys an entity and removes all its components." alt="" coords="242,13,363,40"/>
+<area shape="rect" id="Node000002" href="$classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb" title="Updates the system, removing dead entities." alt="" coords="5,5,194,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="226,29,194,29,194,24,226,24"/>
+</map>

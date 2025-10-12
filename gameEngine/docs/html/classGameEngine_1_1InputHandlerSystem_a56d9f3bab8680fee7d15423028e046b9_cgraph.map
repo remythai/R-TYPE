@@ -1,0 +1,39 @@
+<map id="GameEngine::InputHandlerSystem::onUpdate" name="GameEngine::InputHandlerSystem::onUpdate">
+<area shape="rect" id="Node000001" title="Processes input for all entities and updates their acceleration or triggers actions." alt="" coords="5,196,184,239"/>
+<area shape="rect" id="Node000002" href="$classRegistry.html#ac21e496215b081569cfc303e1a4c0b10" title="Creates a new entity." alt="" coords="273,103,388,130"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,193,231,146,267,133,268,138,233,151,136,198"/>
+<area shape="rect" id="Node000003" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="277,204,384,231"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,215,261,215,261,220,184,220"/>
+<area shape="rect" id="Node000005" href="$classRegistry.html#a11f1e4d7d7ef1a84640adddf32c1f862" title="Gets a reference to a component of type Component for entity e." alt="" coords="542,50,638,76"/>
+<area shape="poly" id="edge21_Node000001_Node000005" title=" " alt="" coords="184,198,332,166,394,151,428,139,442,127,451,114,460,100,476,86,500,75,525,68,527,73,502,80,478,91,464,103,455,116,446,131,430,144,395,156,334,171,185,203"/>
+<area shape="rect" id="Node000013" href="$classRegistry.html#ab12b0e856e109cd94af4aeb5e969de24" title="Adds a new component of type Component to entity e." alt="" coords="267,360,394,387"/>
+<area shape="poly" id="edge16_Node000001_Node000013" title=" " alt="" coords="130,237,297,349,294,354,127,242"/>
+<area shape="rect" id="Node000015" href="$classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72" title=" " alt="" coords="232,411,429,454"/>
+<area shape="poly" id="edge22_Node000001_Node000015" title=" " alt="" coords="109,238,128,273,156,316,191,359,233,397,239,401,236,406,230,401,188,363,152,319,124,276,104,241"/>
+<area shape="rect" id="Node000004" href="$classRegistry.html#acd4bfce3db63792e03b353900dc89f76" title="Ensures that a component pool exists for the given component ID. Creates it if necessary." alt="" coords="518,335,661,362"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="350,229,405,271,478,314,513,328,511,333,476,319,402,275,346,234"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="383,206,407,197,427,184,438,172,444,160,450,136,456,111,463,98,475,86,499,73,525,65,527,70,501,78,479,91,468,101,461,113,455,137,449,162,442,175,431,188,409,202,385,211"/>
+<area shape="rect" id="Node000006" href="$classComponentRegistry.html#a4d993c2bab87c6bdac36ba8f589eca5f" title="Retrieves or creates a unique ID for the given component type T." alt="" coords="750,100,896,143"/>
+<area shape="poly" id="edge10_Node000003_Node000006" title=" " alt="" coords="354,202,391,175,427,140,441,112,446,84,453,59,462,47,475,36,506,19,534,8,560,3,586,4,639,15,703,35,750,58,790,88,787,92,748,63,701,40,638,20,585,9,560,9,535,13,508,23,479,40,466,50,458,61,451,86,446,113,431,143,394,179,357,206"/>
+<area shape="rect" id="Node000008" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="750,251,896,294"/>
+<area shape="poly" id="edge14_Node000003_Node000008" title=" " alt="" coords="360,229,414,252,478,270,544,278,612,282,735,278,735,284,612,287,544,284,476,275,412,257,358,234"/>
+<area shape="rect" id="Node000010" href="$structRegistry_1_1IComponentPool.html#ad4a1001874d3ea8f343fbbcf4988c507" title=" " alt="" coords="502,167,677,210"/>
+<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="383,209,486,197,487,203,384,214"/>
+<area shape="rect" id="Node000011" href="$classRegistry.html#acac1f1c8a740cfeb2b33a32cfd6ad83f" title="Checks if entity e has a component of type Component." alt="" coords="540,234,639,260"/>
+<area shape="poly" id="edge11_Node000003_Node000011" title=" " alt="" coords="384,221,525,237,524,242,383,226"/>
+<area shape="rect" id="Node000012" href="$structRegistry_1_1IComponentPool.html#af60edba4f576e1c34ed07f6dd4e9348b" title=" " alt="" coords="502,100,677,143"/>
+<area shape="poly" id="edge15_Node000003_Node000012" title=" " alt="" coords="381,201,428,183,452,168,476,153,491,146,493,151,478,157,454,173,430,188,383,206"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="639,71,703,86,736,95,735,100,702,91,638,76"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="639,63,672,71,704,86,722,107,748,146,803,236,799,239,743,149,717,110,701,91,670,76,638,68"/>
+<area shape="rect" id="Node000007" href="$classComponentRegistry.html#ab1cc8a486cae16a19268264c69f9af80" title="Computes a new unique ID for a type T, or returns the existing one." alt="" coords="944,100,1089,143"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="896,119,928,119,928,124,896,124"/>
+<area shape="rect" id="Node000009" href="$classComponentRegistry.html#a3bbfefb19e284845afb80ce0a4dd739a" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="944,251,1089,294"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="896,270,928,270,928,275,896,275"/>
+<area shape="poly" id="edge12_Node000011_Node000006" title=" " alt="" coords="639,239,671,231,701,219,750,188,790,152,793,156,753,192,704,224,672,236,640,244"/>
+<area shape="poly" id="edge13_Node000011_Node000008" title=" " alt="" coords="640,250,735,260,735,266,640,255"/>
+<area shape="poly" id="edge17_Node000013_Node000004" title=" " alt="" coords="394,365,502,354,503,360,395,370"/>
+<area shape="poly" id="edge18_Node000013_Node000006" title=" " alt="" coords="395,379,475,388,565,392,647,388,678,382,701,371,716,358,725,344,733,314,736,279,748,238,796,155,801,157,753,240,741,280,738,315,730,346,720,362,704,376,680,387,647,394,565,397,475,393,394,385"/>
+<area shape="poly" id="edge19_Node000013_Node000008" title=" " alt="" coords="390,385,430,397,454,407,478,415,542,429,593,438,642,436,670,428,701,415,734,394,762,366,785,335,802,306,807,309,789,338,766,369,737,398,704,420,672,433,643,441,592,443,540,434,476,420,452,412,428,402,389,390"/>
+<area shape="rect" id="Node000014" href="$classRegistry.html#a45f5c5548ea374a04a46308b2e1c5455" title="Updates which systems are active based on available component types." alt="" coords="477,487,702,514"/>
+<area shape="poly" id="edge20_Node000013_Node000014" title=" " alt="" coords="395,381,431,397,447,414,456,433,463,450,479,466,500,479,498,483,475,471,459,453,451,435,443,417,427,401,393,385"/>
+</map>

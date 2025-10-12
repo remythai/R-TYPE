@@ -1,0 +1,13 @@
+<map id="Registry::view" name="Registry::view">
+<area shape="rect" id="Node000001" title="Returns a reference to the SparseSet storing all components of type Component." alt="" coords="5,64,111,91"/>
+<area shape="rect" id="Node000002" href="$classRegistry.html#acd4bfce3db63792e03b353900dc89f76" title="Ensures that a component pool exists for the given component ID. Creates it if necessary." alt="" coords="160,5,303,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,61,175,35,176,40,101,66"/>
+<area shape="rect" id="Node000003" href="$classComponentRegistry.html#a4d993c2bab87c6bdac36ba8f589eca5f" title="Retrieves or creates a unique ID for the given component type T." alt="" coords="159,56,304,99"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="111,75,143,75,143,80,111,80"/>
+<area shape="rect" id="Node000005" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="159,123,304,165"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="96,89,161,114,159,119,94,94"/>
+<area shape="rect" id="Node000004" href="$classComponentRegistry.html#ab1cc8a486cae16a19268264c69f9af80" title="Computes a new unique ID for a type T, or returns the existing one." alt="" coords="352,56,497,99"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="304,75,336,75,336,80,304,80"/>
+<area shape="rect" id="Node000006" href="$classComponentRegistry.html#a3bbfefb19e284845afb80ce0a4dd739a" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="352,123,497,165"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="304,141,336,141,336,147,304,147"/>
+</map>
