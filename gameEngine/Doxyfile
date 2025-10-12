@@ -1,0 +1,29 @@
+# Project Info
+PROJECT_NAME           = "GameEngine ECS"
+PROJECT_BRIEF          = "Entity Component System for 2D/3D Games"
+OUTPUT_DIRECTORY       = docs
+
+# Input Files / Directories
+INPUT                  = include
+FILE_PATTERNS          = *.hpp *.h
+
+# Recursive search
+RECURSIVE              = YES
+
+# Generate HTML and/or LaTeX
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+# Include diagrams (Graphviz)
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+CLASS_DIAGRAMS         = YES
+
+# Include private members for completeness
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+# Show all functions
+EXTRACT_ALL            = YES

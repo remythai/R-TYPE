@@ -8,13 +8,13 @@
 #include <mutex>
 #include <string>
 #include "../../../gameEngine/ecs/Registry.hpp"
-#include "../../../gameEngine/ecs/components/inputControlled/src/InputControlled.hpp"
-#include "../../../gameEngine/ecs/components/acceleration/src/Acceleration.hpp"
-#include "../../../gameEngine/ecs/components/position/src/Position.hpp"
-#include "../../../gameEngine/ecs/components/velocity/src/Velocity.hpp"
-#include "../../../gameEngine/ecs/components/renderable/src/Renderable.hpp"
-#include "../../../gameEngine/ecs/systems/inputHandler/src/InputHandler.hpp"
-#include "../../../gameEngine/ecs/systems/motion/src/Motion.hpp"
+#include "../../../gameEngine/components/inputControlled/src/InputControlled.hpp"
+#include "../../../gameEngine/components/acceleration/src/Acceleration.hpp"
+#include "../../../gameEngine/components/position/src/Position.hpp"
+#include "../../../gameEngine/components/velocity/src/Velocity.hpp"
+#include "../../../gameEngine/components/renderable/src/Renderable.hpp"
+#include "../../../gameEngine/systems/inputHandler/src/InputHandler.hpp"
+#include "../../../gameEngine/systems/motion/src/Motion.hpp"
 
 namespace rtype {
     enum class PacketType : uint8_t {
