@@ -433,10 +433,6 @@ void CLIENT::Core::graphicsLoop()
                     if (playerId >= 0 && playerId < 4) {
                         players[playerId].position = sf::Vector2f(x, y);
                         players[playerId].sprite.setPosition(x, y);
-                        
-                        if (playerId == _myPlayerId) {
-                            std::cout << "[Server] My position updated: (" << x << ", " << y << ")\n";
-                        }
                     }
                 }
             }
