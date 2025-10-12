@@ -1,8 +1,10 @@
 #pragma once
 
+#include "../../../utils.hpp"
+
 namespace GameEngine {
 struct Position {
-    float x, y;
-    Position(float val_x = 0, float val_y = 0) : x(val_x), y(val_y) {}
+    vec2 pos;
+    Position(float val_x = 0, float val_y = 0) : pos(val_x, val_y) {}
 };
 } // namespace GameEngine

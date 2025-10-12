@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitset>
 #include <cstdint>
 #include "../../../Registry.hpp"
 #include "../../../System.hpp"
@@ -11,6 +12,7 @@
 #include "../../../components/inputControlled/src/InputControlled.hpp"
 #include "../../../components/renderable/src/Renderable.hpp"
 #include "../../../components/domain/src/Domain.hpp"
+#include "../../../components/collider/src/Collider.hpp"
 
 namespace GameEngine {
     class InputHandlerSystem : public System<InputHandlerSystem> {
@@ -48,9 +50,10 @@ namespace GameEngine {
                             registry.emplace<GameEngine::Velocity>(shoot, 1000.0, 1000.0);
                             registry.emplace<GameEngine::Acceleration>(shoot, 1000.0);
                             playerPos = registry.get<GameEngine::Position>(e);
-                            registry.emplace<GameEngine::Position>(shoot, playerPos.x, playerPos.y);
-                            registry.emplace<GameEngine::Renderable>(renderable.screenSizeX, renderable.screenSizeY);
-                            registry.emplace<GameEngine::Domain>(0, 0, renderable.screenSizeX - 1, renderable.screenSizeY);
+                            registry.emplace<GameEngine::Position>(shoot, playerPos.pos.x, playerPos.pos.y);
+                            registry.emplace<GameEngine::Collider>(shoot, vec2(0.0, 0.0), std::bitset<8>("01000000"), vec2(22.28, 22.28));
+                            registry.emplace<GameEngine::Renderable>(shoot, renderable.screenSizeX, renderable.screenSizeY);
+                            registry.emplace<GameEngine::Domain>(shoot, 0, 0, renderable.screenSizeX - 1, renderable.screenSizeY);
                             break;
                         default:
                             break;

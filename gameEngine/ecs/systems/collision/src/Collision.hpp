@@ -19,8 +19,8 @@ class MotionSystem : public System<MotionSystem>
     void collide(uint32_t e1, uint32_t e2, Registry& registry) {
         GameEngine::Position e1Pos = registry.get<GameEngine::Position>(e1);
         GameEngine::Position e2Pos = registry.get<GameEngine::Position>(e2);
-        GameEngine::Collider e1Hitbox = registry.get<GameEngine::Collider>(e1);
-        GameEngine::Collider e2Hitbox = registry.get<GameEngine::Collider>(e2);
+        GameEngine::Collider e1Collider = registry.get<GameEngine::Collider>(e1);
+        GameEngine::Collider e2Collider = registry.get<GameEngine::Collider>(e2);
 
         GameEngine::Damage e1Damage = registry.get<GameEngine::Damage>(e1);
         GameEngine::Damage e2Damage = registry.get<GameEngine::Damage>(e2);
@@ -28,7 +28,10 @@ class MotionSystem : public System<MotionSystem>
         GameEngine::Health e1Health = registry.get<GameEngine::Health>(e1);
         GameEngine::Health e2Health = registry.get<GameEngine::Health>(e2);
 
-        if (e1Pos.x < e2Pos.x + e2Hitbox.size.x && e1Pos.x + e1Hitbox.size.x > e2Pos.x && e1Pos.y < e2Pos.y + e2Hitbox.size.y && e1Pos.y + e1Hitbox.size.y > e2Pos.y) {
+        vec2 e1HitboxPos = e1Pos.pos + e1Collider.originTranslation;
+        vec2 e2HitboxPos = e2Pos.pos + e2Collider.originTranslation;
+
+        if ((e1Collider.entitySelector & e2Collider.entitySelector).any() && e1HitboxPos.x < e2HitboxPos.x + e2Collider.size.x && e1HitboxPos.x + e1Collider.size.x > e2HitboxPos.x && e1HitboxPos.y < e2HitboxPos.y + e2Collider.size.y && e1HitboxPos.y + e1Collider.size.y > e2HitboxPos.y) {
             e1Health.currentHp = e1Health.currentHp > 0 ? std::max(e1Health.currentHp - e2Damage.dmg, 0) : e1Health.currentHp;
             e2Health.currentHp = e2Health.currentHp > 0 ? std::max(e2Health.currentHp - e1Damage.dmg, 0) : e2Health.currentHp;
         }
