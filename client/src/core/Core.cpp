@@ -111,14 +111,13 @@ CLIENT::Core::Core(char **argv)
             float y = readFloat();
             offset += 16;
             
-            if (playerId != _myPlayerId) {
-                std::lock_guard<std::mutex> lock(_incomingMutex);
-                std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
-                                    ":" + std::to_string(x) + 
-                                    ":" + std::to_string(y);
-                _incomingMessages.push(updateMsg);
-            }
-            else {
+            std::lock_guard<std::mutex> lock(_incomingMutex);
+            std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
+                                ":" + std::to_string(x) + 
+                                ":" + std::to_string(y);
+            _incomingMessages.push(updateMsg);
+            
+            if (playerId == _myPlayerId) {
                 std::cout << "[Server] My position: (" << x << ", " << y << ")\n";
             }
         }
@@ -399,13 +398,11 @@ void CLIENT::Core::graphicsLoop()
                 std::string msg = _incomingMessages.front();
                 _incomingMessages.pop();
                 
-                
                 if (msg.find("PLAYER_ID:") == 0) {
                     _myPlayerId = std::stoi(msg.substr(10));
                     players[_myPlayerId].active = true;
                     waitingForPlayerId = false;
                     std::cout << "*** Assigned Player ID: " << int(_myPlayerId) << " ***\n";
-                    std::cout << "*** Using ship " << int(_myPlayerId) + 1 << "/4 ***\n";
                 }
                 else if (msg.find("PLAYER_JOIN:") == 0) {
                     int playerId = std::stoi(msg.substr(12));
@@ -419,9 +416,8 @@ void CLIENT::Core::graphicsLoop()
                     if (playerId >= 0 && playerId < 4) {
                         players[playerId].active = false;
                         std::cout << "Player " << playerId << " left\n";
-
                         if (playerId == _myPlayerId) {
-                            std::cout << "You left or got disconnected, closing the game...\n";
+                            std::cout << "You left or got disconnected\n";
                             window.getWindow().close();
                         }
                     }
@@ -434,9 +430,13 @@ void CLIENT::Core::graphicsLoop()
                     float x = std::stof(msg.substr(pos1 + 1, pos2 - pos1 - 1));
                     float y = std::stof(msg.substr(pos2 + 1));
                     
-                    if (playerId >= 0 && playerId < 4 && playerId != _myPlayerId) {
+                    if (playerId >= 0 && playerId < 4) {
                         players[playerId].position = sf::Vector2f(x, y);
                         players[playerId].sprite.setPosition(x, y);
+                        
+                        if (playerId == _myPlayerId) {
+                            std::cout << "[Server] My position updated: (" << x << ", " << y << ")\n";
+                        }
                     }
                 }
             }
@@ -455,68 +455,6 @@ void CLIENT::Core::graphicsLoop()
             if (!isPressed) {
                 handleKeyStateChange(mapping.action, false, keyStates);
             }
-        }
-        
-        if (_myPlayerId != 255) {
-            auto &player = players[_myPlayerId];
-            float speed = 200.0f * deltaTime;
-
-            sf::Vector2f spriteSize(0.f, 0.f);
-            sf::Sprite* baseSprite = player.sprite.getSprite();
-
-            if (baseSprite) {
-                sf::IntRect rect = baseSprite->getTextureRect();
-                spriteSize.x = static_cast<float>(rect.size.x);
-                spriteSize.y = static_cast<float>(rect.size.y);
-            }
-
-            bool movingUp = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
-            bool movingDown = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down);
-            bool movingLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left);
-            bool movingRight = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right);
-
-            if (movingUp) {
-                if (player.currentRotation < 4) {
-                    player.currentRotation++;
-                    player.sprite.setFrame(player.currentRotation);
-                }
-                player.position.y -= speed;
-            } 
-            else if (movingDown) {
-                if (player.currentRotation > 0) {
-                    player.currentRotation--;
-                    player.sprite.setFrame(player.currentRotation);
-                }
-                player.position.y += speed;
-            } 
-            else {
-                if (player.currentRotation < 2) {
-                    player.currentRotation++;
-                    player.sprite.setFrame(player.currentRotation);
-                }
-                else if (player.currentRotation > 2) {
-                    player.currentRotation--;
-                    player.sprite.setFrame(player.currentRotation);
-                }
-            }
-
-            if (movingLeft) {
-                player.position.x -= speed;
-            }
-            if (movingRight) {
-                player.position.x += speed;
-            }
-
-            if (player.position.x < 0)
-                player.position.x = 0;
-            if (player.position.x > WINDOW_WIDTH - spriteSize.x)
-                player.position.x = WINDOW_WIDTH - spriteSize.x;
-
-            if (player.position.y < 0)
-                player.position.y = 0;
-            if (player.position.y > WINDOW_HEIGHT - spriteSize.y)
-                player.position.y = WINDOW_HEIGHT - spriteSize.y;
-            player.sprite.setPosition(player.position.x, player.position.y);
         }
                 
         for (auto& [id, enemy] : enemies) {
@@ -588,17 +526,17 @@ void CLIENT::Core::graphicsLoop()
     _running = false;
 }
 
-void CLIENT::Core::parseServerState(const std::string& message)
+void CLIENT::Core::parseServerEntities(const std::string& message)
 {
     std::lock_guard<std::mutex> lock(_incomingMutex);
     
     size_t pos = 0;
     while ((pos = message.find("[P", pos)) != std::string::npos) {
         size_t idStart = pos + 2;
-        size_t idEnd = message.find(" ", idStart);
-        if (idEnd == std::string::npos) break;
+        size_t spacePos = message.find(" ", idStart);
+        if (spacePos == std::string::npos) break;
         
-        int playerId = std::stoi(message.substr(idStart, idEnd - idStart));
+        int playerId = std::stoi(message.substr(idStart, spacePos - idStart));
         
         size_t posStart = message.find("pos:(", pos);
         if (posStart == std::string::npos) break;
@@ -616,7 +554,7 @@ void CLIENT::Core::parseServerState(const std::string& message)
                                ":" + std::to_string(y);
         _incomingMessages.push(updateMsg);
         
-        pos = posEnd;
+        pos = posEnd + 1;
     }
 }
 

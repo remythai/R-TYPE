@@ -58,7 +58,7 @@ public:
     
     void run();
 
-    void parseServerState(const std::string& message);
+    void parseServerEntities(const std::string& message);
 
 private:
     void loadResources();
