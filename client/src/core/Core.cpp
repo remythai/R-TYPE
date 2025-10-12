@@ -95,7 +95,37 @@ void CLIENT::Core::setupNetworkCallbacks()
     });
     
     _networkClient->setOnSnapshot([this](const std::vector<uint8_t>& payload) {
-        parseSnapshot(payload);
+        if (payload.empty()) return;
+        
+        uint8_t entityCount = payload[0];
+        size_t offset = 1;
+        const size_t ENTITY_SIZE = 1 + 4 + 4;
+        
+        for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
+            uint8_t playerId = payload[offset];
+            offset += 1;
+            
+            auto readFloat = [&payload, &offset]() -> float {
+                uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
+                            (static_cast<uint32_t>(payload[offset+1]) << 16) | 
+                            (static_cast<uint32_t>(payload[offset+2]) << 8) | 
+                            static_cast<uint32_t>(payload[offset+3]);
+                offset += 4;
+                float result;
+                std::memcpy(&result, &temp, sizeof(float));
+                return result;
+            };
+            
+            float x = readFloat();
+            float y = readFloat();
+            offset += 16;
+            
+            std::lock_guard<std::mutex> lock(_incomingMutex);
+            std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
+                                   ":" + std::to_string(x) + 
+                                   ":" + std::to_string(y);
+            _incomingMessages.push(updateMsg);
+        }
     });
 }
 

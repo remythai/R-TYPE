@@ -105,19 +105,14 @@ void NetworkClient::handlePacket(
 
     std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
 
-    // std::cout << "[CLIENT] From " << sender << " -> ";
-    // std::cout << "[Type=0x" << std::hex << int(type) << std::dec << "]";
-    // std::cout << "[PacketId=" << packetId << "]";
-    // std::cout << "[Timestamp=" << timestamp << "]";
-
-    switch(type) {
+    switch (type) {
         case rtype::PacketType::SNAPSHOT:
         if (!payload.empty()) {
             uint8_t entityCount = payload[0];
             std::cout << "[Entities=" << int(entityCount) << "]";
             
             size_t offset = 1;
-            const size_t ENTITY_SIZE = 25;
+            const size_t ENTITY_SIZE = 1 + 4 + 4;
             
             for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
                 uint8_t playerId = payload[offset];
@@ -136,15 +131,9 @@ void NetworkClient::handlePacket(
                 
                 float x = readFloat();
                 float y = readFloat();
-                float vx = readFloat();
-                float vy = readFloat();
-                float ax = readFloat();
-                float ay = readFloat();
-                
+
                 std::cout << " [P" << int(playerId) 
-                        << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
-                        << " vel:(" << vx << "," << vy << ")"
-                        << " acc:(" << ax << "," << ay << ")]";
+                        << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")";
             }
             
             std::cout << std::endl;

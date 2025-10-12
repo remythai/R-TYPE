@@ -75,7 +75,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     _registry->emplace<GameEngine::InputControlled>(entity);
     _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
-    _registry->emplace<GameEngine::Velocity>(entity, 1000.0f);
+    _registry->emplace<GameEngine::Velocity>(entity, 100.0f);
     _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f);
     
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
@@ -342,85 +342,35 @@ void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
 std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 {
     std::vector<uint8_t> snapshot;
-    
     snapshot.push_back(static_cast<uint8_t>(PacketType::SNAPSHOT));
-    
+
     auto idBytes = toBytes<uint16_t>(0);
     snapshot.insert(snapshot.end(), idBytes.begin(), idBytes.end());
-    
+
     auto now = std::chrono::steady_clock::now();
     uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
         now.time_since_epoch()
     ).count();
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
-    
+
     uint8_t entityCount = 0;
-    for (const auto& slot : _playerSlots) {
-        if (slot.isUsed && slot.entity != EntityManager::INVALID_ENTITY) {
-            entityCount++;
-        }
-    }
+    _registry->each<GameEngine::Position>([&](EntityManager::Entity, GameEngine::Position&) {
+        entityCount += 1;
+    });
     snapshot.push_back(entityCount);
-    
-    for (const auto& slot : _playerSlots) {
-        if (!slot.isUsed || slot.entity == EntityManager::INVALID_ENTITY) {
-            continue;
-        }
-        
-        auto entity = slot.entity;
-        
-        snapshot.push_back(slot.playerId);
-        
-        if (_registry->has<GameEngine::Position>(entity)) {
-            auto& pos = _registry->get<GameEngine::Position>(entity);
-            
-            auto xBytes = floatToBytes(pos.pos.x);
-            snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
-            
-            auto yBytes = floatToBytes(pos.pos.y);
-            snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
-        } else {
-            auto xBytes = floatToBytes(0.0f);
-            snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
-            
-            auto yBytes = floatToBytes(0.0f);
-            snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
-        }
-        
-        if (_registry->has<GameEngine::Velocity>(entity)) {
-            auto& vel = _registry->get<GameEngine::Velocity>(entity);
-            
-            auto vxBytes = floatToBytes(vel.x);
-            snapshot.insert(snapshot.end(), vxBytes.begin(), vxBytes.end());
-            
-            auto vyBytes = floatToBytes(vel.y);
-            snapshot.insert(snapshot.end(), vyBytes.begin(), vyBytes.end());
-        } else {
-            auto vxBytes = floatToBytes(0.0f);
-            snapshot.insert(snapshot.end(), vxBytes.begin(), vxBytes.end());
-            
-            auto vyBytes = floatToBytes(0.0f);
-            snapshot.insert(snapshot.end(), vyBytes.begin(), vyBytes.end());
-        }
-        
-        if (_registry->has<GameEngine::Acceleration>(entity)) {
-            auto& acc = _registry->get<GameEngine::Acceleration>(entity);
-            
-            auto axBytes = floatToBytes(acc.x);
-            snapshot.insert(snapshot.end(), axBytes.begin(), axBytes.end());
-            
-            auto ayBytes = floatToBytes(acc.y);
-            snapshot.insert(snapshot.end(), ayBytes.begin(), ayBytes.end());
-        } else {
-            auto axBytes = floatToBytes(0.0f);
-            snapshot.insert(snapshot.end(), axBytes.begin(), axBytes.end());
-            
-            auto ayBytes = floatToBytes(0.0f);
-            snapshot.insert(snapshot.end(), ayBytes.begin(), ayBytes.end());
-        }
-    }
-    
+
+    _registry->each<GameEngine::Position>(
+    [&](EntityManager::Entity entity, GameEngine::Position& pos) 
+    {
+        snapshot.push_back(static_cast<uint8_t>(entity));
+
+        std::vector<uint8_t> xBytes = floatToBytes(pos.x);
+        snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
+        std::vector<uint8_t> yBytes = floatToBytes(pos.y);
+        snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
+    });
+
     return snapshot;
 }
 
