@@ -355,7 +355,7 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 
     _registry->each<GameEngine::Renderable, GameEngine::Position>(
-    [&](EntityManager::Entity entity, GameEngine::Renderable& render, GameEngine::Position& pos) 
+    [&](EntityManager::Entity entity, GameEngine::Renderable& render, GameEngine::Position& pos)
     {
         snapshot.push_back(static_cast<uint8_t>(entity));
 

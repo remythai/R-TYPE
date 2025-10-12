@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../utils.hpp"
+#include "../../../ecs/utils.hpp"
 
 namespace GameEngine {
 struct Position {

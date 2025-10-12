@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../Registry.hpp"
-#include "../../../System.hpp"
+#include "../../../ecs/Registry.hpp"
+#include "../../../ecs/System.hpp"
 #include <algorithm>
 
 namespace GameEngine {

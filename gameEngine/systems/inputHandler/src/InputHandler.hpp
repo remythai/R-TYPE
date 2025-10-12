@@ -2,8 +2,8 @@
 
 #include <bitset>
 #include <cstdint>
-#include "../../../Registry.hpp"
-#include "../../../System.hpp"
+#include "../../../ecs/Registry.hpp"
+#include "../../../ecs/System.hpp"
 #include "../../../components/health/src/Health.hpp"
 #include "../../../components/damage/src/Damage.hpp"
 #include "../../../components/position/src/Position.hpp"

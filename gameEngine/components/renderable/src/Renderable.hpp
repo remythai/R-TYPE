@@ -1,7 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <iostream>
-#include "../../../utils.hpp"
+#include "../../../ecs/utils.hpp"
 
 namespace GameEngine {
 struct Renderable {
