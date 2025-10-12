@@ -50,7 +50,7 @@ namespace GameEngine {
                             playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(shoot, playerPos.x, playerPos.y);
                             registry.emplace<GameEngine::Renderable>(renderable.screenSizeX, renderable.screenSizeY);
-                            registry.emplace<GameEngine::Domain>(0, 0, renderable.screenSizeX - 1, renderable.screenSizeY - 1);
+                            registry.emplace<GameEngine::Domain>(0, 0, renderable.screenSizeX - 1, renderable.screenSizeY);
                             break;
                         default:
                             break;
