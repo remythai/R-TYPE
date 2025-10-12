@@ -370,10 +370,10 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
         if (_registry->has<GameEngine::Position>(entity)) {
             auto& pos = _registry->get<GameEngine::Position>(entity);
             
-            auto xBytes = floatToBytes(pos.x);
+            auto xBytes = floatToBytes(pos.pos.x);
             snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
             
-            auto yBytes = floatToBytes(pos.y);
+            auto yBytes = floatToBytes(pos.pos.y);
             snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
         } else {
             auto xBytes = floatToBytes(0.0f);

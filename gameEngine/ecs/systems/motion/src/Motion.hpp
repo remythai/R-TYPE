@@ -22,8 +22,8 @@ namespace GameEngine {
                 vel.x = std::clamp(vel.x + acc.x * dt, -vel.speedMax, vel.speedMax);
                 vel.y = std::clamp(vel.y + acc.y * dt, -vel.speedMax, vel.speedMax);
                 // update position
-                pos.x = std::clamp(pos.x + vel.x * dt, float(0), render.screenSizeX);
-                pos.y = std::clamp(pos.y + vel.y * dt, float(0), render.screenSizeY);
+                pos.pos.x = std::clamp(pos.pos.x + vel.x * dt, float(0), render.screenSizeX);
+                pos.pos.y = std::clamp(pos.pos.y + vel.y * dt, float(0), render.screenSizeY);
             });
         }
         int updateCount = 0;
