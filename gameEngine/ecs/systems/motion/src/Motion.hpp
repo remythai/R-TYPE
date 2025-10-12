@@ -19,11 +19,16 @@ namespace GameEngine {
                 vel.x = vel.x > 0 ? std::max(vel.x - (vel.x / 5), float(0)) : std::min(vel.x + (vel.x / 5), float(0));
                 vel.y = vel.y > 0 ? std::max(vel.y - (vel.y / 5), float(0)) : std::min(vel.y + (vel.y / 5), float(0));
                 // acceleration
-                vel.x = std::clamp(vel.x + acc.x * dt, -vel.speedMax, vel.speedMax);
-                vel.y = std::clamp(vel.y + acc.y * dt, -vel.speedMax, vel.speedMax);
+                vel.x = std::clamp(vel.x + acc.x, -vel.speedMax, vel.speedMax);
+                vel.y = std::clamp(vel.y + acc.y, -vel.speedMax, vel.speedMax);
                 // update position
+<<<<<<< HEAD
                 pos.pos.x = std::clamp(pos.pos.x + vel.x * dt, float(0), render.screenSizeX);
                 pos.pos.y = std::clamp(pos.pos.y + vel.y * dt, float(0), render.screenSizeY);
+=======
+                pos.x = std::clamp(pos.x + vel.x, float(0), render.screenSizeX);
+                pos.y = std::clamp(pos.y + vel.y, float(0), render.screenSizeY);
+>>>>>>> 351a0cf (fix: frames by seconds)
             });
         }
         int updateCount = 0;

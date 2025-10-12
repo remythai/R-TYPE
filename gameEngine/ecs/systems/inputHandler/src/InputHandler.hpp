@@ -23,8 +23,8 @@ namespace GameEngine {
         
         void onUpdate(Registry& registry, float dt) {
             updateCount++;
-            registry.each<InputControlled, Acceleration, Renderable>([dt, &registry](auto e, InputControlled& inputs, Acceleration& acceleration, Renderable& renderable) {
-                float accelerationValue = 1000.0;
+            registry.each<InputControlled, Acceleration>([dt, &registry](auto e, InputControlled& inputs, Acceleration& acceleration) {
+                float accelerationValue = 5.0;
                 GameEngine::Position playerPos;
                 uint32_t shoot = -1;
                 acceleration.x = 0;
