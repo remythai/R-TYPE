@@ -429,23 +429,8 @@ void CLIENT::Core::graphicsLoop()
                     float y = std::stof(msg.substr(pos2 + 1));
                     
                     if (playerId >= 0 && playerId < 4) {
-                        if (playerId == _myPlayerId) {
-                            float dx = x - players[playerId].position.x;
-                            float dy = y - players[playerId].position.y;
-                            float distSq = dx*dx + dy*dy;
-                            
-                            if (distSq > 25.0f) {
-                                players[playerId].position.x += dx * 0.3f;
-                                players[playerId].position.y += dy * 0.3f;
-                                players[playerId].sprite.setPosition(
-                                    players[playerId].position.x, 
-                                    players[playerId].position.y
-                                );
-                            }
-                        } else {
-                            players[playerId].position = sf::Vector2f(x, y);
-                            players[playerId].sprite.setPosition(x, y);
-                        }
+                        players[playerId].position = sf::Vector2f(x, y);
+                        players[playerId].sprite.setPosition(x, y);
                     }
                 }
             }
