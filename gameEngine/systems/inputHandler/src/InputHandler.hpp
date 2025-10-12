@@ -15,9 +15,9 @@
 #include "../../../components/collider/src/Collider.hpp"
 
 namespace GameEngine {
-    class InputHandlerSystem : public System<InputHandlerSystem> {
+    class InputHandler : public System<InputHandler> {
     public:
-        InputHandlerSystem() {
+        InputHandler() {
             requireComponents<GameEngine::InputControlled, GameEngine::Acceleration, GameEngine::Renderable>();
         }
         
@@ -48,13 +48,12 @@ namespace GameEngine {
                             registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "assets/sprites/playerProjectiles.png", vec2{0.0f, 0.0f}, vec2{22.28f, 22.28f}, 3, 0, 0.05f);
                             registry.emplace<GameEngine::Health>(shoot, 1, 1);
                             registry.emplace<GameEngine::Damage>(shoot, 1);
-                            registry.emplace<GameEngine::Velocity>(shoot, 1000.0, 1000.0);
-                            registry.emplace<GameEngine::Acceleration>(shoot, 1000.0);
+                            registry.emplace<GameEngine::Velocity>(shoot, 10.0, 10.0);
+                            registry.emplace<GameEngine::Acceleration>(shoot, 10.0);
                             playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(shoot, playerPos.pos.x, playerPos.pos.y);
                             registry.emplace<GameEngine::Collider>(shoot, vec2(0.0, 0.0), std::bitset<8>("01000000"), vec2(22.28, 22.28));
-                            // registry.emplace<GameEngine::Renderable>(shoot, renderable.screenSizeX, renderable.screenSizeY);
-                            // registry.emplace<GameEngine::Domain>(shoot, 0, 0, renderable.screenSizeX - 1, renderable.screenSizeY);
+                            registry.emplace<GameEngine::Domain>(shoot, 0, 0, 1905.0, 1080.0);
                             break;
                         default:
                             break;

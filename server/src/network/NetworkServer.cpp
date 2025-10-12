@@ -6,6 +6,9 @@
 */
 
 #include "NetworkServer.hpp"
+#include <bitset>
+#include <chrono>
+#include <random>
 #include <thread>
 #include <iostream>
 #include <algorithm>
@@ -62,8 +65,11 @@ rtype::NetworkServer::~NetworkServer()
 
 void rtype::NetworkServer::initECS()
 {
-    _registry->addSystem<GameEngine::InputHandlerSystem>(0);
-    _registry->addSystem<GameEngine::MotionSystem>(1);
+    _registry->addSystem<GameEngine::InputHandler>(0);
+    _registry->addSystem<GameEngine::Motion>(1);
+    _registry->addSystem<GameEngine::Collision>(2);
+    _registry->addSystem<GameEngine::Death>(3);
+    _registry->addSystem<GameEngine::DomainHandler>(4);
     
     std::cout << "[SERVER] ECS initialized with InputHandlerSystem and MotionSystem" << std::endl;
 }
@@ -75,10 +81,32 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     _registry->emplace<GameEngine::InputControlled>(entity);
     _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
-    _registry->emplace<GameEngine::Velocity>(entity, 100.0f);
+    _registry->emplace<GameEngine::Velocity>(entity, 5.0f);
     _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("10000000"), vec2(33.2, 17.2));
     
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
+    
+    return entity;
+}
+
+EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
+{
+    auto entity = _registry->create();
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(10, 1070);
+
+    int randomNum = distrib(gen);
+
+    _registry->emplace<GameEngine::AIControlled>(entity);
+    _registry->emplace<GameEngine::Acceleration>(entity, -8.0f, 0.0f);
+    _registry->emplace<GameEngine::Position>(entity, 1900,  randomNum);
+    _registry->emplace<GameEngine::Velocity>(entity, 8.0f);
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet5.png", vec2{0.0f, 0.0f}, vec2{33.3f, 33.3f}, 8, 0, 1.5f);
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("01000000"), vec2(33.3, 33.3));
+    _registry->emplace<GameEngine::Domain>(entity, 5.0f, 0.0f, 1920.0f, 1080.0);
+    
     
     return entity;
 }
@@ -142,8 +170,10 @@ void rtype::NetworkServer::run()
     }).detach();
 
     std::thread([this]() {
-        const float targetDt = 1.0f / 60.0f;
+        const float targetDt = 1.0f / 120.0f;
         auto lastUpdateTime = std::chrono::steady_clock::now();
+        auto clock1 = std::chrono::steady_clock::now();
+        auto clock2 = std::chrono::steady_clock::now();
         
         while (_running) {
             auto frameStart = std::chrono::steady_clock::now();
@@ -162,6 +192,12 @@ void rtype::NetworkServer::run()
                 std::this_thread::sleep_for(
                     std::chrono::duration<float>(targetDt - elapsed)
                 );
+            }
+            clock2 = std::chrono::steady_clock::now();
+            auto deltaTime = clock2 - clock1;
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime).count() > 5000) {
+                this->createEnemyEntity();
+                clock1 = std::chrono::steady_clock::now();
             }
         }
     }).detach();

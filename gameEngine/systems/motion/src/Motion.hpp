@@ -9,9 +9,9 @@
 #include <algorithm>
 
 namespace GameEngine {
-    class MotionSystem : public System<MotionSystem> {
+    class Motion : public System<Motion> {
     public:
-        MotionSystem() {
+        Motion() {
             requireComponents<GameEngine::Position, GameEngine::Velocity, GameEngine::Acceleration, GameEngine::Renderable>();
         }
         
@@ -20,14 +20,14 @@ namespace GameEngine {
             
             registry.each<Position, Velocity, Acceleration, Renderable>([dt](auto e, Position& pos, Velocity& vel, Acceleration& acc, Renderable& render) {
                 // decceleration
-                vel.x = vel.x > 0 ? std::max(vel.x - (vel.x / 5), float(0)) : std::min(vel.x + (vel.x / 5), float(0));
-                vel.y = vel.y > 0 ? std::max(vel.y - (vel.y / 5), float(0)) : std::min(vel.y + (vel.y / 5), float(0));
+                vel.x = vel.x > 0 ? std::max(float(vel.x - (vel.x * 0.75)), float(0)) : std::min(float(vel.x - (vel.x * 0.75)), float(0));
+                vel.y = vel.y > 0 ? std::max(float(vel.y - (vel.y * 0.75)), float(0)) : std::min(float(vel.y - (vel.y * 0.75)), float(0));
                 // acceleration
                 vel.x = std::clamp(vel.x + acc.x, -vel.speedMax, vel.speedMax);
                 vel.y = std::clamp(vel.y + acc.y, -vel.speedMax, vel.speedMax);
                 // update position
-                pos.pos.x = std::clamp(pos.pos.x + vel.x * dt, float(0), render.screenSizeX);
-                pos.pos.y = std::clamp(pos.pos.y + vel.y * dt, float(0), render.screenSizeY);
+                pos.pos.x = std::clamp(pos.pos.x + vel.x, float(0), render.screenSizeX);
+                pos.pos.y = std::clamp(pos.pos.y + vel.y, float(0), render.screenSizeY);
             });
         }
         int updateCount = 0;
