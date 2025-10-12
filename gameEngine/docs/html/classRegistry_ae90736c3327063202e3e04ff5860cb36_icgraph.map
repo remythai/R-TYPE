@@ -1,0 +1,7 @@
+<map id="Registry::sortSystems" name="Registry::sortSystems">
+<area shape="rect" id="Node000001" title="Sorts systems by priority (ascending order)." alt="" coords="250,31,402,57"/>
+<area shape="rect" id="Node000002" href="$classRegistry.html#ae9d15b143aff79d01bc27d1bf89fa7f4" title="Adds a system of type SystemType to the registry." alt="" coords="31,5,176,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="234,36,176,30,176,24,235,31"/>
+<area shape="rect" id="Node000003" href="$classRegistry.html#a3baf2d21b12a925c7e4796fd0fb03d08" title="Adds a dynamically created system (type&#45;erased)." alt="" coords="5,56,202,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="235,57,202,61,202,55,234,52"/>
+</map>

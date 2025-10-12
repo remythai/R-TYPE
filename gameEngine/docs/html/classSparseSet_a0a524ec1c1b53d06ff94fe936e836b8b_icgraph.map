@@ -1,0 +1,7 @@
+<map id="SparseSet::contains" name="SparseSet::contains">
+<area shape="rect" id="Node000001" title="Checks if a given entity currently has an associated component." alt="" coords="193,31,332,57"/>
+<area shape="rect" id="Node000002" href="$classSparseSet.html#abe608bb81179590bbc20b68006a68d66" title="Adds or constructs a component for the given entity." alt="" coords="5,5,145,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,35,145,31,146,25,178,30"/>
+<area shape="rect" id="Node000003" href="$classSparseSet.html#a4d3865af44a93dbd316d47732e55f9cd" title="Removes the component associated with an entity." alt="" coords="14,56,136,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,58,137,64,136,58,177,53"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="components/collider/src/Collider.hpp" name="components/collider/src/Collider.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="45,5,182,48"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,96,59,123"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,51,57,87,54,83,91,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="83,96,144,123"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="116,49,116,80,111,80,111,49"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="168,96,274,123"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="143,46,194,84,191,88,140,51"/>
+</map>

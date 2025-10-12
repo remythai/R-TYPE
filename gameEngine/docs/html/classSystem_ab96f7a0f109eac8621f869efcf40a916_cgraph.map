@@ -1,0 +1,7 @@
+<map id="System::requireComponents" name="System::requireComponents">
+<area shape="rect" id="Node000001" title="Declares which components this system requires." alt="" coords="5,13,193,40"/>
+<area shape="rect" id="Node000002" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="241,5,386,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,24,225,24,225,29,193,29"/>
+<area shape="rect" id="Node000003" href="$classComponentRegistry.html#a3bbfefb19e284845afb80ce0a4dd739a" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="434,5,579,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="386,24,418,24,418,29,386,29"/>
+</map>

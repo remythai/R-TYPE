@@ -1,0 +1,9 @@
+<map id="components/health/src/Health.hpp" name="components/health/src/Health.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="194,5,348,48"/>
+<area shape="rect" id="Node000002" href="$Collision_8hpp.html" title=" " alt="" coords="5,96,150,139"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,57,124,98,122,93,210,53"/>
+<area shape="rect" id="Node000003" href="$Death_8hpp.html" title=" " alt="" coords="174,104,368,131"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="274,64,274,104,268,104,268,64"/>
+<area shape="rect" id="Node000004" href="$systems_2inputHandler_2src_2InputHandler_8hpp.html" title=" " alt="" coords="391,96,540,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="331,52,421,93,419,98,329,57"/>
+</map>

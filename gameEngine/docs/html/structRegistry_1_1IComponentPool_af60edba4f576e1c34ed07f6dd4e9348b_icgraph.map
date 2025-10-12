@@ -1,0 +1,9 @@
+<map id="Registry::IComponentPool::size" name="Registry::IComponentPool::size">
+<area shape="rect" id="Node000001" title=" " alt="" coords="396,39,571,81"/>
+<area shape="rect" id="Node000002" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="242,47,348,73"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="381,63,349,63,349,57,381,57"/>
+<area shape="rect" id="Node000003" href="$classGameEngine_1_1InputHandlerSystem.html#a56d9f3bab8680fee7d15423028e046b9" title=" " alt="" coords="10,5,189,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="226,51,189,45,189,39,227,46"/>
+<area shape="rect" id="Node000004" href="$classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb" title=" " alt="" coords="5,72,194,115"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="227,74,195,80,194,75,226,69"/>
+</map>

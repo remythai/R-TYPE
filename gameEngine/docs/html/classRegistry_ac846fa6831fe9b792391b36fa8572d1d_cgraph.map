@@ -1,0 +1,11 @@
+<map id="Registry::get" name="Registry::get">
+<area shape="rect" id="Node000001" title="Const version of get()." alt="" coords="5,47,102,73"/>
+<area shape="rect" id="Node000002" href="$classComponentRegistry.html#a4d993c2bab87c6bdac36ba8f589eca5f" title="Retrieves or creates a unique ID for the given component type T." alt="" coords="150,5,295,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,48,134,41,135,47,103,53"/>
+<area shape="rect" id="Node000004" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="150,72,295,115"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="103,67,135,73,134,79,101,72"/>
+<area shape="rect" id="Node000003" href="$classComponentRegistry.html#ab1cc8a486cae16a19268264c69f9af80" title="Computes a new unique ID for a type T, or returns the existing one." alt="" coords="343,5,488,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="295,24,327,24,327,29,295,29"/>
+<area shape="rect" id="Node000005" href="$classComponentRegistry.html#a3bbfefb19e284845afb80ce0a4dd739a" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="343,72,488,115"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="295,91,327,91,327,96,295,96"/>
+</map>
