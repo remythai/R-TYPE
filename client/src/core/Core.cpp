@@ -95,7 +95,8 @@ void CLIENT::Core::setupNetworkCallbacks()
     });
     
     _networkClient->setOnSnapshot([this](const std::vector<uint8_t>& payload) {
-        if (payload.empty()) return;
+        if (payload.empty())
+            return;
         
         uint8_t entityCount = payload[0];
         size_t offset = 1;
@@ -120,11 +121,16 @@ void CLIENT::Core::setupNetworkCallbacks()
             float y = readFloat();
             offset += 16;
             
-            std::lock_guard<std::mutex> lock(_incomingMutex);
-            std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
-                                   ":" + std::to_string(x) + 
-                                   ":" + std::to_string(y);
-            _incomingMessages.push(updateMsg);
+            if (playerId != _myPlayerId) {
+                std::lock_guard<std::mutex> lock(_incomingMutex);
+                std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
+                                    ":" + std::to_string(x) + 
+                                    ":" + std::to_string(y);
+                _incomingMessages.push(updateMsg);
+            }
+            else {
+                std::cout << "[Server] My position: (" << x << ", " << y << ")\n";
+            }
         }
     });
 }
