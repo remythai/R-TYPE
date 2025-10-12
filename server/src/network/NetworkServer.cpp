@@ -129,7 +129,6 @@ void rtype::NetworkServer::updateECS(float dt)
 void rtype::NetworkServer::run()
 {
     _running = true;
-    _lastUpdate = std::chrono::steady_clock::now();
     _lastSnapshot = std::chrono::steady_clock::now();
     
     doReceive();
@@ -144,15 +143,21 @@ void rtype::NetworkServer::run()
 
     std::thread([this]() {
         const float targetDt = 1.0f / 60.0f;
+        auto lastUpdateTime = std::chrono::steady_clock::now();
         
         while (_running) {
-            auto now = std::chrono::steady_clock::now();
-            float dt = std::chrono::duration<float>(now - _lastUpdate).count();
-            _lastUpdate = now;
-            
-            updateECS(dt);
+            auto frameStart = std::chrono::steady_clock::now();
 
-            auto elapsed = std::chrono::duration<float>(std::chrono::steady_clock::now() - now).count();
+            float realDt = std::chrono::duration<float>(frameStart - lastUpdateTime).count();
+            lastUpdateTime = frameStart;
+
+            realDt = std::min(realDt, 0.25f);
+
+            updateECS(realDt);
+
+            auto frameEnd = std::chrono::steady_clock::now();
+            float elapsed = std::chrono::duration<float>(frameEnd - frameStart).count();
+            
             if (elapsed < targetDt) {
                 std::this_thread::sleep_for(
                     std::chrono::duration<float>(targetDt - elapsed)
