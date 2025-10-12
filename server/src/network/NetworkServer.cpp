@@ -359,9 +359,9 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
     {
         snapshot.push_back(static_cast<uint8_t>(entity));
 
-        auto xBytes = floatToBytes(pos.x);
+        auto xBytes = floatToBytes(pos.pos.x);
         snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
-        auto yBytes = floatToBytes(pos.y);
+        auto yBytes = floatToBytes(pos.pos.y);
         snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
 
         uint8_t pathLen = static_cast<uint8_t>(render.spriteSheetPath.size());

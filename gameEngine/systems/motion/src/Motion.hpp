@@ -2,6 +2,10 @@
 
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
+#include "../../../components/position/src/Position.hpp"
+#include "../../../components/velocity/src/Velocity.hpp"
+#include "../../../components/acceleration/src/Acceleration.hpp"
+#include "../../../components/renderable/src/Renderable.hpp"
 #include <algorithm>
 
 namespace GameEngine {
