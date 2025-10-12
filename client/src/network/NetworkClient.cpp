@@ -107,103 +107,64 @@ void NetworkClient::handlePacket(
 
     switch (type) {
         case rtype::PacketType::SNAPSHOT:
-        if (!payload.empty()) {
-            uint8_t entityCount = payload[0];
-            std::cout << "[Entities=" << int(entityCount) << "]";
-            
-            size_t offset = 1;
-            const size_t ENTITY_SIZE = 1 + 4 + 4;
-            
-            for (int i = 0; i < entityCount && (offset + ENTITY_SIZE) <= payload.size(); i++) {
-                uint8_t playerId = payload[offset];
-                offset += 1;
-                
-                auto readFloat = [&payload, &offset]() -> float {
-                    uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
-                                (static_cast<uint32_t>(payload[offset+1]) << 16) | 
-                                (static_cast<uint32_t>(payload[offset+2]) << 8) | 
-                                static_cast<uint32_t>(payload[offset+3]);
-                    offset += 4;
-                    float result;
-                    std::memcpy(&result, &temp, sizeof(float));
-                    return result;
-                };
-                
-                float x = readFloat();
-                float y = readFloat();
+            if (!payload.empty()) {
+                size_t offset = 0;
 
-                std::cout << " [P" << int(playerId) 
-                        << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")";
+                while (offset < payload.size()) {
+                    uint8_t entityId = payload[offset++];
+                    
+                    auto readFloat = [&payload, &offset]() -> float {
+                        uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) |
+                                        (static_cast<uint32_t>(payload[offset+1]) << 16) |
+                                        (static_cast<uint32_t>(payload[offset+2]) << 8) |
+                                        static_cast<uint32_t>(payload[offset+3]);
+                        offset += 4;
+                        float result;
+                        std::memcpy(&result, &temp, sizeof(float));
+                        return result;
+                    };
+
+                    float x = readFloat();
+                    float y = readFloat();
+
+                    uint8_t pathLen = payload[offset++];
+                    std::string spritePath(payload.begin() + offset, payload.begin() + offset + pathLen);
+                    offset += pathLen;
+
+                    uint8_t currentFrame = payload[offset++];
+                    uint8_t frameNumber = payload[offset++];
+
+                    float frameDur = readFloat();
+
+                    float rectPosX = readFloat();
+                    float rectPosY = readFloat();
+                    float rectSizeX = readFloat();
+                    float rectSizeY = readFloat();
+
+                    std::cout << "[Entity:" << int(entityId)
+                            << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
+                            << " sprite:" << spritePath
+                            << " frame:" << int(currentFrame) << "/" << int(frameNumber)
+                            << " frameDur:" << frameDur
+                            << " rectPos:(" << rectPosX << "," << rectPosY << ")"
+                            << " rectSize:(" << rectSizeX << "," << rectSizeY << ")]"
+                            << std::endl;
+                }
+
+                if (_onSnapshot) {
+                    _onSnapshot(payload);
+                }
             }
-            
-            std::cout << std::endl;
-            
-            if (_onSnapshot) {
-                _onSnapshot(payload);
-            }
-        }
-        break;
+            break;
 
         case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
-            if (!payload.empty()) {
-                uint8_t playerId = payload[0];
-                std::cout << "[AssignedPlayerId=" << int(playerId) << "]";
-
-                if (playerId == 255) {
-                    std::cout << "\n[Error] Server full, cannot join." << std::endl;
-                    _ioContext.stop();
-                    return; 
-                }
-
-                if (_onPlayerIdReceived) {
-                    _onPlayerIdReceived(playerId);
-                }
-            }
-            break;
-
         case rtype::PacketType::PLAYER_EVENT:
-            if (payload.size() >= 2) {
-                uint8_t playerId = payload[0];
-                uint8_t eventType = payload[1];
-                
-                std::cout << "[PlayerId=" << int(playerId)
-                        << "][EventType=" << int(eventType);
-                
-                if (payload.size() > 2)
-                    std::cout << "][Score=" << int(payload[2]);
-                std::cout << "]";
-                
-                if (_onPlayerEvent) {
-                    _onPlayerEvent(playerId, eventType);
-                }
-            }
-            break;
-
         case rtype::PacketType::INPUT:
-            if (payload.size() >= 3)
-                std::cout << "[PlayerId=" << int(payload[0])
-                        << "][KeyCode=" << int(payload[1])
-                        << "][Action=" << int(payload[2]) << "]";
-            break;
-
         case rtype::PacketType::JOIN:
-            std::cout << "[Username=" << std::string(payload.begin(), payload.end()) << "]";
-            break;
-
         case rtype::PacketType::PING:
         case rtype::PacketType::PING_RESPONSE:
-            std::cout << "[PacketId=" << packetId << "]";
-            break;
-
         case rtype::PacketType::ENTITY_EVENT:
-            if (payload.size() >= 2)
-                std::cout << "[EntityId=" << int(payload[0])
-                        << "][EventType=" << int(payload[1])
-                        << "][ExtraData=" << (payload.size() > 2 ? std::string(payload.begin()+2, payload.end()) : "") << "]";
-            break;
-
         default:
-            std::cout << "[Unknown packet]";
             break;
     }
 

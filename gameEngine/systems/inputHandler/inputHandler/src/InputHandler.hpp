@@ -45,7 +45,7 @@ namespace GameEngine {
                             break;
                         case 4:
                             shoot = registry.create();
-                            registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "sprites/playerProjectiles.png", vec2{0.0f, 0.0f}, vec2{22.28f, 22.28f}, 3, 0, 0.05f);
+                            registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "assets/sprites/playerProjectiles.png", vec2{0.0f, 0.0f}, vec2{22.28f, 22.28f}, 3, 0, 0.05f);
                             registry.emplace<GameEngine::Health>(shoot, 1, 1);
                             registry.emplace<GameEngine::Damage>(shoot, 1);
                             registry.emplace<GameEngine::Velocity>(shoot, 1000.0, 1000.0);

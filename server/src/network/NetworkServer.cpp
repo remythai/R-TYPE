@@ -76,7 +76,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
     _registry->emplace<GameEngine::Velocity>(entity, 100.0f);
-    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
     
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
     
@@ -354,21 +354,35 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 
-    uint8_t entityCount = 0;
-    _registry->each<GameEngine::Position>([&](EntityManager::Entity, GameEngine::Position&) {
-        entityCount += 1;
-    });
-    snapshot.push_back(entityCount);
-
-    _registry->each<GameEngine::Position>(
-    [&](EntityManager::Entity entity, GameEngine::Position& pos) 
+    _registry->each<GameEngine::Renderable, GameEngine::Position>(
+    [&](EntityManager::Entity entity, GameEngine::Renderable& render, GameEngine::Position& pos) 
     {
         snapshot.push_back(static_cast<uint8_t>(entity));
 
-        std::vector<uint8_t> xBytes = floatToBytes(pos.x);
+        auto xBytes = floatToBytes(pos.x);
         snapshot.insert(snapshot.end(), xBytes.begin(), xBytes.end());
-        std::vector<uint8_t> yBytes = floatToBytes(pos.y);
+        auto yBytes = floatToBytes(pos.y);
         snapshot.insert(snapshot.end(), yBytes.begin(), yBytes.end());
+
+        uint8_t pathLen = static_cast<uint8_t>(render.spriteSheetPath.size());
+        snapshot.push_back(pathLen);
+        snapshot.insert(snapshot.end(), render.spriteSheetPath.begin(), render.spriteSheetPath.end());
+
+        snapshot.push_back(static_cast<uint8_t>(render.currentFrame));
+        snapshot.push_back(static_cast<uint8_t>(render.frameNumber));
+
+        auto frameDurBytes = floatToBytes(render.frameDuration);
+        snapshot.insert(snapshot.end(), frameDurBytes.begin(), frameDurBytes.end());
+
+        auto rectPosX = floatToBytes(render.rectPos.x);
+        snapshot.insert(snapshot.end(), rectPosX.begin(), rectPosX.end());
+        auto rectPosY = floatToBytes(render.rectPos.y);
+        snapshot.insert(snapshot.end(), rectPosY.begin(), rectPosY.end());
+
+        auto rectSizeX = floatToBytes(render.rectSize.x);
+        snapshot.insert(snapshot.end(), rectSizeX.begin(), rectSizeX.end());
+        auto rectSizeY = floatToBytes(render.rectSize.y);
+        snapshot.insert(snapshot.end(), rectSizeY.begin(), rectSizeY.end());
     });
 
     return snapshot;
