@@ -121,14 +121,13 @@ void CLIENT::Core::setupNetworkCallbacks()
             float y = readFloat();
             offset += 16;
             
-            if (playerId != _myPlayerId) {
-                std::lock_guard<std::mutex> lock(_incomingMutex);
-                std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
-                                    ":" + std::to_string(x) + 
-                                    ":" + std::to_string(y);
-                _incomingMessages.push(updateMsg);
-            }
-            else {
+            std::lock_guard<std::mutex> lock(_incomingMutex);
+            std::string updateMsg = "PLAYER_MOVE:" + std::to_string(playerId) + 
+                                ":" + std::to_string(x) + 
+                                ":" + std::to_string(y);
+            _incomingMessages.push(updateMsg);
+            
+            if (playerId == _myPlayerId) {
                 std::cout << "[Server] My position: (" << x << ", " << y << ")\n";
             }
         }
