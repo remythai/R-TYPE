@@ -9,14 +9,17 @@
 #include <string>
 #include "../../../gameEngine/ecs/Registry.hpp"
 #include "../../../gameEngine/components/inputControlled/src/InputControlled.hpp"
+#include "../../../gameEngine/components/AIControlled/src/AIControlled.hpp"
 #include "../../../gameEngine/components/acceleration/src/Acceleration.hpp"
 #include "../../../gameEngine/components/position/src/Position.hpp"
 #include "../../../gameEngine/components/velocity/src/Velocity.hpp"
 #include "../../../gameEngine/components/renderable/src/Renderable.hpp"
+#include "../../../gameEngine/components/domain/src/Domain.hpp"
 #include "../../../gameEngine/systems/inputHandler/src/InputHandler.hpp"
 #include "../../../gameEngine/systems/motion/src/Motion.hpp"
-#include "../../../gameEngine/systems/domain/src/Domain.hpp"
 #include "../../../gameEngine/systems/collision/src/Collision.hpp"
+#include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
+#include "../../../gameEngine/systems/death/src/Death.hpp"
 
 namespace rtype {
     enum class PacketType : uint8_t {
@@ -56,6 +59,7 @@ namespace rtype {
             void initECS();
             void updateECS(float dt);
             EntityManager::Entity createPlayerEntity(uint8_t playerId);
+            EntityManager::Entity createEnemyEntity();
             void destroyPlayerEntity(uint8_t playerId);
             void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
 

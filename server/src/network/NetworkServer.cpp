@@ -66,9 +66,9 @@ void rtype::NetworkServer::initECS()
 {
     _registry->addSystem<GameEngine::InputHandler>(0);
     _registry->addSystem<GameEngine::Motion>(1);
-    _registry->addSystem<GameEngine::Collision>(2)
-    _registry->addSystem<GameEngine::Death>(3)
-    _registry->addSystem<GameEngine::DomainHandler>(2)
+    _registry->addSystem<GameEngine::Collision>(2);
+    _registry->addSystem<GameEngine::Death>(3);
+    _registry->addSystem<GameEngine::DomainHandler>(2);
     
     std::cout << "[SERVER] ECS initialized with InputHandlerSystem and MotionSystem" << std::endl;
 }
@@ -89,7 +89,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     return entity;
 }
 
-EntityManager::Entity rtype::NetworkServer::createEnemyEntity(uint8_t playerId)
+EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
 {
     auto entity = _registry->create();
 
@@ -98,9 +98,8 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity(uint8_t playerId)
     _registry->emplace<GameEngine::Position>(entity, 1900,  540);
     _registry->emplace<GameEngine::Velocity>(entity, 0.0f);
     _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
-    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("1000000"), vec2(33.2, 17.2));
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("10000000"), vec2(33.2, 17.2));
     
-    std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
     
     return entity;
 }

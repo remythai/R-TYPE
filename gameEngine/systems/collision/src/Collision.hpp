@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "../../../Registry.hpp"
-#include "../../../System.hpp"
+#include "../../../ecs/Registry.hpp"
+#include "../../../ecs/System.hpp"
 #include "../../../components/collider/src/Collider.hpp"
 #include "../../../components/position/src/Position.hpp"
 #include "../../../components/renderable/src/Renderable.hpp"
@@ -61,11 +61,11 @@ class Collision : public System<Collision>
             gridWidth, std::vector<std::vector<uint32_t>>(gridHeight));
 
         registry.each<Position, Renderable, Collider>([dt, &grid, hitboxSizeMean](auto e, Position& pos, Renderable& render, Collider& collider) {
-            float rightPos = pos.x + collider.size.x;
-            float topPos = pos.y + collider.size.y;
+            float rightPos = pos.pos.x + collider.size.x;
+            float topPos = pos.pos.y + collider.size.y;
 
-            int leftCell = pos.x / hitboxSizeMean;
-            int bottomCell = pos.y / hitboxSizeMean;
+            int leftCell = pos.pos.x / hitboxSizeMean;
+            int bottomCell = pos.pos.y / hitboxSizeMean;
             int rightCell = rightPos / hitboxSizeMean;
             int topCell = topPos / hitboxSizeMean;
 
