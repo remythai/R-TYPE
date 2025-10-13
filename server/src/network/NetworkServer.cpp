@@ -64,8 +64,11 @@ rtype::NetworkServer::~NetworkServer()
 
 void rtype::NetworkServer::initECS()
 {
-    _registry->addSystem<GameEngine::InputHandlerSystem>(0);
-    _registry->addSystem<GameEngine::MotionSystem>(1);
+    _registry->addSystem<GameEngine::InputHandler>(0);
+    _registry->addSystem<GameEngine::Motion>(1);
+    _registry->addSystem<GameEngine::Collision>(2)
+    _registry->addSystem<GameEngine::Death>(3)
+    _registry->addSystem<GameEngine::DomainHandler>(2)
     
     std::cout << "[SERVER] ECS initialized with InputHandlerSystem and MotionSystem" << std::endl;
 }

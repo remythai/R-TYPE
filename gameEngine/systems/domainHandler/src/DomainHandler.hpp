@@ -5,9 +5,9 @@
 #include <algorithm>
 
 namespace GameEngine {
-    class MotionSystem : public System<MotionSystem> {
+    class DomainHandler : public System<DomainHandler> {
     public:
-        MotionSystem() {
+        DomainHandler() {
             requireComponents<GameEngine::Position, GameEngine::Domain>();
         }
         

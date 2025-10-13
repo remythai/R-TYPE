@@ -13,7 +13,7 @@
 #include "../../../components/health/src/Health.hpp"
 
 namespace GameEngine {
-class MotionSystem : public System<MotionSystem>
+class Collision : public System<Collision>
 {
    private:
     void collide(uint32_t e1, uint32_t e2, Registry& registry) {
@@ -37,7 +37,7 @@ class MotionSystem : public System<MotionSystem>
         }
     }
    public:
-    MotionSystem()
+    Collision()
     {
         requireComponents<
             GameEngine::Position, GameEngine::Renderable,

@@ -9,9 +9,9 @@
 #include <algorithm>
 
 namespace GameEngine {
-    class MotionSystem : public System<MotionSystem> {
+    class Motion : public System<Motion> {
     public:
-        MotionSystem() {
+        Motion() {
             requireComponents<GameEngine::Position, GameEngine::Velocity, GameEngine::Acceleration, GameEngine::Renderable>();
         }
         

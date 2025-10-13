@@ -15,6 +15,8 @@
 #include "../../../gameEngine/components/renderable/src/Renderable.hpp"
 #include "../../../gameEngine/systems/inputHandler/src/InputHandler.hpp"
 #include "../../../gameEngine/systems/motion/src/Motion.hpp"
+#include "../../../gameEngine/systems/domain/src/Domain.hpp"
+#include "../../../gameEngine/systems/collision/src/Collision.hpp"
 
 namespace rtype {
     enum class PacketType : uint8_t {

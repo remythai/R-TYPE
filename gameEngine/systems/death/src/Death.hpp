@@ -7,15 +7,15 @@
 
 namespace GameEngine {
     /**
-    * @class MotionSystem
+    * @class Death
     * @brief System responsible for removing entities with zero health.
     *
-    * The `MotionSystem` iterates over all entities that have a `Health` component.
+    * The `Death` iterates over all entities that have a `Health` component.
     * If an entity’s `currentHp` is zero, the entity is destroyed via the ECS `Registry`.
     * 
     * This ensures dead entities are removed from the simulation automatically.
     */
-    class MotionSystem : public System<MotionSystem> {
+    class Death : public System<Death> {
     public:
         /**
         * @brief Constructs the Health-cleanup system and declares its required component.
@@ -23,7 +23,7 @@ namespace GameEngine {
         * Requires:
         * - `GameEngine::Health`
         */
-        MotionSystem() {
+        Death() {
             requireComponents<GameEngine::Health>();
         }
         
