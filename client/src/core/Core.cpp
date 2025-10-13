@@ -233,10 +233,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         float rectSizeX = readFloat();
         float rectSizeY = readFloat();
         
-        std::cout << "[Entity " << int(entityId) << "] pos=(" << x << "," << y 
-                  << ") sprite=" << spritePath << " frame=" << int(currentFrame) 
-                  << "/" << int(frameCount) << "\n";
-        
         GameEntity* entity = _entityManager->getEntity(entityId);
         if (!entity) {
             EntityType type = determineEntityType(entityId, spritePath);
@@ -275,10 +271,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
                 
                 entity->sprite->setPosition(sf::Vector2f(x, y));
                 entity->sprite->setScale(sf::Vector2f(2.0f, 2.0f));
-            }
-            
-            if (entityId == _myPlayerId) {
-                std::cout << "[★ MY PLAYER ★] Position: (" << x << ", " << y << ")\n";
             }
         }
     }
@@ -370,9 +362,6 @@ void CLIENT::Core::handleKeyStateChange(const std::string& action, bool isPresse
             InputAction inputAction = isPressed ? InputAction::PRESSED : InputAction::RELEASED;
             sendInput(mapping.keyCode, inputAction);
             
-            if (action == "SHOOT" && isPressed) {
-                std::cout << "Piou piou piou\n";
-            }
             break;
         }
     }
