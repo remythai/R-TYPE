@@ -105,8 +105,6 @@ void NetworkClient::handlePacket(
 
     std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
 
-    std::cout << "[CLIENT] Received packet type: " << int(type) << " payloadSize: " << payload.size() << std::endl;
-
     switch (type) {
         case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
             if (!payload.empty()) {
