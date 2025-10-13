@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Core.cpp - Generalized entity system
+** Core.cpp
 */
 
 #include "Core.hpp"
@@ -23,8 +23,8 @@ struct InputMapping {
 };
 
 static const std::vector<struct InputMapping> INPUT_MAPPINGS = {
-    {"MOVE_UP", CLIENT::KeyCode::UP},
-    {"MOVE_DOWN", CLIENT::KeyCode::DOWN},
+    {"MOVE_UP", CLIENT::KeyCode::DOWN},
+    {"MOVE_DOWN", CLIENT::KeyCode::UP},
     {"MOVE_LEFT", CLIENT::KeyCode::LEFT},
     {"MOVE_RIGHT", CLIENT::KeyCode::RIGHT},
     {"SHOOT", CLIENT::KeyCode::SHOOT}
@@ -128,7 +128,7 @@ void CLIENT::Core::loadResources()
     rm.loadTexture("assets/sprites/parallax/4.png", "assets/sprites/parallax/4.png");
 
     _backgroundMusic = std::make_unique<sf::Music>();
-    if (!_backgroundMusic->openFromFile("sound/backgroundmusic.wav")) {
+    if (!_backgroundMusic->openFromFile("assets/sound/backgroundmusic.wav")) {
         std::cerr << "Failed to load background music\n";
     } else {
         _backgroundMusic->setLooping(true);
@@ -203,8 +203,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         return result;
     };
     
-    bool firstEntity = true;
-    
     while (offset < payload.size()) {
         if (offset >= payload.size()) break;
         uint8_t entityId = payload[offset++];
@@ -234,12 +232,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         if (offset + 8 > payload.size()) break;
         float rectSizeX = readFloat();
         float rectSizeY = readFloat();
-        
-        if (_myPlayerId == 255 && firstEntity) {
-            _myPlayerId = entityId;
-            std::cout << "*** [Auto-assigned from snapshot] Player ID: " << int(_myPlayerId) << " ***\n";
-        }
-        firstEntity = false;
         
         std::cout << "[Entity " << int(entityId) << "] pos=(" << x << "," << y 
                   << ") sprite=" << spritePath << " frame=" << int(currentFrame) 

@@ -105,15 +105,46 @@ void NetworkClient::handlePacket(
 
     std::vector<uint8_t> payload(buffer.begin() + 7, buffer.begin() + bytesReceived);
 
+    std::cout << "[CLIENT] Received packet type: " << int(type) << " payloadSize: " << payload.size() << std::endl;
+
     switch (type) {
+        case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
+            if (!payload.empty()) {
+                uint8_t playerId = payload[0];
+                std::cout << "[CLIENT] ✓ PLAYER_ID_ASSIGNMENT received: " << int(playerId) << std::endl;
+                
+                if (_onPlayerIdReceived) {
+                    std::cout << "[CLIENT] Calling _onPlayerIdReceived callback..." << std::endl;
+                    _onPlayerIdReceived(playerId);
+                } else {
+                    std::cout << "[CLIENT] No callback set for _onPlayerIdReceived" << std::endl;
+                }
+            }
+            break;
+
+        case rtype::PacketType::PLAYER_EVENT:
+            if (payload.size() >= 2) {
+                uint8_t playerId = payload[0];
+                uint8_t eventType = payload[1];
+                std::cout << "[CLIENT] ✓ PLAYER_EVENT: Player " << int(playerId) 
+                          << " Event " << int(eventType) << std::endl;
+                
+                if (_onPlayerEvent) {
+                    _onPlayerEvent(playerId, eventType);
+                }
+            }
+            break;
+
         case rtype::PacketType::SNAPSHOT:
             if (!payload.empty()) {
                 size_t offset = 0;
 
                 while (offset < payload.size()) {
+                    if (offset >= payload.size()) break;
                     uint8_t entityId = payload[offset++];
                     
                     auto readFloat = [&payload, &offset]() -> float {
+                        if (offset + 4 > payload.size()) return 0.0f;
                         uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) |
                                         (static_cast<uint32_t>(payload[offset+1]) << 16) |
                                         (static_cast<uint32_t>(payload[offset+2]) << 8) |
@@ -124,18 +155,25 @@ void NetworkClient::handlePacket(
                         return result;
                     };
 
+                    if (offset + 8 > payload.size()) break;
                     float x = readFloat();
                     float y = readFloat();
 
+                    if (offset >= payload.size()) break;
                     uint8_t pathLen = payload[offset++];
+                    
+                    if (offset + pathLen > payload.size()) break;
                     std::string spritePath(payload.begin() + offset, payload.begin() + offset + pathLen);
                     offset += pathLen;
 
+                    if (offset + 2 > payload.size()) break;
                     uint8_t currentFrame = payload[offset++];
                     uint8_t frameNumber = payload[offset++];
 
+                    if (offset + 4 > payload.size()) break;
                     float frameDur = readFloat();
 
+                    if (offset + 16 > payload.size()) break;
                     float rectPosX = readFloat();
                     float rectPosY = readFloat();
                     float rectSizeX = readFloat();
@@ -157,18 +195,18 @@ void NetworkClient::handlePacket(
             }
             break;
 
-        case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
-        case rtype::PacketType::PLAYER_EVENT:
+        case rtype::PacketType::PING_RESPONSE:
+            std::cout << "[CLIENT] ✓ PING_RESPONSE received" << std::endl;
+            break;
+
         case rtype::PacketType::INPUT:
         case rtype::PacketType::JOIN:
         case rtype::PacketType::PING:
-        case rtype::PacketType::PING_RESPONSE:
         case rtype::PacketType::ENTITY_EVENT:
         default:
+            std::cout << "[CLIENT] Unhandled packet type: " << int(type) << std::endl;
             break;
     }
-
-    std::cout << std::endl;
 }
 
 void NetworkClient::setOnSnapshot(std::function<void(const std::vector<uint8_t>&)> callback)
