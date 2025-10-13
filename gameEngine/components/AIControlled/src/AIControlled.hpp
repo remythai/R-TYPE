@@ -1,7 +1,7 @@
 #pragma once
 
 namespace GameEngine {
-struct AIControlled {
-    AIControlled() {}
-};
+    struct AIControlled {
+        AIControlled() {}
+    };
 } // namespace GameEngine

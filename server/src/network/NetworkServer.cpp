@@ -6,6 +6,8 @@
 */
 
 #include "NetworkServer.hpp"
+#include <bitset>
+#include <random>
 #include <thread>
 #include <iostream>
 #include <algorithm>
@@ -75,8 +77,25 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     _registry->emplace<GameEngine::InputControlled>(entity);
     _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
-    _registry->emplace<GameEngine::Velocity>(entity, 100.0f);
+    _registry->emplace<GameEngine::Velocity>(entity, 0.0f);
     _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("10000000"), vec2(33.2, 17.2));
+    
+    std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
+    
+    return entity;
+}
+
+EntityManager::Entity rtype::NetworkServer::createEnemyEntity(uint8_t playerId)
+{
+    auto entity = _registry->create();
+
+    _registry->emplace<GameEngine::AIControlled>(entity);
+    _registry->emplace<GameEngine::Acceleration>(entity, -8.0f, 0.0f);
+    _registry->emplace<GameEngine::Position>(entity, 1900,  540);
+    _registry->emplace<GameEngine::Velocity>(entity, 0.0f);
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("1000000"), vec2(33.2, 17.2));
     
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
     
