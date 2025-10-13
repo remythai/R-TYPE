@@ -110,7 +110,6 @@ void CLIENT::Core::loadResources()
     auto &rm = ResourceManager::getInstance();
     
     rm.loadTexture("assets/sprites/r-typesheet42.png", "assets/sprites/r-typesheet42.png");
-    rm.loadTexture("assets/sprites/r-typesheet42.png", "sprites/r-typesheet42.png");
     rm.loadTexture("assets/sprites/playerProjectiles.png", "assets/sprites/playerProjectiles.png");
     rm.loadTexture("assets/sprites/r-typesheet5.png", "assets/sprites/r-typesheet5.png");
     rm.loadTexture("assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
@@ -118,10 +117,6 @@ void CLIENT::Core::loadResources()
     rm.loadTexture("assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
     
     rm.loadTexture("assets/sprites/background.png", "assets/sprites/background.png");
-    rm.loadTexture("parallax1.png", "assets/sprites/parallax/1.png");
-    rm.loadTexture("parallax2.png", "assets/sprites/parallax/2.png");
-    rm.loadTexture("parallax3.png", "assets/sprites/parallax/3.png");
-    rm.loadTexture("parallax4.png", "assets/sprites/parallax/4.png");
     rm.loadTexture("assets/sprites/parallax/1.png", "assets/sprites/parallax/1.png");
     rm.loadTexture("assets/sprites/parallax/2.png", "assets/sprites/parallax/2.png");
     rm.loadTexture("assets/sprites/parallax/3.png", "assets/sprites/parallax/3.png");
@@ -136,7 +131,7 @@ void CLIENT::Core::loadResources()
         _backgroundMusic->play();
     }
 
-    std::cout << "Resources loaded\n";
+    std::cout << "Resources loaded (15 textures + 1 music)\n";
 }
 
 void CLIENT::Core::run()
