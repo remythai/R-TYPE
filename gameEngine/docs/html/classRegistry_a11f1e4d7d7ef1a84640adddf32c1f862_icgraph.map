@@ -1,14 +1,20 @@
 <map id="Registry::get" name="Registry::get">
-<area shape="rect" id="Node000001" title="Gets a reference to a component of type Component for entity e." alt="" coords="478,97,574,124"/>
-<area shape="rect" id="Node000002" href="$classGameEngine_1_1MotionSystem.html#a2bde704857c323ba1547d6ee0cebb6f4" title="Checks and resolves a collision between two entities." alt="" coords="242,5,430,48"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="481,93,429,69,388,51,390,46,431,64,483,88"/>
-<area shape="rect" id="Node000003" href="$classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb" title="Updates the system and processes collisions for all entities." alt="" coords="5,64,194,107"/>
-<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="462,110,194,94,194,88,462,104"/>
-<area shape="rect" id="Node000004" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="283,123,389,149"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="463,122,390,132,389,126,462,116"/>
-<area shape="rect" id="Node000005" href="$classGameEngine_1_1InputHandlerSystem.html#a56d9f3bab8680fee7d15423028e046b9" title=" " alt="" coords="10,148,189,191"/>
-<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="494,135,464,151,431,164,369,176,305,182,189,181,189,175,305,176,368,171,429,159,462,146,492,130"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="233,55,189,66,188,61,232,50"/>
-<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="267,124,193,108,195,103,268,119"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="267,148,189,159,188,154,267,143"/>
+<area shape="rect" id="Node000001" title="Gets a reference to a component of type Component for entity e." alt="" coords="450,109,546,136"/>
+<area shape="rect" id="Node000002" href="$classGameEngine_1_1Collision.html#a64427d8df75feb70d3039f2e376d7480" title=" " alt="" coords="248,9,402,52"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="456,104,366,55,368,50,459,99"/>
+<area shape="rect" id="Node000003" href="$classGameEngine_1_1Collision.html#a49f26a6547e81a9cebf7ad5436fb7101" title=" " alt="" coords="25,5,180,48"/>
+<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="434,111,247,67,180,49,181,44,248,61,435,106"/>
+<area shape="rect" id="Node000004" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="272,135,378,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="435,135,379,143,378,138,434,129"/>
+<area shape="rect" id="Node000007" href="$classGameEngine_1_1InputHandler.html#acb0d11bd1241dad8925f26b86f6d9007" title=" " alt="" coords="13,272,192,315"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="460,146,403,176,303,222,201,262,170,274,168,269,199,258,301,217,401,171,458,141"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="232,32,180,31,180,25,232,26"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="274,130,246,113,231,99,222,86,213,74,198,62,177,51,180,46,201,58,217,71,226,83,235,96,249,109,277,125"/>
+<area shape="rect" id="Node000005" href="$classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7" title=" " alt="" coords="29,72,176,115"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="256,134,176,114,177,109,257,129"/>
+<area shape="rect" id="Node000006" href="$classGameEngine_1_1DomainHandler.html#a2e491047939e77c803075c6c490d54ee" title="Updates the system, checking entity positions against their domain boundaries." alt="" coords="5,139,200,181"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="257,154,200,157,200,152,256,149"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="301,174,248,224,201,262,178,274,176,269,198,258,245,220,297,170"/>
+<area shape="rect" id="Node000008" href="$classGameEngine_1_1Motion.html#a015b898244098b869ceb6001884ae9fe" title=" " alt="" coords="31,205,174,248"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="273,169,201,196,168,207,166,202,199,191,271,164"/>
 </map>

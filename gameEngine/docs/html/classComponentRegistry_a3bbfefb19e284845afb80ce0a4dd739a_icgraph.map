@@ -1,37 +1,43 @@
 <map id="ComponentRegistry::ComponentRegistry" name="ComponentRegistry::ComponentRegistry">
-<area shape="rect" id="Node000001" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="907,241,1052,284"/>
-<area shape="rect" id="Node000002" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="713,241,859,284"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="891,265,859,265,859,260,891,260"/>
-<area shape="rect" id="Node000003" href="$classRegistry.html#a7a17141d6ad949dbc4792cb638665226" title="Counts how many components of type Component currently exist." alt="" coords="516,21,627,48"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="771,228,755,189,732,144,702,100,664,62,646,52,627,45,628,40,648,47,667,58,706,96,737,141,760,187,776,226"/>
-<area shape="rect" id="Node000004" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="283,173,389,200"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="698,242,665,235,515,210,389,195,390,189,516,205,666,229,699,237"/>
-<area shape="rect" id="Node000007" href="$classRegistry.html#ab12b0e856e109cd94af4aeb5e969de24" title="Adds a new component of type Component to entity e." alt="" coords="272,224,400,251"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="697,260,400,244,400,238,698,255"/>
-<area shape="rect" id="Node000008" href="$classRegistry.html#a11f1e4d7d7ef1a84640adddf32c1f862" title="Gets a reference to a component of type Component for entity e." alt="" coords="524,72,620,99"/>
-<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="764,229,723,169,695,139,664,113,642,102,619,95,621,90,644,97,667,108,699,135,727,166,768,226"/>
-<area shape="rect" id="Node000010" href="$classRegistry.html#ac846fa6831fe9b792391b36fa8572d1d" title="Const version of get()." alt="" coords="524,275,620,301"/>
-<area shape="poly" id="edge14_Node000002_Node000010" title=" " alt="" coords="698,276,620,285,620,280,698,270"/>
-<area shape="rect" id="Node000011" href="$classRegistry.html#acac1f1c8a740cfeb2b33a32cfd6ad83f" title="Checks if entity e has a component of type Component." alt="" coords="522,123,621,149"/>
-<area shape="poly" id="edge15_Node000002_Node000011" title=" " alt="" coords="749,233,710,200,664,170,621,152,623,147,667,166,713,196,753,229"/>
-<area shape="rect" id="Node000012" href="$classRegistry.html#a629e3280396e2e8cc06434895e746639" title="Removes a component of type Component from entity e." alt="" coords="511,325,632,352"/>
-<area shape="poly" id="edge17_Node000002_Node000012" title=" " alt="" coords="724,293,666,316,629,327,628,322,664,311,722,288"/>
-<area shape="rect" id="Node000013" href="$classSystem.html#ab96f7a0f109eac8621f869efcf40a916" title="Declares which components this system requires." alt="" coords="478,376,665,403"/>
-<area shape="poly" id="edge18_Node000002_Node000013" title=" " alt="" coords="756,297,716,333,667,366,639,378,637,373,664,362,713,329,753,293"/>
-<area shape="rect" id="Node000014" href="$classSystem.html#a3debf9a0bb97844f19da1c818d4dd3e3" title="Declares required components using their names as strings." alt="" coords="478,427,665,469"/>
-<area shape="poly" id="edge19_Node000002_Node000014" title=" " alt="" coords="767,299,726,359,698,390,667,417,647,428,645,424,664,413,695,386,722,355,763,296"/>
-<area shape="rect" id="Node000015" href="$classRegistry.html#a864a9feb3c9cffc43296ae8bb1aa2e3a" title="Returns a reference to the SparseSet storing all components of type Component." alt="" coords="519,493,624,520"/>
-<area shape="poly" id="edge20_Node000002_Node000015" title=" " alt="" coords="777,300,762,342,739,392,708,441,667,483,647,495,626,503,624,498,645,490,664,479,703,438,734,389,757,340,772,298"/>
-<area shape="rect" id="Node000005" href="$classGameEngine_1_1InputHandlerSystem.html#a56d9f3bab8680fee7d15423028e046b9" title=" " alt="" coords="10,165,189,208"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="267,189,189,189,189,184,267,184"/>
-<area shape="rect" id="Node000006" href="$classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb" title=" " alt="" coords="5,64,194,107"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="288,169,150,110,152,105,290,164"/>
-<area shape="poly" id="edge7_Node000007_Node000005" title=" " alt="" coords="257,223,189,208,190,203,258,218"/>
-<area shape="poly" id="edge11_Node000008_Node000004" title=" " alt="" coords="509,100,479,113,465,123,456,134,446,145,431,157,391,175,388,170,429,152,443,142,452,131,462,119,477,108,507,95"/>
-<area shape="poly" id="edge12_Node000008_Node000005" title=" " alt="" coords="509,101,190,170,188,165,508,96"/>
-<area shape="poly" id="edge13_Node000008_Node000006" title=" " alt="" coords="508,88,194,88,194,83,508,83"/>
-<area shape="rect" id="Node000009" href="$classGameEngine_1_1MotionSystem.html#a2bde704857c323ba1547d6ee0cebb6f4" title="Checks and resolves a collision between two entities." alt="" coords="242,5,430,48"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="508,72,424,51,425,46,509,67"/>
-<area shape="poly" id="edge10_Node000009_Node000006" title=" " alt="" coords="233,55,189,66,188,61,232,50"/>
-<area shape="poly" id="edge16_Node000011_Node000004" title=" " alt="" coords="507,152,390,178,389,173,506,147"/>
+<area shape="rect" id="Node000001" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="879,265,1024,308"/>
+<area shape="rect" id="Node000002" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="685,265,831,308"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="863,289,831,289,831,284,863,284"/>
+<area shape="rect" id="Node000003" href="$classRegistry.html#a7a17141d6ad949dbc4792cb638665226" title="Counts how many components of type Component currently exist." alt="" coords="488,45,599,72"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="743,252,727,213,704,168,674,124,636,86,618,76,599,69,600,64,620,71,639,82,678,120,709,165,732,211,748,250"/>
+<area shape="rect" id="Node000004" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="272,147,378,173"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="727,256,687,218,662,201,636,188,569,168,500,158,434,155,379,157,378,152,434,150,500,153,570,162,638,183,665,197,690,214,730,252"/>
+<area shape="rect" id="Node000010" href="$classRegistry.html#ab12b0e856e109cd94af4aeb5e969de24" title="Adds a new component of type Component to entity e." alt="" coords="261,272,388,299"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="670,289,389,288,389,283,670,284"/>
+<area shape="rect" id="Node000011" href="$classRegistry.html#a11f1e4d7d7ef1a84640adddf32c1f862" title="Gets a reference to a component of type Component for entity e." alt="" coords="496,96,592,123"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="734,253,693,197,666,168,636,144,614,132,592,123,593,118,617,127,639,139,669,164,697,194,738,250"/>
+<area shape="rect" id="Node000013" href="$classRegistry.html#ac846fa6831fe9b792391b36fa8572d1d" title="Const version of get()." alt="" coords="496,299,592,325"/>
+<area shape="poly" id="edge17_Node000002_Node000013" title=" " alt="" coords="670,300,592,309,592,304,670,294"/>
+<area shape="rect" id="Node000014" href="$classRegistry.html#acac1f1c8a740cfeb2b33a32cfd6ad83f" title="Checks if entity e has a component of type Component." alt="" coords="494,197,593,224"/>
+<area shape="poly" id="edge18_Node000002_Node000014" title=" " alt="" coords="683,262,636,245,585,227,586,222,638,240,684,257"/>
+<area shape="rect" id="Node000015" href="$classRegistry.html#a629e3280396e2e8cc06434895e746639" title="Removes a component of type Component from entity e." alt="" coords="483,349,604,376"/>
+<area shape="poly" id="edge20_Node000002_Node000015" title=" " alt="" coords="696,317,638,340,601,351,600,346,636,335,694,312"/>
+<area shape="rect" id="Node000016" href="$classSystem.html#ab96f7a0f109eac8621f869efcf40a916" title="Declares which components this system requires." alt="" coords="450,400,637,427"/>
+<area shape="poly" id="edge21_Node000002_Node000016" title=" " alt="" coords="728,321,688,357,639,390,611,402,609,397,636,386,685,353,725,317"/>
+<area shape="rect" id="Node000017" href="$classSystem.html#a3debf9a0bb97844f19da1c818d4dd3e3" title="Declares required components using their names as strings." alt="" coords="450,451,637,493"/>
+<area shape="poly" id="edge22_Node000002_Node000017" title=" " alt="" coords="739,323,698,383,670,414,639,441,619,452,617,448,636,437,667,410,694,379,735,320"/>
+<area shape="rect" id="Node000018" href="$classRegistry.html#a864a9feb3c9cffc43296ae8bb1aa2e3a" title="Returns a reference to the SparseSet storing all components of type Component." alt="" coords="491,517,596,544"/>
+<area shape="poly" id="edge23_Node000002_Node000018" title=" " alt="" coords="749,324,734,366,711,416,680,465,639,507,619,519,598,527,596,522,617,514,636,503,675,462,706,413,729,364,744,322"/>
+<area shape="rect" id="Node000005" href="$classGameEngine_1_1Collision.html#a49f26a6547e81a9cebf7ad5436fb7101" title=" " alt="" coords="25,5,180,48"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="266,142,246,129,230,111,222,94,213,78,198,62,178,50,181,46,201,58,218,75,226,92,235,108,249,125,269,137"/>
+<area shape="rect" id="Node000006" href="$classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7" title=" " alt="" coords="29,72,176,115"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="262,144,175,118,177,113,264,139"/>
+<area shape="rect" id="Node000007" href="$classGameEngine_1_1DomainHandler.html#a2e491047939e77c803075c6c490d54ee" title="Updates the system, checking entity positions against their domain boundaries." alt="" coords="5,139,200,181"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="256,163,200,163,200,157,256,157"/>
+<area shape="rect" id="Node000008" href="$classGameEngine_1_1InputHandler.html#acb0d11bd1241dad8925f26b86f6d9007" title=" " alt="" coords="13,272,192,315"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="278,183,249,202,235,217,227,232,217,247,201,262,181,274,179,269,198,258,213,244,222,229,231,214,246,198,275,179"/>
+<area shape="rect" id="Node000009" href="$classGameEngine_1_1Motion.html#a015b898244098b869ceb6001884ae9fe" title=" " alt="" coords="31,205,174,248"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="264,181,175,208,174,203,262,176"/>
+<area shape="poly" id="edge10_Node000010_Node000008" title=" " alt="" coords="246,291,192,293,192,287,246,286"/>
+<area shape="poly" id="edge14_Node000011_Node000004" title=" " alt="" coords="481,127,379,150,378,145,480,121"/>
+<area shape="poly" id="edge15_Node000011_Node000005" title=" " alt="" coords="480,97,449,86,425,74,401,63,344,49,286,39,180,30,180,25,287,34,345,44,403,57,427,69,451,82,482,92"/>
+<area shape="poly" id="edge16_Node000011_Node000008" title=" " alt="" coords="507,133,403,188,303,228,201,263,168,274,166,269,199,257,301,223,401,183,505,129"/>
+<area shape="rect" id="Node000012" href="$classGameEngine_1_1Collision.html#a64427d8df75feb70d3039f2e376d7480" title=" " alt="" coords="248,72,402,115"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="479,107,402,102,403,96,480,102"/>
+<area shape="poly" id="edge13_Node000012_Node000005" title=" " alt="" coords="236,70,176,51,177,46,238,65"/>
+<area shape="poly" id="edge19_Node000014_Node000004" title=" " alt="" coords="479,198,378,175,379,170,480,193"/>
 </map>

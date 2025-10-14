@@ -12,5 +12,7 @@ var searchData=
   ['assurepool_9',['assurePool',['../classRegistry.html#acd4bfce3db63792e03b353900dc89f76',1,'Registry']]],
   ['audio_10',['Audio',['../structGameEngine_1_1Audio.html',1,'GameEngine::Audio'],['../structGameEngine_1_1Audio.html#ab18f6e5808039c31095ab35068c5499b',1,'GameEngine::Audio::Audio()']]],
   ['audio_2ehpp_11',['Audio.hpp',['../Audio_8hpp.html',1,'']]],
-  ['availablecomponents_12',['availableComponents',['../classRegistry.html#a99bde84fc2c1ec33baa535b31c60c53b',1,'Registry']]]
+  ['availablecomponents_12',['availableComponents',['../classRegistry.html#a99bde84fc2c1ec33baa535b31c60c53b',1,'Registry']]],
+  ['ax_13',['ax',['../structGameEngine_1_1Domain.html#a7d85ff1ff12238cb0139f53f7d7183c1',1,'GameEngine::Domain']]],
+  ['ay_14',['ay',['../structGameEngine_1_1Domain.html#a2ed01825aca069bb93a2b90aaac36958',1,'GameEngine::Domain']]]
 ];

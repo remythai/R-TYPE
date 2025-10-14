@@ -1,17 +1,15 @@
 <map id="ecs/EntityManager.hpp" name="ecs/EntityManager.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="456,5,611,32"/>
-<area shape="rect" id="Node000002" href="$Registry_8hpp.html" title=" " alt="" coords="474,80,593,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="536,48,536,80,531,80,531,48"/>
-<area shape="rect" id="Node000003" href="$ecs_2systems_2inputHandler_2src_2InputHandler_8hpp.html" title=" " alt="" coords="5,155,179,197"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="459,110,191,157,180,159,179,154,190,152,458,105"/>
-<area shape="rect" id="Node000004" href="$ecs_2systems_2motion_2src_2Motion_8hpp.html" title=" " alt="" coords="202,155,342,197"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="479,114,340,157,339,151,478,109"/>
-<area shape="rect" id="Node000005" href="$Collision_8hpp.html" title=" " alt="" coords="365,155,510,197"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="509,119,464,156,460,152,505,115"/>
-<area shape="rect" id="Node000006" href="$Death_8hpp.html" title=" " alt="" coords="534,163,727,189"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="562,115,618,160,614,165,558,119"/>
-<area shape="rect" id="Node000007" href="$systems_2inputHandler_2src_2InputHandler_8hpp.html" title=" " alt="" coords="751,155,900,197"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="594,109,751,152,750,157,593,114"/>
-<area shape="rect" id="Node000008" href="$systems_2motion_2src_2Motion_8hpp.html" title=" " alt="" coords="924,155,1060,197"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="609,102,750,123,913,152,924,155,923,160,911,157,749,128,608,107"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="394,5,550,32"/>
+<area shape="rect" id="Node000002" href="$Registry_8hpp.html" title=" " alt="" coords="412,80,532,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="475,48,475,80,470,80,470,48"/>
+<area shape="rect" id="Node000003" href="$Collision_8hpp.html" title=" " alt="" coords="5,155,150,197"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="397,111,162,157,151,160,150,155,161,152,396,106"/>
+<area shape="rect" id="Node000004" href="$Death_8hpp.html" title=" " alt="" coords="174,163,368,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="427,115,303,165,301,160,425,110"/>
+<area shape="rect" id="Node000005" href="$DomainHandler_8hpp.html" title=" " alt="" coords="391,155,553,197"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="475,122,475,154,470,154,470,122"/>
+<area shape="rect" id="Node000006" href="$InputHandler_8hpp.html" title=" " alt="" coords="578,155,726,197"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="515,111,607,152,605,156,513,116"/>
+<area shape="rect" id="Node000007" href="$Motion_8hpp.html" title=" " alt="" coords="751,155,887,197"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="545,108,739,152,751,155,750,160,738,157,544,113"/>
 </map>

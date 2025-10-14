@@ -19,9 +19,12 @@ var searchData=
   ['storage_16',['storage',['../structRegistry_1_1ComponentPool.html#ab7652326aa41c54a4cdc7d404d0c9c9c',1,'Registry::ComponentPool']]],
   ['system_17',['System',['../classSystem.html',1,'']]],
   ['system_2ehpp_18',['System.hpp',['../System_8hpp.html',1,'']]],
-  ['system_3c_20inputhandlersystem_20_3e_19',['System&lt; InputHandlerSystem &gt;',['../classSystem.html',1,'']]],
-  ['system_3c_20motionsystem_20_3e_20',['System&lt; MotionSystem &gt;',['../classSystem.html',1,'']]],
-  ['systemid_21',['SystemID',['../Types_8hpp.html#a65bf27fc78c8b6e34e76e36704e81715',1,'Types.hpp']]],
-  ['systemid_22',['systemID',['../classSystem.html#a779e9da6e815e0265f4a3cd0ee16cbb0',1,'System']]],
-  ['systems_23',['systems',['../classRegistry.html#a8b5527f9f16255387238c19ff397d60b',1,'Registry']]]
+  ['system_3c_20collision_20_3e_19',['System&lt; Collision &gt;',['../classSystem.html',1,'']]],
+  ['system_3c_20death_20_3e_20',['System&lt; Death &gt;',['../classSystem.html',1,'']]],
+  ['system_3c_20domainhandler_20_3e_21',['System&lt; DomainHandler &gt;',['../classSystem.html',1,'']]],
+  ['system_3c_20inputhandler_20_3e_22',['System&lt; InputHandler &gt;',['../classSystem.html',1,'']]],
+  ['system_3c_20motion_20_3e_23',['System&lt; Motion &gt;',['../classSystem.html',1,'']]],
+  ['systemid_24',['SystemID',['../Types_8hpp.html#a65bf27fc78c8b6e34e76e36704e81715',1,'Types.hpp']]],
+  ['systemid_25',['systemID',['../classSystem.html#a779e9da6e815e0265f4a3cd0ee16cbb0',1,'System']]],
+  ['systems_26',['systems',['../classRegistry.html#a8b5527f9f16255387238c19ff397d60b',1,'Registry']]]
 ];

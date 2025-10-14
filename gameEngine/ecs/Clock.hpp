@@ -19,7 +19,7 @@ namespace GameEngine {
         float totalTime = 0.0f;
 
         /// @brief Fixed timestep duration (in seconds). Default = 1/60 = 0.01666...
-        float fixedDeltaTime = 1.0f / 60.0f;
+        float fixedDeltaTime = 1.0f / 120.0f;
 
         /// @brief Number of fixed update frames that have occurred since start.
         uint64_t frameCount = 0;
