@@ -1,17 +1,19 @@
 #pragma once
 #include <cstddef>
 #include <iostream>
+#include <utility>
+#include <vector>
 #include "../../../ecs/utils.hpp"
 
 namespace GameEngine {
 struct Renderable {
     float screenSizeX, screenSizeY;
     std::string spriteSheetPath;
-    vec2 rectPos;
+    vec2 currentRectPos;
+    std::vector<vec2> rectPos;
     vec2 rectSize;
-    std::size_t frameNumber;
-    std::size_t currentFrame;
-    float frameDuration;
-    Renderable(float val_screenSizeX, float val_screenSizeY, std::string val_spriteSheetPath, vec2 val_rectPos, vec2 val_rectSize, std::size_t val_frameNumber, std::size_t val_currentFrame, float val_frameDuration) : screenSizeX(val_screenSizeX), screenSizeY(val_screenSizeY), spriteSheetPath(val_spriteSheetPath), rectPos(val_rectPos), rectSize(val_rectSize), frameNumber{val_frameNumber}, currentFrame(val_currentFrame), frameDuration(val_frameDuration) {}
+    int frameDuration;
+    bool autoAnimate;
+    Renderable(float val_screenSizeX, float val_screenSizeY, std::string val_spriteSheetPath, std::vector<vec2> val_rectPos, vec2 val_rectSize, int val_frameDuration, bool val_autoAnimate) : screenSizeX(val_screenSizeX), screenSizeY(val_screenSizeY), spriteSheetPath(std::move(val_spriteSheetPath)), rectPos(std::move(val_rectPos)), rectSize(val_rectSize), frameDuration(val_frameDuration), autoAnimate(val_autoAnimate) {}
 };
 } // namespace GameEngine

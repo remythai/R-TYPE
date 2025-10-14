@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <cstdint>
+#include <vector>
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 #include "../../../components/health/src/Health.hpp"
@@ -138,6 +139,7 @@ namespace GameEngine {
                 uint32_t shoot = -1;
                 acceleration.x = 0;
                 acceleration.y = 0;
+                std::vector<vec2> rectPos;
                 
                 for (auto &it : inputs.inputs) {
                     switch (it) {
@@ -160,7 +162,11 @@ namespace GameEngine {
                         case 4:
                             /// @brief Shoot: Create projectile with full component setup
                             shoot = registry.create();
-                            registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "assets/sprites/playerProjectiles.png", vec2{0.0f, 0.0f}, vec2{22.28f, 22.28f}, 3, 0, 0.05f);
+                            rectPos.clear();
+                            rectPos.push_back(vec2{0.0F, 0.0F});
+                            rectPos.push_back(vec2{19.0F, 0.0F});
+                            rectPos.push_back(vec2{38.0F, 0.0F});
+                            registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "assets/sprites/playerProjectiles.png", rectPos, vec2{22.28f, 22.28f}, 0.05f, true);
                             registry.emplace<GameEngine::Health>(shoot, 1, 1);
                             registry.emplace<GameEngine::Damage>(shoot, 1);
                             registry.emplace<GameEngine::Velocity>(shoot, 10.0, 10.0);
