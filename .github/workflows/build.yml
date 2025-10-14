@@ -19,20 +19,35 @@ jobs:
           sudo apt-get install -y cmake build-essential \
             libx11-dev libxrandr-dev libxcursor-dev libxi-dev \
             libudev-dev libgl1-mesa-dev libflac-dev libogg-dev \
-            libvorbis-dev libopenal-dev libfreetype-dev
+            libvorbis-dev libopenal-dev libfreetype-dev \
+            clang-format clang-tidy
+
+      - name: Check code formatting
+        run: |
+          find client/src client/include server/src server/include \
+            -name '*.cpp' -o -name '*.hpp' -o -name '*.h' | \
+            xargs clang-format --dry-run --Werror
+
+      - name: Run clang-tidy on client
+        run: |
+          cd client
+          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          clang-tidy -p .build/compile_commands.json \
+            $(find src include -name '*.cpp')
+
+      - name: Run clang-tidy on server
+        run: |
+          cd server
+          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          clang-tidy -p .build/compile_commands.json \
+            $(find src include -name '*.cpp')
 
       - name: Client build
         run: |
-          mkdir -p client/.build
-          cd client
-          cmake -B .build
-          cd .build
+          cd client/.build
           make
 
       - name: Server build 
         run: |
-          mkdir -p server/.build
-          cd server
-          cmake -B .build
-          cd .build
+          cd server/.build
           make
