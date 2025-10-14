@@ -61,7 +61,7 @@ class Collision : public System<Collision>
         std::vector<std::vector<std::vector<uint32_t>>> grid(
             gridWidth, std::vector<std::vector<uint32_t>>(gridHeight));
 
-        registry.each<Position, Renderable, Collider>([dt, &grid, hitboxSizeMean](auto e, Position& pos, Renderable& render, Collider& collider) {
+        registry.each<Position, Renderable, Collider, Damage, Health>([dt, &grid, hitboxSizeMean](auto e, Position& pos, Renderable& render, Collider& collider, Damage &damage, Health& health) {
             float rightPos = pos.pos.x + collider.size.x;
             float topPos = pos.pos.y + collider.size.y;
 

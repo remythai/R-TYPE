@@ -1,3 +1,4 @@
+#include <vector>
 /*
 ** EPITECH PROJECT, 2025
 ** r-type-mirror
@@ -83,7 +84,13 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
     _registry->emplace<GameEngine::Velocity>(entity, 5.0f);
-    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", vec2{0.0f, 0.0f}, vec2{33.2f, 17.2f}, 5, 3, 1.5f);
+    std::vector<vec2> rectPos;
+    rectPos.push_back(vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
+    rectPos.push_back(vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
+    rectPos.push_back(vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
+    rectPos.push_back(vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
+    rectPos.push_back(vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", rectPos, vec2{33.2f, 17.2f}, 1000, false);
     _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("10000000"), vec2(33.2, 17.2));
     _registry->emplace<GameEngine::Health>(entity, 1, 1);
     _registry->emplace<GameEngine::Damage>(entity, 1);
@@ -107,7 +114,16 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
     _registry->emplace<GameEngine::Acceleration>(entity, -8.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 1900,  randomNum);
     _registry->emplace<GameEngine::Velocity>(entity, 8.0f);
-    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet5.png", vec2{0.0f, 0.0f}, vec2{33.3f, 33.3f}, 8, 0, 1.5f);
+    std::vector<vec2> rectPos;
+    rectPos.push_back(vec2{0.0f, 0.0f});
+    rectPos.push_back(vec2{33.3f, 0.0f});
+    rectPos.push_back(vec2{66.6f, 0.0f});
+    rectPos.push_back(vec2{99.9f, 0.0f});
+    rectPos.push_back(vec2{133.2f, 0.0f});
+    rectPos.push_back(vec2{166.5f, 0.0f});
+    rectPos.push_back(vec2{199.8f, 0.0f});
+    rectPos.push_back(vec2{233.1f, 0.0f});
+    _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet5.png", rectPos, vec2{33.3f, 36.0f}, 1000, true);
     _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("11000000"), vec2(33.3, 33.3));
     _registry->emplace<GameEngine::Domain>(entity, 5.0f, 0.0f, 1920.0f, 1080.0);
     _registry->emplace<GameEngine::Health>(entity, 1, 1);
@@ -415,15 +431,12 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
         snapshot.push_back(pathLen);
         snapshot.insert(snapshot.end(), render.spriteSheetPath.begin(), render.spriteSheetPath.end());
 
-        snapshot.push_back(static_cast<uint8_t>(render.currentFrame));
-        snapshot.push_back(static_cast<uint8_t>(render.frameNumber));
-
         auto frameDurBytes = floatToBytes(render.frameDuration);
         snapshot.insert(snapshot.end(), frameDurBytes.begin(), frameDurBytes.end());
 
-        auto rectPosX = floatToBytes(render.rectPos.x);
+        auto rectPosX = floatToBytes(render.currentRectPos.x);
         snapshot.insert(snapshot.end(), rectPosX.begin(), rectPosX.end());
-        auto rectPosY = floatToBytes(render.rectPos.y);
+        auto rectPosY = floatToBytes(render.currentRectPos.y);
         snapshot.insert(snapshot.end(), rectPosY.begin(), rectPosY.end());
 
         auto rectSizeX = floatToBytes(render.rectSize.x);
