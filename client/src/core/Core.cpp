@@ -191,6 +191,8 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
     size_t offset = 0;
     auto& rm = ResourceManager::getInstance();
     
+    std::set<uint8_t> activeEntitiesInSnapshot;
+    
     auto readFloat = [&payload, &offset]() -> float {
         if (offset + 4 > payload.size()) return 0.0f;
         uint32_t temp = (static_cast<uint32_t>(payload[offset]) << 24) | 
@@ -233,14 +235,47 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         float rectSizeX = readFloat();
         float rectSizeY = readFloat();
         
+        activeEntitiesInSnapshot.insert(entityId);
+        
         GameEntity* entity = _entityManager->getEntity(entityId);
-        if (!entity) {
+        bool needsNewSprite = false;
+        
+        if (entity) {
+            if (!entity->currentSpritePath.empty() && 
+                entity->currentSpritePath != spritePath) {
+                
+                std::cout << "[Entity " << int(entityId) 
+                          << "] ⚠️  Sprite path changed:\n"
+                          << "    OLD: '" << entity->currentSpritePath << "'\n"
+                          << "    NEW: '" << spritePath << "'\n"
+                          << "    → Recreating sprite\n";
+                
+                needsNewSprite = true;
+                
+                EntityType newType = determineEntityType(entityId, spritePath);
+                RenderLayer newLayer = determineRenderLayer(newType);
+                
+                if (entity->type != newType || entity->layer != newLayer) {
+                    std::cout << "[Entity " << int(entityId) 
+                              << "] Type/Layer changed: "
+                              << int(entity->type) << "/" << int(entity->layer)
+                              << " → " << int(newType) << "/" << int(newLayer) << "\n";
+                    
+                    entity->type = newType;
+                    entity->layer = newLayer;
+                }
+            }
+        } else {
             EntityType type = determineEntityType(entityId, spritePath);
             RenderLayer layer = determineRenderLayer(type);
             
             _entityManager->createServerEntity(entityId, type, layer);
             entity = _entityManager->getEntity(entityId);
-            std::cout << "[Entity " << int(entityId) << "] Created new entity\n";
+            needsNewSprite = true;
+            
+            std::cout << "[Entity " << int(entityId) 
+                      << "] ✓ Created new entity (Type: " << int(type) 
+                      << ", Layer: " << int(layer) << ")\n";
         }
         
         if (entity) {
@@ -254,11 +289,20 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
                     altPath = altPath.substr(7);
                     texture = rm.getTexture(altPath);
                 }
+                
+                if (!texture) {
+                    std::cerr << "[Entity " << int(entityId) 
+                              << "] ❌ Texture not found: " << spritePath << "\n";
+                }
             }
             
-            if (texture && !entity->sprite.has_value()) {
+            if (texture && (needsNewSprite || !entity->sprite.has_value())) {
                 entity->sprite = sf::Sprite(*texture);
-                std::cout << "[Entity " << int(entityId) << "] Sprite created\n";
+                entity->currentSpritePath = spritePath;
+                
+                std::cout << "[Entity " << int(entityId) 
+                          << "] ✓ Sprite " << (needsNewSprite ? "recreated" : "created") 
+                          << " with: " << spritePath << "\n";
             }
             
             if (entity->sprite.has_value()) {
@@ -274,6 +318,8 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
             }
         }
     }
+    
+    _entityManager->deactivateEntitiesNotInSet(activeEntitiesInSnapshot);
 }
 
 void CLIENT::Core::processIncomingMessages(Window& window)
@@ -398,6 +444,10 @@ void CLIENT::Core::graphicsLoop()
         {"MOVE_RIGHT", false}, {"SHOOT", false}
     };
 
+    auto lastCleanup = std::chrono::steady_clock::now();
+    const float CLEANUP_INTERVAL = 5.0f;
+
+
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();
         
@@ -415,6 +465,17 @@ void CLIENT::Core::graphicsLoop()
         processInputs(window, keyStates);
         
         _entityManager->update(deltaTime);
+        
+        auto now = std::chrono::steady_clock::now();
+        float timeSinceCleanup = std::chrono::duration<float>(now - lastCleanup).count();
+        if (timeSinceCleanup >= CLEANUP_INTERVAL) {
+            _entityManager->cleanupInactiveEntities();
+            lastCleanup = now;
+            
+            std::cout << "[Core] Periodic cleanup: " 
+                      << _entityManager->getActiveEntityCount() 
+                      << " active entities remaining\n";
+        }
         
         window.clear();
         _entityManager->render(window.getWindow());

@@ -1,74 +1,87 @@
+/*
+** EPITECH PROJECT, 2025
+** RTypeClient
+** File description:
+** EntityManager.hpp
+*/
+
 #pragma once
 
-#include <unordered_map>
+#include <SFML/Graphics.hpp>
+#include <map>
 #include <vector>
 #include <optional>
-#include <memory>
-#include <SFML/Graphics.hpp>
+#include <set>
+#include <string>
 #include "../macros.hpp"
 
 namespace CLIENT {
 
-enum class RenderLayer {
-    BACKGROUND = 0,
-    PARALLAX_FAR = 1,
-    PARALLAX_NEAR = 2,
-    OBSTACLES = 3,
-    ENEMIES = 4,
-    PLAYERS = 5,
-    PROJECTILES = 6,
-    UI = 7
-};
+    enum class RenderLayer {
+        BACKGROUND = 0,
+        PARALLAX_FAR = 1,
+        PARALLAX_NEAR = 2,
+        OBSTACLES = 3,
+        ENEMIES = 4,
+        PLAYERS = 5,
+        PROJECTILES = 6,
+        UI = 7
+    };
 
-enum class EntityType {
-    PLAYER,
-    ENEMY,
-    OBSTACLE,
-    PROJECTILE,
-    STAR,
-    BACKGROUND,
-    DECORATION
-};
+    enum class EntityType {
+        PLAYER,
+        ENEMY,
+        OBSTACLE,
+        PROJECTILE,
+        STAR,
+        BACKGROUND,
+        DECORATION
+    };
 
-struct GameEntity {
-    uint32_t entityId;
-    EntityType type;
-    RenderLayer layer;
-    std::optional<sf::Sprite> sprite;
-    sf::Vector2f position;
-    sf::Vector2f velocity;
-    bool active;
-    float scale;
-    
-    float scrollSpeed;
-    bool looping;
-    sf::FloatRect resetBounds;
+    struct GameEntity {
+        uint32_t entityId;
+        EntityType type;
+        RenderLayer layer;
+        
+        sf::Vector2f position;
+        sf::Vector2f velocity;
+        std::optional<sf::Sprite> sprite;
+        
+        bool active;
+        float scale;
+        float scrollSpeed;
+        bool looping;
+        
+        std::string currentSpritePath;
 
-    GameEntity();
-};
+        GameEntity();
+    };
 
-class EntityManager {
-private:
-    std::unordered_map<uint32_t, GameEntity> _entities;
-    std::unordered_map<RenderLayer, std::vector<uint32_t>> _layerMap;
-    uint32_t _nextLocalId;
+    class EntityManager {
+    public:
+        EntityManager();
 
-public:
-    EntityManager();
+        uint32_t createLocalEntity(EntityType type, RenderLayer layer);
+        void createServerEntity(uint32_t serverId, EntityType type, RenderLayer layer);
+        
+        GameEntity* getEntity(uint32_t id);
+        std::vector<GameEntity*> getEntitiesByType(EntityType type);
+        
+        void removeEntity(uint32_t id);
+        void deactivateEntitiesNotInSet(const std::set<uint8_t>& activeIds);
+        void cleanupInactiveEntities();
+        
+        void update(float deltaTime);
+        void render(sf::RenderWindow& window);
+        
+        void clear();
+        size_t getEntityCount() const;
+        size_t getActiveEntityCount() const;
 
-    uint32_t createLocalEntity(EntityType type, RenderLayer layer);
-    void createServerEntity(uint32_t serverId, EntityType type, RenderLayer layer);
-
-    GameEntity* getEntity(uint32_t id);
-    void removeEntity(uint32_t id);
-
-    void update(float deltaTime);
-    void render(sf::RenderWindow& window);
-
-    std::vector<GameEntity*> getEntitiesByType(EntityType type);
-
-    void clear();
-    size_t getEntityCount() const;
-};
+    private:
+        std::map<uint32_t, GameEntity> _entities;
+        std::map<RenderLayer, std::vector<uint32_t>> _layerMap;
+        uint32_t _nextLocalId;
+    };
 
 } // namespace CLIENT
