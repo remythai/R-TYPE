@@ -206,9 +206,10 @@ They cover:
 
 ## 📚 Documentation
 
+- [![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://remythai.github.io/R-TYPE/)
 - [Network Protocol Specification](docs/protocol.md)
 - [Server Architecture](docs/server-architecture.md)
-- [ECS Engine Design](docs/architecture.md)
+- [ECS Engine Design](https://remythai.github.io/R-TYPE/gameEngine)
 - [Comparative Technical Study](docs/comparative-study.md)
 - [Accessibility Guidelines](docs/accessibility.md)
 
