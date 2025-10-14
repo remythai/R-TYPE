@@ -1,0 +1,5 @@
+<map id="GameEngine::Death::Death" name="GameEngine::Death::Death">
+<area shape="rect" id="Node000001" title="Constructs the Death system and registers its component requirements." alt="" coords="5,5,153,48"/>
+<area shape="rect" id="Node000002" href="$classSystem.html#ab96f7a0f109eac8621f869efcf40a916" title=" " alt="" coords="201,5,373,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="153,24,185,24,185,29,153,29"/>
+</map>

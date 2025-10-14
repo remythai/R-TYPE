@@ -1,0 +1,5 @@
+<map id="GameEngine::Position" name="GameEngine::Position">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,104,157,131"/>
+<area shape="rect" id="Node000002" href="$structvec2.html" title=" " alt="" coords="56,5,106,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,48,84,104,78,104,78,48"/>
+</map>

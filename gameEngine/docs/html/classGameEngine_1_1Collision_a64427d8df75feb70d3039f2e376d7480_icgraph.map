@@ -1,0 +1,5 @@
+<map id="GameEngine::Collision::collide" name="GameEngine::Collision::collide">
+<area shape="rect" id="Node000001" title=" " alt="" coords="208,5,362,48"/>
+<area shape="rect" id="Node000002" href="$classGameEngine_1_1Collision.html#a49f26a6547e81a9cebf7ad5436fb7101" title=" " alt="" coords="5,5,160,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,29,160,29,160,24,192,24"/>
+</map>

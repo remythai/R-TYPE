@@ -6,6 +6,7 @@ var hierarchy =
     [ "GameEngine::Collider", "structGameEngine_1_1Collider.html", null ],
     [ "ComponentRegistry", "classComponentRegistry.html", null ],
     [ "GameEngine::Damage", "structGameEngine_1_1Damage.html", null ],
+    [ "GameEngine::Domain", "structGameEngine_1_1Domain.html", null ],
     [ "GameEngine::DropOnDeath", "structGameEngine_1_1DropOnDeath.html", null ],
     [ "EntityManager", "classEntityManager.html", null ],
     [ "GameEngine::GameClock", "structGameEngine_1_1GameClock.html", null ],
@@ -16,15 +17,20 @@ var hierarchy =
     ] ],
     [ "GameEngine::InputControlled", "structGameEngine_1_1InputControlled.html", null ],
     [ "ISystem", "classISystem.html", [
-      [ "System< InputHandlerSystem >", "classSystem.html", [
-        [ "GameEngine::InputHandlerSystem", "classGameEngine_1_1InputHandlerSystem.html", null ],
-        [ "GameEngine::InputHandlerSystem", "classGameEngine_1_1InputHandlerSystem.html", null ]
+      [ "System< Collision >", "classSystem.html", [
+        [ "GameEngine::Collision", "classGameEngine_1_1Collision.html", null ]
       ] ],
-      [ "System< MotionSystem >", "classSystem.html", [
-        [ "GameEngine::MotionSystem", "classGameEngine_1_1MotionSystem.html", null ],
-        [ "GameEngine::MotionSystem", "classGameEngine_1_1MotionSystem.html", null ],
-        [ "GameEngine::MotionSystem", "classGameEngine_1_1MotionSystem.html", null ],
-        [ "GameEngine::MotionSystem", "classGameEngine_1_1MotionSystem.html", null ]
+      [ "System< Death >", "classSystem.html", [
+        [ "GameEngine::Death", "classGameEngine_1_1Death.html", null ]
+      ] ],
+      [ "System< DomainHandler >", "classSystem.html", [
+        [ "GameEngine::DomainHandler", "classGameEngine_1_1DomainHandler.html", null ]
+      ] ],
+      [ "System< InputHandler >", "classSystem.html", [
+        [ "GameEngine::InputHandler", "classGameEngine_1_1InputHandler.html", null ]
+      ] ],
+      [ "System< Motion >", "classSystem.html", [
+        [ "GameEngine::Motion", "classGameEngine_1_1Motion.html", null ]
       ] ],
       [ "System< Derived >", "classSystem.html", null ]
     ] ],

@@ -1,0 +1,7 @@
+<map id="GameEngine::InputHandler" name="GameEngine::InputHandler">
+<area shape="rect" id="Node000001" title="System that processes player input and manages input&#45;controlled entities." alt="" coords="5,155,184,181"/>
+<area shape="rect" id="Node000002" href="$classSystem.html" title=" " alt="" coords="12,80,177,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,122,97,154,92,154,92,122"/>
+<area shape="rect" id="Node000003" href="$classISystem.html" title="Base interface for all systems within the ECS framework." alt="" coords="59,5,130,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,48,97,80,92,80,92,48"/>
+</map>

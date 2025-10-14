@@ -1,0 +1,34 @@
+<map id="GameEngine::Collision::onUpdate" name="GameEngine::Collision::onUpdate">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,287,160,330"/>
+<area shape="rect" id="Node000002" href="$classGameEngine_1_1Collision.html#a64427d8df75feb70d3039f2e376d7480" title=" " alt="" coords="208,316,362,359"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,317,193,322,192,327,160,322"/>
+<area shape="rect" id="Node000003" href="$classRegistry.html#a11f1e4d7d7ef1a84640adddf32c1f862" title="Gets a reference to a component of type Component for entity e." alt="" coords="450,324,546,351"/>
+<area shape="poly" id="edge18_Node000001_Node000003" title=" " alt="" coords="160,299,257,296,362,302,438,317,437,322,362,307,257,301,160,304"/>
+<area shape="rect" id="Node000008" href="$classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72" title=" " alt="" coords="428,375,568,418"/>
+<area shape="poly" id="edge19_Node000001_Node000008" title=" " alt="" coords="119,328,161,350,208,368,260,380,313,388,412,395,412,400,313,393,259,386,207,374,159,355,117,332"/>
+<area shape="rect" id="Node000009" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="232,182,338,208"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="121,284,245,214,247,219,124,289"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="363,335,434,335,434,340,363,340"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="363,356,413,370,411,375,362,362"/>
+<area shape="rect" id="Node000004" href="$classComponentRegistry.html#a4d993c2bab87c6bdac36ba8f589eca5f" title="Retrieves or creates a unique ID for the given component type T." alt="" coords="633,266,779,308"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="546,323,617,306,619,311,547,329"/>
+<area shape="rect" id="Node000006" href="$classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce" title="Provides access to the global ComponentRegistry instance." alt="" coords="633,31,779,74"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="516,322,549,295,583,260,616,216,644,169,687,86,691,89,649,171,620,219,587,263,553,299,520,326"/>
+<area shape="rect" id="Node000005" href="$classComponentRegistry.html#ab1cc8a486cae16a19268264c69f9af80" title="Computes a new unique ID for a type T, or returns the existing one." alt="" coords="827,266,972,308"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="779,284,811,284,811,290,779,290"/>
+<area shape="rect" id="Node000007" href="$classComponentRegistry.html#a3bbfefb19e284845afb80ce0a4dd739a" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="827,31,972,74"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="779,50,811,50,811,55,779,55"/>
+<area shape="poly" id="edge10_Node000009_Node000003" title=" " alt="" coords="304,207,364,258,387,283,411,303,437,316,434,321,409,308,383,286,360,262,301,211"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="307,206,353,234,411,259,463,272,517,280,618,286,618,291,517,285,462,277,409,264,351,239,304,211"/>
+<area shape="poly" id="edge16_Node000009_Node000006" title=" " alt="" coords="289,180,304,146,329,102,364,58,385,40,409,25,436,13,465,7,524,4,582,11,634,23,632,28,581,16,524,9,466,12,438,19,411,29,388,44,367,62,333,105,309,149,294,182"/>
+<area shape="rect" id="Node000010" href="$classRegistry.html#acd4bfce3db63792e03b353900dc89f76" title="Ensures that a component pool exists for the given component ID. Creates it if necessary." alt="" coords="426,90,569,116"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="307,179,353,153,409,126,427,119,429,124,411,131,356,157,310,184"/>
+<area shape="rect" id="Node000011" href="$structRegistry_1_1IComponentPool.html#ad4a1001874d3ea8f343fbbcf4988c507" title=" " alt="" coords="410,140,585,183"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="338,184,394,175,395,180,339,189"/>
+<area shape="rect" id="Node000012" href="$classRegistry.html#acac1f1c8a740cfeb2b33a32cfd6ad83f" title="Checks if entity e has a component of type Component." alt="" coords="448,39,547,66"/>
+<area shape="poly" id="edge13_Node000009_Node000012" title=" " alt="" coords="295,179,341,129,373,100,409,75,432,65,434,69,411,80,376,104,344,133,299,183"/>
+<area shape="rect" id="Node000013" href="$structRegistry_1_1IComponentPool.html#af60edba4f576e1c34ed07f6dd4e9348b" title=" " alt="" coords="410,207,585,250"/>
+<area shape="poly" id="edge17_Node000009_Node000013" title=" " alt="" coords="339,201,395,210,394,215,338,206"/>
+<area shape="poly" id="edge14_Node000012_Node000004" title=" " alt="" coords="549,57,569,64,587,76,626,116,657,163,680,210,696,250,691,252,676,212,653,165,622,119,584,80,566,69,547,62"/>
+<area shape="poly" id="edge15_Node000012_Node000006" title=" " alt="" coords="548,50,618,50,618,55,548,55"/>
+</map>

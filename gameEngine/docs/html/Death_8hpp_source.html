@@ -101,67 +101,124 @@ $(function(){initNavTree('Death_8hpp_source.html','',''); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGameEngine.html">GameEngine</a> {<span class="comment"></span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">    /**</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">    * @class MotionSystem</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">    * @brief System responsible for removing entities with zero health.</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">    *</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">    * The `MotionSystem` iterates over all entities that have a `Health` component.</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">    * If an entity’s `currentHp` is zero, the entity is destroyed via the ECS `Registry`.</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">    * </span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">    * This ensures dead entities are removed from the simulation automatically.</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">    */</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">class </span><a class="code hl_class" href="classGameEngine_1_1MotionSystem.html">MotionSystem</a> : <span class="keyword">public</span> System&lt;MotionSystem&gt; {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">public</span>:<span class="comment"></span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">        /**</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">        * @brief Constructs the Health-cleanup system and declares its required component.</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">        *</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">        * Requires:</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">        * - `GameEngine::Health`</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">        */</span></div>
-<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classGameEngine_1_1MotionSystem.html#adb79fc426b440025929bef49f8315efb">   26</a></span>        <a class="code hl_function" href="classGameEngine_1_1MotionSystem.html#adb79fc426b440025929bef49f8315efb">MotionSystem</a>() {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_function" href="classSystem.html#ab96f7a0f109eac8621f869efcf40a916">requireComponents&lt;GameEngine::Health&gt;</a>();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        }</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">     * @class Death</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">     * @brief System that removes entities with zero health from the simulation.</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">     * The Death system iterates through all entities that possess a Health component</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">     * and automatically destroys any entity whose `currentHp` reaches zero. This ensures</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">     * that dead entities are cleaned up from the ECS registry automatically each frame.</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">     * @details</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">     * This system is part of the damage and death handling pipeline:</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">     * 1. Other systems reduce entity health (e.g., DamageSystem)</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">     * 2. Death system checks for zero health each update</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">     * 3. Dead entities are removed from the simulation</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">     * This approach decouples the death logic from damage dealing, allowing flexible</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">     * death handling without tight coupling.</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">     * @note An entity is only destroyed if `currentHp == 0` (exact equality).</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">     *       This allows for potential &quot;undead&quot; mechanics where health might go negative.</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">     * @performance</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">     * - Time Complexity: O(n) where n is the number of entities with Health components</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment">     * - Space Complexity: O(1) - only iteration, no additional storage</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">     * @see Health</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">     * @see Registry::each</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">     * @see Registry::destroy</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">     */</span></div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classGameEngine_1_1Death.html">   37</a></span>    <span class="keyword">class </span><a class="code hl_function" href="classGameEngine_1_1Death.html#a35b9da1354e4da7e376b1e09b5b737c7">Death</a> : <span class="keyword">public</span> <a class="code hl_class" href="classSystem.html">System</a>&lt;Death&gt; {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">public</span>:<span class="comment"></span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">        /**</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">         * @brief Constructs the Death system and registers its component requirements.</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment">         * During construction, the system declares that it requires the Health component.</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">         * The ECS registry will only activate this system when at least one entity with</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment">         * a Health component exists.</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment">         * @post System is configured to process entities with Health components.</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment">         * @post The system is ready for scheduling within the Registry.</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment">         */</span></div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classGameEngine_1_1Death.html#a35b9da1354e4da7e376b1e09b5b737c7">   49</a></span>        <a class="code hl_function" href="classGameEngine_1_1Death.html#a35b9da1354e4da7e376b1e09b5b737c7">Death</a>() {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <a class="code hl_function" href="classSystem.html#ab96f7a0f109eac8621f869efcf40a916">requireComponents&lt;GameEngine::Health&gt;</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        }</div>
 </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="comment"></span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">        /**</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment">        * @brief Updates the system, removing dead entities.</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">        *</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">        * For each entity with a `Health` component:</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">        * - Checks if `currentHp` is zero.</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">        * - If so, destroys the entity in the registry.</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">        *</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment">        * @param registry The ECS registry managing entities and components.</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">        * @param dt Delta time since the last update (unused here but kept for consistency with other systems).</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">        */</span></div>
-<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb">   40</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb">onUpdate</a>(<a class="code hl_friend" href="classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72">Registry</a>&amp; registry, <span class="keywordtype">float</span> dt) {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <a class="code hl_variable" href="classGameEngine_1_1MotionSystem.html#a28b9160c81f2145715c6eb8b8143a3a7">updateCount</a>++;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            registry.<a class="code hl_function" href="classRegistry.html#a31cfb49fd633086383bf646b39a8daa2">each</a>&lt;<a class="code hl_struct" href="structGameEngine_1_1Health.html">Health</a>&gt;(</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                [dt, &amp;registry](<span class="keyword">auto</span> e, <a class="code hl_struct" href="structGameEngine_1_1Health.html">Health</a>&amp; health) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                    <span class="keywordflow">if</span> (health.currentHp == 0) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                        registry.<a class="code hl_function" href="classRegistry.html#ae620740b0c598d102a93703b3a8062fc">destroy</a>(e);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                    }</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            );</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="comment"></span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">        /**</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">         * @brief Processes all entities with Health components and destroys those with zero HP.</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment">         * Called every frame by the Registry. This method:</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">         * 1. Increments the update counter for profiling/debugging</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment">         * 2. Iterates through all entities with a Health component</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment">         * 3. Checks each entity&#39;s `currentHp` value</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment">         * 4. Destroys any entity with exactly zero health</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">         * @param registry Reference to the main ECS Registry for entity management.</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment">         * @param dt Delta time since last update in seconds. Unused but provided</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment">         *           for consistency with the System interface.</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment">         * @attention Destroying entities during iteration is safe because the ECS system</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment">         *            uses optimized pool iteration that doesn&#39;t invalidate cursors.</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment">         * @warning If an entity&#39;s health goes below zero (negative HP), it will NOT be</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment">         *          destroyed by this system. Ensure damage systems clamp health to 0.</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment">         * @example</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment">         * ```cpp</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment">         * Registry registry;</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment">         * Death deathSystem;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="comment">         * </span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="comment">         * // If entity `e` has Health with currentHp = 0:</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">         * registry.update(0.016f); // Entity `e` will be destroyed</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">         * ```</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment">         * @see Registry::each</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment">         * @see Registry::destroy</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="comment">         * @see Health::currentHp</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="comment">         */</span></div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7">   85</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7">onUpdate</a>(<a class="code hl_friend" href="classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72">Registry</a>&amp; registry, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <a class="code hl_variable" href="classGameEngine_1_1Death.html#a10348aa592cf1292b59731546ab50d2d">updateCount</a>++;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            registry.<a class="code hl_function" href="classRegistry.html#a31cfb49fd633086383bf646b39a8daa2">each</a>&lt;<a class="code hl_struct" href="structGameEngine_1_1Health.html">Health</a>&gt;(</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                [dt, &amp;registry](<span class="keyword">auto</span> e, <a class="code hl_struct" href="structGameEngine_1_1Health.html">Health</a>&amp; health) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                    <span class="keywordflow">if</span> (health.currentHp == 0) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                        registry.<a class="code hl_function" href="classRegistry.html#ae620740b0c598d102a93703b3a8062fc">destroy</a>(e);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                    }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            );</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        }</div>
 </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment"></span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">        /// @brief Tracks how many times this system has run (useful for debugging or profiling).</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="classGameEngine_1_1MotionSystem.html#a28b9160c81f2145715c6eb8b8143a3a7">updateCount</a> = 0;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    };</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>} <span class="comment">// namespace GameEngine</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="comment"></span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="comment">        /**</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="comment">         * @brief Counter tracking system execution calls.</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment">         * Increments each time onUpdate() is called. Useful for:</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment">         * - Performance profiling</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment">         * - Unit testing (verifying the system runs)</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="comment">         * - Debugging system execution order</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="comment">         *</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="comment">         * @remarks Value persists throughout the system&#39;s lifetime.</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="comment">         *          Manually reset if needed for test isolation.</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="comment">         */</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classGameEngine_1_1Death.html#a10348aa592cf1292b59731546ab50d2d">  108</a></span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="classGameEngine_1_1Death.html#a10348aa592cf1292b59731546ab50d2d">updateCount</a> = 0;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    };</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>} <span class="comment">// namespace GameEngine</span></div>
 <div class="ttc" id="aHealth_8hpp_html"><div class="ttname"><a href="Health_8hpp.html">Health.hpp</a></div></div>
 <div class="ttc" id="aRegistry_8hpp_html"><div class="ttname"><a href="Registry_8hpp.html">Registry.hpp</a></div></div>
 <div class="ttc" id="aSystem_8hpp_html"><div class="ttname"><a href="System_8hpp.html">System.hpp</a></div></div>
-<div class="ttc" id="aclassGameEngine_1_1MotionSystem_html"><div class="ttname"><a href="classGameEngine_1_1MotionSystem.html">GameEngine::MotionSystem</a></div><div class="ttdoc">System responsible for detecting collisions and applying damage between entities.</div><div class="ttdef"><b>Definition</b> <a href="ecs_2systems_2motion_2src_2Motion_8hpp_source.html#l00008">Motion.hpp:8</a></div></div>
-<div class="ttc" id="aclassGameEngine_1_1MotionSystem_html_a28b9160c81f2145715c6eb8b8143a3a7"><div class="ttname"><a href="classGameEngine_1_1MotionSystem.html#a28b9160c81f2145715c6eb8b8143a3a7">GameEngine::MotionSystem::updateCount</a></div><div class="ttdeci">int updateCount</div><div class="ttdoc">Tracks how many times the system has updated (useful for profiling or debugging).</div><div class="ttdef"><b>Definition</b> <a href="ecs_2systems_2motion_2src_2Motion_8hpp_source.html#l00029">Motion.hpp:29</a></div></div>
-<div class="ttc" id="aclassGameEngine_1_1MotionSystem_html_a5c82b0f76ecf7fdef391014a16bd06fb"><div class="ttname"><a href="classGameEngine_1_1MotionSystem.html#a5c82b0f76ecf7fdef391014a16bd06fb">GameEngine::MotionSystem::onUpdate</a></div><div class="ttdeci">void onUpdate(Registry &amp;registry, float dt)</div><div class="ttdoc">Updates the system, removing dead entities.</div><div class="ttdef"><b>Definition</b> <a href="#l00040">Death.hpp:40</a></div></div>
-<div class="ttc" id="aclassGameEngine_1_1MotionSystem_html_adb79fc426b440025929bef49f8315efb"><div class="ttname"><a href="classGameEngine_1_1MotionSystem.html#adb79fc426b440025929bef49f8315efb">GameEngine::MotionSystem::MotionSystem</a></div><div class="ttdeci">MotionSystem()</div><div class="ttdoc">Constructs the Health-cleanup system and declares its required component.</div><div class="ttdef"><b>Definition</b> <a href="#l00026">Death.hpp:26</a></div></div>
+<div class="ttc" id="aclassGameEngine_1_1Death_html_a081a250ee3a8d22b7dd2323dbaba0eb7"><div class="ttname"><a href="classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7">GameEngine::Death::onUpdate</a></div><div class="ttdeci">void onUpdate(Registry &amp;registry, float dt)</div><div class="ttdef"><b>Definition</b> <a href="#l00085">Death.hpp:85</a></div></div>
+<div class="ttc" id="aclassGameEngine_1_1Death_html_a10348aa592cf1292b59731546ab50d2d"><div class="ttname"><a href="classGameEngine_1_1Death.html#a10348aa592cf1292b59731546ab50d2d">GameEngine::Death::updateCount</a></div><div class="ttdeci">int updateCount</div><div class="ttdoc">Counter tracking system execution calls.</div><div class="ttdef"><b>Definition</b> <a href="#l00108">Death.hpp:108</a></div></div>
+<div class="ttc" id="aclassGameEngine_1_1Death_html_a35b9da1354e4da7e376b1e09b5b737c7"><div class="ttname"><a href="classGameEngine_1_1Death.html#a35b9da1354e4da7e376b1e09b5b737c7">GameEngine::Death::Death</a></div><div class="ttdeci">Death()</div><div class="ttdoc">Constructs the Death system and registers its component requirements.</div><div class="ttdef"><b>Definition</b> <a href="#l00049">Death.hpp:49</a></div></div>
 <div class="ttc" id="aclassRegistry_html_a31cfb49fd633086383bf646b39a8daa2"><div class="ttname"><a href="classRegistry.html#a31cfb49fd633086383bf646b39a8daa2">Registry::each</a></div><div class="ttdeci">void each(Func &amp;&amp;func)</div><div class="ttdoc">Iterates through all entities that have all the specified components.</div><div class="ttdef"><b>Definition</b> <a href="Registry_8hpp_source.html#l00165">Registry.hpp:165</a></div></div>
 <div class="ttc" id="aclassRegistry_html_ae620740b0c598d102a93703b3a8062fc"><div class="ttname"><a href="classRegistry.html#ae620740b0c598d102a93703b3a8062fc">Registry::destroy</a></div><div class="ttdeci">void destroy(Entity e)</div><div class="ttdoc">Destroys an entity and removes all its components.</div><div class="ttdef"><b>Definition</b> <a href="Registry_8hpp_source.html#l00048">Registry.hpp:48</a></div></div>
-<div class="ttc" id="aclassSystem_html_ab96f7a0f109eac8621f869efcf40a916"><div class="ttname"><a href="classSystem.html#ab96f7a0f109eac8621f869efcf40a916">System&lt; MotionSystem &gt;::requireComponents</a></div><div class="ttdeci">void requireComponents()</div><div class="ttdef"><b>Definition</b> <a href="System_8hpp_source.html#l00163">System.hpp:163</a></div></div>
-<div class="ttc" id="aclassSystem_html_ac7b716e6d41ff508ad2d8e5dad655d72"><div class="ttname"><a href="classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72">System&lt; MotionSystem &gt;::Registry</a></div><div class="ttdeci">friend class Registry</div><div class="ttdef"><b>Definition</b> <a href="System_8hpp_source.html#l00196">System.hpp:196</a></div></div>
+<div class="ttc" id="aclassSystem_html"><div class="ttname"><a href="classSystem.html">System</a></div><div class="ttdoc">CRTP (Curiously Recurring Template Pattern) base class for ECS systems.</div><div class="ttdef"><b>Definition</b> <a href="System_8hpp_source.html#l00096">System.hpp:96</a></div></div>
+<div class="ttc" id="aclassSystem_html_ab96f7a0f109eac8621f869efcf40a916"><div class="ttname"><a href="classSystem.html#ab96f7a0f109eac8621f869efcf40a916">System&lt; Death &gt;::requireComponents</a></div><div class="ttdeci">void requireComponents()</div><div class="ttdef"><b>Definition</b> <a href="System_8hpp_source.html#l00163">System.hpp:163</a></div></div>
+<div class="ttc" id="aclassSystem_html_ac7b716e6d41ff508ad2d8e5dad655d72"><div class="ttname"><a href="classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72">System&lt; Death &gt;::Registry</a></div><div class="ttdeci">friend class Registry</div><div class="ttdef"><b>Definition</b> <a href="System_8hpp_source.html#l00196">System.hpp:196</a></div></div>
 <div class="ttc" id="anamespaceGameEngine_html"><div class="ttname"><a href="namespaceGameEngine.html">GameEngine</a></div><div class="ttdef"><b>Definition</b> <a href="Acceleration_8hpp_source.html#l00003">Acceleration.hpp:3</a></div></div>
 <div class="ttc" id="astructGameEngine_1_1Health_html"><div class="ttname"><a href="structGameEngine_1_1Health.html">GameEngine::Health</a></div><div class="ttdef"><b>Definition</b> <a href="Health_8hpp_source.html#l00004">Health.hpp:4</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

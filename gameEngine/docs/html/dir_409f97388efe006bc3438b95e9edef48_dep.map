@@ -1,0 +1,27 @@
+<map id="components" name="components">
+<area shape="rect" id="node2" href="dir_98acdb4bffbea1efd53725909b452d2b.html" title="acceleration" alt="" coords="144,27,235,53"/>
+<area shape="rect" id="node3" href="dir_e88969f3b5f51b6fca4d6e7a1d8bfbac.html" title="AIControlled" alt="" coords="259,27,352,53"/>
+<area shape="rect" id="node4" href="dir_043befaf7bc3f6db074c9f769e83570a.html" title="audio" alt="" coords="376,27,429,53"/>
+<area shape="rect" id="node5" href="dir_1ff88d99f58100638d3dc98d112763e3.html" title="collider" alt="" coords="453,27,515,53"/>
+<area shape="rect" id="node19" href="dir_eafb92770fbc727220bdaa0b1292f771.html" title="ecs" alt="" coords="1252,101,1294,128"/>
+<area shape="poly" id="edge1" href="dir_000003_000011.html" alt="" coords="505,51,529,61,592,74,678,85,884,99,1090,107,1237,110,1236,116,1090,112,884,105,677,90,592,79,527,67,503,56"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000003_000011.html" title="1" alt="" coords="1230,96,1237,112"/>
+<area shape="rect" id="node6" href="dir_c38972b1f2950f67621d164bceb32698.html" title="damage" alt="" coords="540,27,607,53"/>
+<area shape="rect" id="node7" href="dir_1cd45358307b6f205726a39c50e33898.html" title="domain" alt="" coords="631,27,694,53"/>
+<area shape="rect" id="node8" href="dir_96476495b74fea5076faa25c62208a05.html" title="dropOnDeath" alt="" coords="719,27,817,53"/>
+<area shape="rect" id="node9" href="dir_1400034c277d5f5abfb62b4bd021b743.html" title="health" alt="" coords="841,27,898,53"/>
+<area shape="rect" id="node10" href="dir_e90d1c41c8cdf9ad6018804044d78e41.html" title="inputControlled" alt="" coords="922,27,1030,53"/>
+<area shape="rect" id="node11" href="dir_c65a46b1b51094219d0c23f1483ec233.html" title="lifetime" alt="" coords="1054,27,1117,53"/>
+<area shape="rect" id="node12" href="dir_9c11a20a7d1b20c152df76157f6edc5c.html" title="onPickup" alt="" coords="1141,27,1216,53"/>
+<area shape="rect" id="node13" href="dir_a12e4a5e96cf1ebb6ee7a046b993bdd5.html" title="position" alt="" coords="1240,27,1306,53"/>
+<area shape="poly" id="edge2" href="dir_000018_000011.html" alt="" coords="1276,54,1276,86,1271,86,1271,54"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000018_000011.html" title="1" alt="" coords="1278,75,1285,91"/>
+<area shape="rect" id="node14" href="dir_26aeb69069f58da6eb42e367c1f5a5eb.html" title="renderable" alt="" coords="1330,27,1411,53"/>
+<area shape="poly" id="edge3" href="dir_000019_000011.html" alt="" coords="1355,56,1304,94,1300,90,1352,52"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000019_000011.html" title="1" alt="" coords="1306,89,1313,105"/>
+<area shape="rect" id="node15" href="dir_c4049e4dea6cb97476c8d04e0664c0f2.html" title="scoreValue" alt="" coords="1436,27,1521,53"/>
+<area shape="rect" id="node16" href="dir_adddd79e8a1eee27dd4e83a22a569f28.html" title="text" alt="" coords="1545,27,1588,53"/>
+<area shape="rect" id="node17" href="dir_403375e8a4afbb99eba7e47afebadaba.html" title="velocity" alt="" coords="1612,27,1678,53"/>
+<area shape="rect" id="node18" href="dir_35e3d20f68c3b213b97d9a77b2112d4b.html" title="weapon" alt="" coords="1703,27,1769,53"/>
+<area shape="rect" id="clust1" href="dir_409f97388efe006bc3438b95e9edef48.html" alt="" coords="16,16,1780,64"/>
+</map>

@@ -20,10 +20,10 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classGameEngine_1_1InputHandlerSystem.html#a56d9f3bab8680fee7d15423028e046b9" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classGameEngine_1_1InputHandler.html#acb0d11bd1241dad8925f26b86f6d9007" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="133.75,-32 0,-32 0,0 133.75,0 133.75,-32"/>
 <text xml:space="preserve" text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">GameEngine::InputHandler</text>
-<text xml:space="preserve" text-anchor="middle" x="66.88" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00">System::onUpdate</text>
+<text xml:space="preserve" text-anchor="middle" x="66.88" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00">::onUpdate</text>
 </a>
 </g>
 </g>
