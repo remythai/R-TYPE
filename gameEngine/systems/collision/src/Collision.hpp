@@ -17,6 +17,13 @@ class Collision : public System<Collision>
 {
    private:
     void collide(uint32_t e1, uint32_t e2, Registry& registry) {
+
+        if (!registry.has<GameEngine::Damage>(e1) ||
+            !registry.has<GameEngine::Damage>(e2) ||
+            !registry.has<GameEngine::Health>(e1) ||
+            !registry.has<GameEngine::Health>(e2))
+            return;
+
         GameEngine::Position e1Pos = registry.get<GameEngine::Position>(e1);
         GameEngine::Position e2Pos = registry.get<GameEngine::Position>(e2);
         GameEngine::Collider e1Collider = registry.get<GameEngine::Collider>(e1);
