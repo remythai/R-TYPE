@@ -27,6 +27,7 @@
 #include "../../../gameEngine/systems/collision/src/Collision.hpp"
 #include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
 #include "../../../gameEngine/systems/death/src/Death.hpp"
+#include "../../../gameEngine/systems/animation/src/Animation.hpp"
 
 namespace rtype {
     enum class PacketType : uint8_t {
