@@ -71,4 +71,25 @@ endif()
 if(UNIX)
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} Threads::Threads)
+file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+
+if(TEST_SOURCES)
+    add_executable(r-type_tests
+        ${TEST_SOURCES}
+        src/network/NetworkServer.cpp
+        src/network/handleClient.cpp
+    )
+
+    target_include_directories(r-type_tests PRIVATE
+        ${asio_SOURCE_DIR}/asio/include
+        src/
+    )
+
+    target_link_libraries(r-type_tests
+        PRIVATE
+        GTest::gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(r-type_tests)
 endif()
