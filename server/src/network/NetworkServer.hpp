@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** r-type-mirror
+** File description:
+** NetworkServer.hpp
+*/
+
 #pragma once
 #include <asio.hpp>
 #include <atomic>
@@ -52,15 +59,21 @@ namespace rtype {
             void run();
             void stop();
             void broadcast(const std::vector<uint8_t>& message);
+            int countActivePlayers() const;
+            EntityManager::Entity createPlayerEntity(uint8_t playerId);
+            void destroyPlayerEntity(uint8_t playerId);
+            void setPlayerSlot(size_t index, const PlayerSlot& slot) {
+                if (index >= _playerSlots.size()) return;
+                std::lock_guard<std::mutex> lock(_playerSlotsMutex);
+                _playerSlots[index] = slot;
+            }
 
         private:
             void doReceive();
 
             void initECS();
             void updateECS(float dt);
-            EntityManager::Entity createPlayerEntity(uint8_t playerId);
             EntityManager::Entity createEnemyEntity();
-            void destroyPlayerEntity(uint8_t playerId);
             void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
 
             void handleClientPacket(
@@ -110,7 +123,6 @@ namespace rtype {
             );
 
             uint8_t findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint);
-            int countActivePlayers() const;
 
             std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
             std::string packetTypeToString(PacketType type);
