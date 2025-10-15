@@ -16,6 +16,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(asio)
 
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/heads/main.zip
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
 set(SOURCES
     src/main.cpp
     src/network/NetworkServer.cpp
@@ -24,7 +34,29 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Add include path for ASIO (header-only)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${asio_SOURCE_DIR}/asio/include
 )
+
+file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+
+if(TEST_SOURCES)
+    add_executable(r-type_tests
+        ${TEST_SOURCES}
+        src/network/NetworkServer.cpp
+        src/network/handleClient.cpp
+    )
+
+    target_include_directories(r-type_tests PRIVATE
+        ${asio_SOURCE_DIR}/asio/include
+        src/
+    )
+
+    target_link_libraries(r-type_tests
+        PRIVATE
+        GTest::gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(r-type_tests)
+endif()
