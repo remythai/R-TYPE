@@ -24,7 +24,20 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Add include path for ASIO (header-only)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${asio_SOURCE_DIR}/asio/include
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    ASIO_STANDALONE
+    $<$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x0601>
+)
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} ws2_32 wsock32)
+endif()
+
+if(UNIX)
+    find_package(Threads REQUIRED)
+    target_link_libraries(${PROJECT_NAME} Threads::Threads)
+endif()
