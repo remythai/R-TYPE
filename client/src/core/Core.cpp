@@ -23,8 +23,8 @@ struct InputMapping {
 };
 
 static const std::vector<struct InputMapping> INPUT_MAPPINGS = {
-    {"MOVE_UP", CLIENT::KeyCode::DOWN},
-    {"MOVE_DOWN", CLIENT::KeyCode::UP},
+    {"MOVE_DOWN", CLIENT::KeyCode::DOWN},
+    {"MOVE_UP", CLIENT::KeyCode::UP},
     {"MOVE_LEFT", CLIENT::KeyCode::LEFT},
     {"MOVE_RIGHT", CLIENT::KeyCode::RIGHT},
     {"SHOOT", CLIENT::KeyCode::SHOOT}
@@ -471,10 +471,6 @@ void CLIENT::Core::graphicsLoop()
         if (timeSinceCleanup >= CLEANUP_INTERVAL) {
             _entityManager->cleanupInactiveEntities();
             lastCleanup = now;
-            
-            std::cout << "[Core] Periodic cleanup: " 
-                      << _entityManager->getActiveEntityCount() 
-                      << " active entities remaining\n";
         }
         
         window.clear();
