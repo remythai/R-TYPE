@@ -76,6 +76,7 @@ void rtype::NetworkServer::initECS()
 
 EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 {
+    std::lock_guard<std::mutex> lock(_registryMutex);
     auto entity = _registry->create();
 
     _registry->emplace<GameEngine::InputControlled>(entity);
@@ -94,6 +95,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 
 EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
 {
+    std::lock_guard<std::mutex> lock(_registryMutex);
     auto entity = _registry->create();
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -117,6 +119,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
 
 void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
 {
+    std::lock_guard<std::mutex> lock(_registryMutex);
     if (playerId < 4 && _playerSlots[playerId].entity != EntityManager::INVALID_ENTITY) {
         _registry->destroy(_playerSlots[playerId].entity);
         _playerSlots[playerId].entity = EntityManager::INVALID_ENTITY;
@@ -134,6 +137,8 @@ void rtype::NetworkServer::applyInputToEntity(uint8_t playerId, uint8_t keyCode,
     if (entity == EntityManager::INVALID_ENTITY) {
         return;
     }
+
+    std::lock_guard<std::mutex> lock(_registryMutex);
     
     if (!_registry->has<GameEngine::InputControlled>(entity)) {
         return;
@@ -155,6 +160,7 @@ void rtype::NetworkServer::applyInputToEntity(uint8_t playerId, uint8_t keyCode,
 
 void rtype::NetworkServer::updateECS(float dt)
 {
+    std::lock_guard<std::mutex> lock(_registryMutex);
     _registry->update(dt);
 }
 
@@ -381,6 +387,7 @@ void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
 
 std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 {
+    std::lock_guard<std::mutex> lock(_registryMutex);
     std::vector<uint8_t> snapshot;
     snapshot.push_back(static_cast<uint8_t>(PacketType::SNAPSHOT));
 
