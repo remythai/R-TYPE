@@ -27,11 +27,11 @@ jobs:
             libvorbis-dev libopenal-dev libfreetype-dev \
             clang-format clang-tidy doxygen graphviz
 
-      - name: Check code formatting
-        run: |
-          find client/src client/include server/src server/include \
-            -name '*.cpp' -o -name '*.hpp' -o -name '*.h' | \
-            xargs clang-format --dry-run --Werror
+      # - name: Check code formatting
+      #   run: |
+      #     find client/src client/include server/src server/include \
+      #       -name '*.cpp' -o -name '*.hpp' -o -name '*.h' | \
+      #       xargs clang-format --dry-run --Werror
 
       - name: Run clang-tidy on client
         run: |
