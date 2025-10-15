@@ -138,5 +138,7 @@ namespace rtype {
 
             std::chrono::steady_clock::time_point _lastSnapshot;
             static constexpr float SNAPSHOT_RATE = 1.0f / 20.0f;
+
+            std::mutex _registryMutex;
     };
 }
