@@ -59,4 +59,16 @@ if(TEST_SOURCES)
 
     include(GoogleTest)
     gtest_discover_tests(r-type_tests)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    ASIO_STANDALONE
+    $<$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x0601>
+)
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} ws2_32 wsock32)
+endif()
+
+if(UNIX)
+    find_package(Threads REQUIRED)
+    target_link_libraries(${PROJECT_NAME} Threads::Threads)
 endif()
