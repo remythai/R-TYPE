@@ -112,9 +112,9 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
     int randomNum = distrib(gen);
 
     _registry->emplace<GameEngine::AIControlled>(entity);
-    _registry->emplace<GameEngine::Acceleration>(entity, -8.0f, 0.0f);
+    _registry->emplace<GameEngine::Acceleration>(entity, -3.0f, 0.0f);
     _registry->emplace<GameEngine::Position>(entity, 1900,  randomNum);
-    _registry->emplace<GameEngine::Velocity>(entity, 8.0f);
+    _registry->emplace<GameEngine::Velocity>(entity, 3.0f);
     std::vector<vec2> rectPos;
     rectPos.push_back(vec2{0.0f, 0.0f});
     rectPos.push_back(vec2{33.3f, 0.0f});

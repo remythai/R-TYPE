@@ -166,7 +166,7 @@ namespace GameEngine {
                             rectPos.push_back(vec2{0.0F, 0.0F});
                             rectPos.push_back(vec2{19.0F, 0.0F});
                             rectPos.push_back(vec2{38.0F, 0.0F});
-                            registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "assets/sprites/playerProjectiles.png", rectPos, vec2{22.28f, 22.28f}, 0.05f, true);
+                            registry.emplace<GameEngine::Renderable>(shoot, 1920.0, 1080.0, "assets/sprites/playerProjectiles.png", rectPos, vec2{22.28f, 22.28f}, 50, true);
                             registry.emplace<GameEngine::Health>(shoot, 1, 1);
                             registry.emplace<GameEngine::Damage>(shoot, 1);
                             registry.emplace<GameEngine::Velocity>(shoot, 10.0, 10.0);
