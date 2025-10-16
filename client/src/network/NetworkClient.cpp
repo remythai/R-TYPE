@@ -165,13 +165,6 @@ void NetworkClient::handlePacket(
                     std::string spritePath(payload.begin() + offset, payload.begin() + offset + pathLen);
                     offset += pathLen;
 
-                    if (offset + 2 > payload.size()) break;
-                    uint8_t currentFrame = payload[offset++];
-                    uint8_t frameNumber = payload[offset++];
-
-                    if (offset + 4 > payload.size()) break;
-                    float frameDur = readFloat();
-
                     if (offset + 16 > payload.size()) break;
                     float rectPosX = readFloat();
                     float rectPosY = readFloat();
@@ -181,8 +174,6 @@ void NetworkClient::handlePacket(
                     std::cout << "[Entity:" << int(entityId)
                             << " pos:(" << std::fixed << std::setprecision(1) << x << "," << y << ")"
                             << " sprite:" << spritePath
-                            << " frame:" << int(currentFrame) << "/" << int(frameNumber)
-                            << " frameDur:" << frameDur
                             << " rectPos:(" << rectPosX << "," << rectPosY << ")"
                             << " rectSize:(" << rectSizeX << "," << rectSizeY << ")]"
                             << std::endl;

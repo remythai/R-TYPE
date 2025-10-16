@@ -432,9 +432,6 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
         snapshot.push_back(pathLen);
         snapshot.insert(snapshot.end(), render.spriteSheetPath.begin(), render.spriteSheetPath.end());
 
-        auto frameDurBytes = floatToBytes(render.frameDuration);
-        snapshot.insert(snapshot.end(), frameDurBytes.begin(), frameDurBytes.end());
-
         auto rectPosX = floatToBytes(render.currentRectPos.x);
         snapshot.insert(snapshot.end(), rectPosX.begin(), rectPosX.end());
         auto rectPosY = floatToBytes(render.currentRectPos.y);
