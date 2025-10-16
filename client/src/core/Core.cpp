@@ -212,20 +212,13 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         if (offset + 8 > payload.size()) break;
         float x = readFloat();
         float y = readFloat();
-        
+
         if (offset >= payload.size()) break;
         uint8_t pathLen = payload[offset++];
         
         if (offset + pathLen > payload.size()) break;
         std::string spritePath(payload.begin() + offset, payload.begin() + offset + pathLen);
         offset += pathLen;
-        
-        if (offset + 2 > payload.size()) break;
-        uint8_t currentFrame = payload[offset++];
-        uint8_t frameCount = payload[offset++];
-        
-        if (offset + 4 > payload.size()) break;
-        float frameDuration = readFloat();
         
         if (offset + 8 > payload.size()) break;
         float rectPosX = readFloat();
@@ -243,12 +236,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         if (entity) {
             if (!entity->currentSpritePath.empty() && 
                 entity->currentSpritePath != spritePath) {
-                
-                std::cout << "[Entity " << int(entityId) 
-                          << "] ⚠️  Sprite path changed:\n"
-                          << "    OLD: '" << entity->currentSpritePath << "'\n"
-                          << "    NEW: '" << spritePath << "'\n"
-                          << "    → Recreating sprite\n";
                 
                 needsNewSprite = true;
                 
@@ -272,10 +259,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
             _entityManager->createServerEntity(entityId, type, layer);
             entity = _entityManager->getEntity(entityId);
             needsNewSprite = true;
-            
-            std::cout << "[Entity " << int(entityId) 
-                      << "] ✓ Created new entity (Type: " << int(type) 
-                      << ", Layer: " << int(layer) << ")\n";
         }
         
         if (entity) {
@@ -292,7 +275,7 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
                 
                 if (!texture) {
                     std::cerr << "[Entity " << int(entityId) 
-                              << "] ❌ Texture not found: " << spritePath << "\n";
+                              << "] Texture not found: " << spritePath << "\n";
                 }
             }
             
@@ -300,14 +283,11 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
                 entity->sprite = sf::Sprite(*texture);
                 entity->currentSpritePath = spritePath;
                 
-                std::cout << "[Entity " << int(entityId) 
-                          << "] ✓ Sprite " << (needsNewSprite ? "recreated" : "created") 
-                          << " with: " << spritePath << "\n";
             }
             
             if (entity->sprite.has_value()) {
                 entity->sprite->setTextureRect(sf::IntRect(
-                    sf::Vector2i(static_cast<int>(rectPosX + currentFrame * rectSizeX), 
+                    sf::Vector2i(static_cast<int>(rectPosX), 
                                  static_cast<int>(rectPosY)),
                     sf::Vector2i(static_cast<int>(rectSizeX), 
                                  static_cast<int>(rectSizeY))
