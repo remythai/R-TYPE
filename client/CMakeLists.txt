@@ -30,6 +30,23 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(asio)
 
+if(EXISTS "${CMAKE_SOURCE_DIR}/external/imgui-sfml/CMakeLists.txt")
+    message(STATUS "Using ImGui-SFML from submodule")
+    set(IMGUI_SFML_FIND_SFML OFF)
+    set(IMGUI_SFML_IMGUI_DEMO ON)
+    add_subdirectory(external/imgui-sfml)
+else()
+    message(STATUS "Using ImGui-SFML from FetchContent")
+    FetchContent_Declare(
+        imgui-sfml
+        GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
+        GIT_TAG master
+    )
+    set(IMGUI_SFML_FIND_SFML OFF)
+    set(IMGUI_SFML_IMGUI_DEMO ON)
+    FetchContent_MakeAvailable(imgui-sfml)
+endif()
+
 set(SOURCES
     src/main.cpp
     src/core/Core.cpp
@@ -39,6 +56,7 @@ set(SOURCES
     src/graphics/EntityManager.cpp
     src/graphics/ParallaxSystem.cpp
     src/network/NetworkClient.cpp
+    src/mapEditor/MapEditor.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -48,6 +66,7 @@ target_link_libraries(${PROJECT_NAME}
     sfml-window
     sfml-system
     sfml-audio
+    ImGui-SFML::ImGui-SFML
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

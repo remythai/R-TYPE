@@ -461,6 +461,53 @@ void CLIENT::Core::graphicsLoop()
     _running = false;
 }
 
+
+void CLIENT::Core::launchMapEditor()
+{
+    Window window("R-Type Map Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
+    auto& rm = ResourceManager::getInstance();
+    
+    rm.loadTexture("assets/sprites/r-typesheet42.png", "assets/sprites/r-typesheet42.png");
+    rm.loadTexture("assets/sprites/r-typesheet42.png", "sprites/r-typesheet42.png");
+    
+    rm.loadTexture("assets/sprites/r-typesheet5.png", "assets/sprites/r-typesheet5.png");
+    rm.loadTexture("assets/sprites/r-typesheet5.png", "sprites/r-typesheet5.png");
+    
+    rm.loadTexture("assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
+    rm.loadTexture("assets/sprites/r-typesheet9.png", "sprites/r-typesheet9.png");
+    
+    rm.loadTexture("assets/sprites/r-typesheet10.png", "assets/sprites/r-typesheet10.png");
+    rm.loadTexture("assets/sprites/r-typesheet10.png", "sprites/r-typesheet10.png");
+    
+    rm.loadTexture("assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
+    rm.loadTexture("assets/sprites/r-typesheet11.png", "sprites/r-typesheet11.png");
+    
+    rm.loadTexture("assets/sprites/background.png", "assets/sprites/background.png");
+    rm.loadTexture("assets/sprites/playerProjectiles.png", "assets/sprites/playerProjectiles.png");
+    
+    std::cout << "Map Editor resources loaded\n";
+    
+    MapEditor editor;
+    editor.toggle();
+    
+    std::cout << "Map Editor launched\n";
+    
+    while (window.isOpen()) {
+        float deltaTime = window.getDeltaTime();
+        
+        window.pollEvents();
+        
+        editor.handleMouseInput(window.getWindow());
+        editor.update(deltaTime);
+        
+        window.clear();
+        editor.render(window.getWindow());
+        editor.renderUI();
+        window.display();
+    }
+}
+
+
 int execute_rtypeClient(char **argv)
 {
     try {

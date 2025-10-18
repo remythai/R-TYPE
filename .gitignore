@@ -3,4 +3,6 @@ build.sh
 a.out
 r-type_client
 r-type_server
+.vscode/
+*.json
 r-type_tests

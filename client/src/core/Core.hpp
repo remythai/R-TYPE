@@ -17,7 +17,7 @@
 #include "../network/NetworkClient.hpp"
 #include "../graphics/EntityManager.hpp"
 #include "../graphics/ParallaxSystem.hpp"
-
+#include "../mapEditor/MapEditor.hpp"
 
 namespace CLIENT {
 
@@ -50,8 +50,11 @@ public:
     ~Core();
 
     void run();
+    static void launchMapEditor();
 
 private:
+    std::unique_ptr<MapEditor> _mapEditor;
+
     std::mutex _playerIdMutex;
     void parseCommandLineArgs(char **argv);
     void initializeNetwork();
