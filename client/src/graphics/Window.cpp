@@ -6,29 +6,38 @@
 */
 
 #include "Window.hpp"
+#include <imgui.h>
+#include <imgui-SFML.h>
 #include <iostream>
 
-namespace CLIENT {
-
-Window::Window(const std::string &title, unsigned int width, unsigned int height)
+CLIENT::Window::Window(const std::string &title, unsigned int width, unsigned int height)
 : _window(sf::VideoMode(sf::Vector2u{width, height}), title), _deltaTime(0.0f)
 {
     _window.setFramerateLimit(60);
+    
+    if (!ImGui::SFML::Init(_window)) {
+        std::cerr << "Failed to initialize ImGui-SFML" << std::endl;
+    }
 }
 
-Window::~Window() = default;
+CLIENT::Window::~Window() {
+    ImGui::SFML::Shutdown();
+}
 
-bool Window::isOpen() const {
+bool CLIENT::Window::isOpen() const {
     return _window.isOpen();
 }
 
-void Window::pollEvents() {
+void CLIENT::Window::pollEvents() {
     _deltaTime = _clock.restart().asSeconds();
     
     _pendingActions.clear();
     
     while (auto eventOpt = _window.pollEvent()) {
         const auto &event = *eventOpt;
+        
+        // Laisser ImGui traiter l'événement d'abord
+        ImGui::SFML::ProcessEvent(_window, event);
 
         if (event.is<sf::Event::Closed>())
             _window.close();
@@ -65,26 +74,27 @@ void Window::pollEvents() {
             }
         }
     }
+    
+    ImGui::SFML::Update(_window, sf::seconds(_deltaTime));
 }
 
-void Window::clear() {
+void CLIENT::Window::clear() {
     _window.clear(sf::Color::Black);
 }
 
-void Window::display() {
+void CLIENT::Window::display() {
+    ImGui::SFML::Render(_window);
     _window.display();
 }
 
-sf::RenderWindow &Window::getWindow() {
+sf::RenderWindow &CLIENT::Window::getWindow() {
     return _window;
 }
 
-const std::vector<std::string> &Window::getPendingActions() const {
+const std::vector<std::string> &CLIENT::Window::getPendingActions() const {
     return _pendingActions;
 }
 
-float Window::getDeltaTime() const {
+float CLIENT::Window::getDeltaTime() const {
     return _deltaTime;
 }
-
-} // namespace CLIENT
