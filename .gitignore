@@ -6,3 +6,4 @@ r-type_server
 .vscode/
 *.json
 r-type_tests
+*.ini
