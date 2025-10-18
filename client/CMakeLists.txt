@@ -30,11 +30,20 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(asio)
 
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.91.5
+)
+
+FetchContent_MakeAvailable(imgui)
+
 if(EXISTS "${CMAKE_SOURCE_DIR}/external/imgui-sfml/CMakeLists.txt")
     message(STATUS "Using ImGui-SFML from submodule")
+    set(IMGUI_DIR ${imgui_SOURCE_DIR})
     set(IMGUI_SFML_FIND_SFML OFF)
     set(IMGUI_SFML_IMGUI_DEMO ON)
-    add_subdirectory(external/imgui-sfml)
+    add_subdirectory(external/imgui-sfml imgui-sfml)
 else()
     message(STATUS "Using ImGui-SFML from FetchContent")
     FetchContent_Declare(
@@ -42,6 +51,7 @@ else()
         GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
         GIT_TAG master
     )
+    set(IMGUI_DIR ${imgui_SOURCE_DIR})
     set(IMGUI_SFML_FIND_SFML OFF)
     set(IMGUI_SFML_IMGUI_DEMO ON)
     FetchContent_MakeAvailable(imgui-sfml)
