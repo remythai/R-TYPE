@@ -1,3 +1,0 @@
-[submodule "external/imgui-sfml"]
-	path = external/imgui-sfml
-	url = https://github.com/eliasdaler/imgui-sfml.git
