@@ -18,7 +18,7 @@ void CLIENT::ParallaxSystem::createParallaxLayer(const std::string& texturePath,
     }
 
     float scaleY = static_cast<float>(WINDOW_HEIGHT) / texture->getSize().y;
-    float scaleX = scaleY; // garder les proportions
+    float scaleX = scaleY;
     float textureWidth = texture->getSize().x * scaleX;
 
     for (int i = 0; i < 2; ++i) {
@@ -43,10 +43,10 @@ void CLIENT::ParallaxSystem::createParallaxLayer(const std::string& texturePath,
 
 void CLIENT::ParallaxSystem::createParallaxLayers()
 {
-    createParallaxLayer("parallax1.png", 10.0f, RenderLayer::PARALLAX_FAR);
-    createParallaxLayer("parallax2.png", 25.0f, RenderLayer::PARALLAX_FAR);
-    createParallaxLayer("parallax3.png", 50.0f, RenderLayer::PARALLAX_NEAR);
-    createParallaxLayer("parallax4.png", 80.0f, RenderLayer::PARALLAX_NEAR);
+    createParallaxLayer("assets/sprites/parallax/1.png", 10.0f, RenderLayer::PARALLAX_FAR);
+    createParallaxLayer("assets/sprites/parallax/2.png", 25.0f, RenderLayer::PARALLAX_FAR);
+    createParallaxLayer("assets/sprites/parallax/3.png", 50.0f, RenderLayer::PARALLAX_NEAR);
+    createParallaxLayer("assets/sprites/parallax/4.png", 80.0f, RenderLayer::PARALLAX_NEAR);
 
     createStarField(30, 5.0f, 15.0f, RenderLayer::PARALLAX_FAR);
     createStarField(20, 100.0f, 150.0f, RenderLayer::PARALLAX_NEAR);
