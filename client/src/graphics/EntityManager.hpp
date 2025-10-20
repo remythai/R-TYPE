@@ -44,6 +44,7 @@ namespace CLIENT {
         RenderLayer layer;
         
         sf::Vector2f position;
+        sf::Vector2f targetPosition;
         sf::Vector2f velocity;
         std::optional<sf::Sprite> sprite;
         
@@ -53,6 +54,9 @@ namespace CLIENT {
         bool looping;
         
         std::string currentSpritePath;
+        
+        float interpolationTime;
+        float interpolationDuration;
 
         GameEntity();
     };
