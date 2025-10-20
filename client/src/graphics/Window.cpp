@@ -36,7 +36,6 @@ void CLIENT::Window::pollEvents() {
     while (auto eventOpt = _window.pollEvent()) {
         const auto &event = *eventOpt;
         
-        // Laisser ImGui traiter l'événement d'abord
         ImGui::SFML::ProcessEvent(_window, event);
 
         if (event.is<sf::Event::Closed>())

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Core.hpp - Header with generalized entity system
+** Core.hpp 
 */
 
 #pragma once

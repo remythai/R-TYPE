@@ -82,6 +82,8 @@ namespace CLIENT {
         size_t getEntityCount() const;
         size_t getActiveEntityCount() const;
 
+        std::vector<CLIENT::GameEntity*> getEntitiesByLayer(RenderLayer layer);
+
     private:
         std::map<uint32_t, GameEntity> _entities;
         std::map<RenderLayer, std::vector<uint32_t>> _layerMap;
