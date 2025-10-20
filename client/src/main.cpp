@@ -17,7 +17,6 @@ static int check_args(int argc, char **argv, bool &isEditor)
     isEditor = false;
     int requiredArgs = NB_ARGS;
     
-    // Check if -editor flag is present
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-editor") {
             isEditor = true;
@@ -26,15 +25,13 @@ static int check_args(int argc, char **argv, bool &isEditor)
         }
     }
     
-    // Need at least 5 args (program name + -p PORT -h HOSTNAME)
-    // or 6 args if -editor is present
     if (argc < requiredArgs || argv[0] == nullptr) {
         display_help();
         return EPITECH_FAILURE;
     }
     
-    // Check that -p and -h are present
-    bool hasPort = false, hasHostname = false;
+    bool hasPort = false;
+    bool hasHostname = false;
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-p" && i + 1 < argc) hasPort = true;
         if (std::string(argv[i]) == "-h" && i + 1 < argc) hasHostname = true;
