@@ -18,6 +18,7 @@ enable_testing()
 add_executable(runTests
     entityManager_tests.cpp
     sparseSet_tests.cpp
+    componentRegistry_tests.cpp
 )
 
 # Lier GoogleTest
