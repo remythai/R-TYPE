@@ -29,8 +29,8 @@ class Collision : public System<Collision>
         GameEngine::Damage e1Damage = registry.get<GameEngine::Damage>(e1);
         GameEngine::Damage e2Damage = registry.get<GameEngine::Damage>(e2);
 
-        GameEngine::Health e1Health = registry.get<GameEngine::Health>(e1);
-        GameEngine::Health e2Health = registry.get<GameEngine::Health>(e2);
+        GameEngine::Health &e1Health = registry.get<GameEngine::Health>(e1);
+        GameEngine::Health &e2Health = registry.get<GameEngine::Health>(e2);
 
         vec2 e1HitboxPos = e1Pos.pos + e1Collider.originTranslation;
         vec2 e2HitboxPos = e2Pos.pos + e2Collider.originTranslation;
