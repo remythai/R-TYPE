@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.hpp"
+#include <unordered_map>
 #include <vector>
 #include <typeindex>
 #include <string>
@@ -17,6 +18,8 @@
  *  - **String-based registration** (for dynamic/runtime use)
  *
  * The registry follows the Singleton pattern — only one instance exists globally.
+ * 
+ * **Optimization**: Uses unordered_map for O(1) average lookup instead of O(n) linear search.
  */
 class ComponentRegistry {
     public:
@@ -53,18 +56,14 @@ class ComponentRegistry {
         * @return Unique ComponentID associated with this name.
         */
         ComponentID getOrCreateID(const std::string& name) {
-            // Check if the name already has an assigned ID
-            for (size_t i = 0; i < nameToID.size(); ++i) {
-                if (nameToID[i].first == name) {
-                    return nameToID[i].second;
-                }
+            auto it = nameToID.find(name);
+            if (it != nameToID.end()) {
+                return it->second;
             }
-            
-            // Create a new entry
-            ComponentID id = nextID++;
-            nameToID.push_back({name, id});
 
-            // Resize name table if needed
+            ComponentID id = nextID++;
+            nameToID[name] = id;
+
             if (id >= idToName.size()) {
                 idToName.resize(id + 1);
             }
@@ -94,10 +93,10 @@ class ComponentRegistry {
         * @return The ComponentID if found, otherwise INVALID_ID.
         */
         ComponentID getID(const std::string& name) const {
-            for (size_t i = 0; i < nameToID.size(); ++i) {
-                if (nameToID[i].first == name) {
-                    return nameToID[i].second;
-                }
+            // O(1) lookup au lieu de O(n)
+            auto it = nameToID.find(name);
+            if (it != nameToID.end()) {
+                return it->second;
             }
             return INVALID_ID;
         }
@@ -128,19 +127,15 @@ class ComponentRegistry {
         template<typename T>
         ComponentID computeID() {
             auto typeIdx = std::type_index(typeid(T));
-        
-            // Search if this type is already registered
-            for (size_t i = 0; i < typeToID.size(); ++i) {
-                if (typeToID[i].first == typeIdx) {
-                    return typeToID[i].second;
-                }
-            }
-            
-            // Otherwise, assign a new ID
-            ComponentID id = nextID++;
-            typeToID.push_back({typeIdx, id});
 
-            // Store type name for debugging or serialization
+            auto it = typeToID.find(typeIdx);
+            if (it != typeToID.end()) {
+                return it->second;
+            }
+
+            ComponentID id = nextID++;
+            typeToID[typeIdx] = id;
+
             if (id >= idToName.size()) {
                 idToName.resize(id + 1);
             }
@@ -151,12 +146,12 @@ class ComponentRegistry {
         
         ComponentID nextID = 0; ///< Next available unique component ID counter.
 
-        /// @brief Maps C++ type_index → ComponentID (used for static type lookup).
-        std::vector<std::pair<std::type_index, ComponentID>> typeToID;
+        /// @brief Maps C++ type_index → ComponentID (O(1) lookup with hash map).
+        std::unordered_map<std::type_index, ComponentID> typeToID;
 
-        /// @brief Maps string name → ComponentID (used for dynamic component lookup).
-        std::vector<std::pair<std::string, ComponentID>> nameToID;
+        /// @brief Maps string name → ComponentID (O(1) lookup with hash map).
+        std::unordered_map<std::string, ComponentID> nameToID;
 
-        /// @brief Reverse lookup: maps ComponentID → string name.
+        /// @brief Reverse lookup: maps ComponentID → string name (O(1) indexed access).
         std::vector<std::string> idToName;
 };
