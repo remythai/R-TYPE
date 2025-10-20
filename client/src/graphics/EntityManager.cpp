@@ -101,7 +101,17 @@ void CLIENT::EntityManager::cleanupInactiveEntities() {
 void CLIENT::EntityManager::update(float deltaTime) {
     for (auto& [id, entity] : _entities) {
         if (!entity.active || !entity.sprite.has_value()) continue;
-
+        if (entity.interpolationTime < entity.interpolationDuration) {
+            entity.interpolationTime += deltaTime;
+            float alpha = entity.interpolationTime / entity.interpolationDuration;
+            alpha = std::min(1.0f, std::max(0.0f, alpha));
+            entity.position.x = entity.position.x + 
+                (entity.targetPosition.x - entity.position.x) * alpha;
+            entity.position.y = entity.position.y + 
+                (entity.targetPosition.y - entity.position.y) * alpha;
+        } else {
+            entity.position = entity.targetPosition;
+        }
         entity.position.x += entity.velocity.x * deltaTime;
         entity.position.y += entity.velocity.y * deltaTime;
 

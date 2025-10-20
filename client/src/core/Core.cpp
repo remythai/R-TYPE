@@ -233,7 +233,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         if (entity) {
             if (!entity->currentSpritePath.empty() && 
                 entity->currentSpritePath != spritePath) {
-                
                 needsNewSprite = true;
                 
                 EntityType newType = determineEntityType(entityId, spritePath);
@@ -259,7 +258,17 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
         }
         
         if (entity) {
-            entity->position = sf::Vector2f(x, y);
+            if (!entity->sprite.has_value() || entity->currentSpritePath.empty()) {
+                entity->position = sf::Vector2f(x, y);
+                entity->targetPosition = sf::Vector2f(x, y);
+                entity->interpolationTime = 0.0f;
+                entity->interpolationDuration = 0.1f;
+            } else {
+                entity->targetPosition = sf::Vector2f(x, y);
+                entity->interpolationTime = 0.0f;
+                entity->interpolationDuration = 0.1f;
+            }
+            
             entity->active = true;
             
             sf::Texture* texture = rm.getTexture(spritePath);
@@ -279,7 +288,6 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
             if (texture && (needsNewSprite || !entity->sprite.has_value())) {
                 entity->sprite = sf::Sprite(*texture);
                 entity->currentSpritePath = spritePath;
-                
             }
             
             if (entity->sprite.has_value()) {
