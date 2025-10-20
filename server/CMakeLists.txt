@@ -52,26 +52,46 @@ elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} Threads::Threads)
 endif()
 
-# Tests unitaires
-file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+# Tests unitaires (seulement si ENABLE_TESTS=ON)
+if(ENABLE_TESTS)
+    message(STATUS "Tests are enabled")
 
-if(TEST_SOURCES)
-    add_executable(r-type_tests
-        ${TEST_SOURCES}
-        src/network/NetworkServer.cpp
-        src/network/handleClient.cpp
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/heads/main.zip
     )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
-    target_include_directories(r-type_tests PRIVATE
-        ${asio_SOURCE_DIR}/asio/include
-        src/
-    )
+    enable_testing()
 
-    target_link_libraries(r-type_tests
-        PRIVATE
-        GTest::gtest_main
-    )
+    file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
 
-    include(GoogleTest)
-    gtest_discover_tests(r-type_tests)
+    if(TEST_SOURCES)
+        add_executable(r-type_tests
+            ${TEST_SOURCES}
+            src/network/NetworkServer.cpp
+            src/network/handleClient.cpp
+        )
+
+        target_include_directories(r-type_tests PRIVATE
+            ${asio_SOURCE_DIR}/asio/include
+            src/
+        )
+
+        target_link_libraries(r-type_tests
+            PRIVATE
+            GTest::gtest_main
+        )
+
+        include(GoogleTest)
+        gtest_discover_tests(r-type_tests)
+    endif()
+else()
+    message(STATUS "Tests are disabled (use -DENABLE_TESTS=ON to enable)")
 endif()
+
+# Lancer les test unitaire :
+# cmake -B build -DENABLE_TESTS=ON .
+# cmake --build build
+# ctest --test-dir build

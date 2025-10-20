@@ -69,13 +69,17 @@ namespace rtype {
                 _playerSlots[index] = slot;
             }
 
+            std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
+            std::vector<uint8_t> serializeSnapshot();
+            EntityManager::Entity createEnemyEntity();
+            void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
+            static std::string packetTypeToString(PacketType type);
+
         private:
             void doReceive();
 
             void initECS();
             void updateECS(float dt);
-            EntityManager::Entity createEnemyEntity();
-            void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
 
             void handleClientPacket(
                 const asio::ip::udp::endpoint& clientEndpoint,
@@ -125,15 +129,12 @@ namespace rtype {
 
             uint8_t findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint);
 
-            std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
-            std::string packetTypeToString(PacketType type);
             void checkInactivePlayers();
 
             void cleanInactivePlayers();
 
             void sendSnapshot(const asio::ip::udp::endpoint& clientEndpoint);
             void broadcastSnapshot();
-            std::vector<uint8_t> serializeSnapshot();
 
             bool _running;
             asio::io_context _ioContext;
