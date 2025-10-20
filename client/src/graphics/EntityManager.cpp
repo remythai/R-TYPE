@@ -93,7 +93,6 @@ void CLIENT::EntityManager::cleanupInactiveEntities() {
     }
     
     for (uint32_t id : toRemove) {
-        std::cout << "[EntityManager] Removing inactive entity " << id << "\n";
         removeEntity(id);
     }
 }
@@ -101,7 +100,16 @@ void CLIENT::EntityManager::cleanupInactiveEntities() {
 void CLIENT::EntityManager::update(float deltaTime) {
     for (auto& [id, entity] : _entities) {
         if (!entity.active || !entity.sprite.has_value()) continue;
-        if (entity.interpolationTime < entity.interpolationDuration) {
+        
+        if (entity.layer == RenderLayer::PARALLAX_FAR || 
+            entity.layer == RenderLayer::PARALLAX_NEAR) {
+            continue;
+        }
+        
+        entity.position.x += entity.velocity.x * deltaTime;
+        entity.position.y += entity.velocity.y * deltaTime;
+        
+        if (entity.interpolationDuration > 0.0f && entity.interpolationTime < entity.interpolationDuration) {
             entity.interpolationTime += deltaTime;
             float alpha = entity.interpolationTime / entity.interpolationDuration;
             alpha = std::min(1.0f, std::max(0.0f, alpha));
@@ -109,11 +117,9 @@ void CLIENT::EntityManager::update(float deltaTime) {
                 (entity.targetPosition.x - entity.position.x) * alpha;
             entity.position.y = entity.position.y + 
                 (entity.targetPosition.y - entity.position.y) * alpha;
-        } else {
+        } else if (entity.interpolationDuration > 0.0f && entity.interpolationTime >= entity.interpolationDuration) {
             entity.position = entity.targetPosition;
         }
-        entity.position.x += entity.velocity.x * deltaTime;
-        entity.position.y += entity.velocity.y * deltaTime;
 
         if (entity.looping) {
             auto bounds = entity.sprite->getGlobalBounds();
@@ -171,4 +177,17 @@ size_t CLIENT::EntityManager::getActiveEntityCount() const {
         if (entity.active) count++;
     }
     return count;
+}
+
+std::vector<CLIENT::GameEntity*> CLIENT::EntityManager::getEntitiesByLayer(RenderLayer layer) {
+    std::vector<GameEntity*> result;
+    if (_layerMap.find(layer) != _layerMap.end()) {
+        for (uint32_t id : _layerMap[layer]) {
+            auto* entity = getEntity(id);
+            if (entity) {
+                result.push_back(entity);
+            }
+        }
+    }
+    return result;
 }

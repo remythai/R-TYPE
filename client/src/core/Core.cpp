@@ -421,8 +421,15 @@ void CLIENT::Core::graphicsLoop()
 
     _entityManager = std::make_unique<EntityManager>();
     _parallaxSystem = std::make_unique<ParallaxSystem>(_entityManager.get(), &rm);
-    _parallaxSystem->createParallaxLayers();
-    std::cout << "Parallax system initialized with 4 layers\n";
+    
+    _parallaxSystem->addLayer("assets/sprites/parallax/1.png", 10.0f, 0.1f);
+    _parallaxSystem->addLayer("assets/sprites/parallax/2.png", 25.0f, 0.3f);
+    _parallaxSystem->addLayer("assets/sprites/parallax/3.png", 50.0f, 0.6f);
+    _parallaxSystem->addLayer("assets/sprites/parallax/4.png", 80.0f, 0.9f);
+    
+    _parallaxSystem->createLayers();
+    
+    std::cout << "Parallax system initialized\n";
     
     std::map<std::string, bool> keyStates = {
         {"MOVE_UP", false}, {"MOVE_DOWN", false}, {"MOVE_LEFT", false},
@@ -431,7 +438,6 @@ void CLIENT::Core::graphicsLoop()
 
     auto lastCleanup = std::chrono::steady_clock::now();
     const float CLEANUP_INTERVAL = 5.0f;
-
 
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();
@@ -460,12 +466,12 @@ void CLIENT::Core::graphicsLoop()
         
         window.clear();
         _entityManager->render(window.getWindow());
+        _parallaxSystem->update(deltaTime); 
         window.display();
     }
 
     _running = false;
 }
-
 
 void CLIENT::Core::launchMapEditor()
 {
