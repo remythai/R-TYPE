@@ -149,13 +149,13 @@ void rtype::NetworkServer::applyInputToEntity(uint8_t playerId, uint8_t keyCode,
     if (playerId >= 4 || !_playerSlots[playerId].isUsed) {
         return;
     }
+
+    std::lock_guard<std::mutex> lock(_registryMutex);
     
     auto entity = _playerSlots[playerId].entity;
     if (entity == EntityManager::INVALID_ENTITY) {
         return;
     }
-
-    std::lock_guard<std::mutex> lock(_registryMutex);
     
     if (!_registry->has<GameEngine::InputControlled>(entity)) {
         return;
