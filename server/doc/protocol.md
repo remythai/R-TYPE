@@ -10,6 +10,7 @@ This document describes the binary communication protocol used between the R-Typ
 - **Encoding**: Binary format with big-endian byte order
 - **Connection Model**: Connectionless with client identification via Player ID assignment
 - **Maximum Players**: 4 concurrent players per game instance
+- **State Synchronization**: Snapshot-based (all game state and events are transmitted via periodic snapshots)
 
 ## Packet Structure
 
@@ -20,7 +21,7 @@ All packets follow a common header structure followed by a variable-length paylo
 │   Header    │  Packet ID  │  Timestamp  │       Payload       │
 │   (1 byte)  │  (2 bytes)  │  (4 bytes)  │    (Variable)       │
 └─────────────┴─────────────┴─────────────┴─────────────────────┘
-     Type         Sequence      Time Info      Type-specific data
+    Type         Sequence      Time Info      Type-specific data
 ```
 
 ### Header Fields
@@ -28,8 +29,8 @@ All packets follow a common header structure followed by a variable-length paylo
 | Field | Size | Type | Description |
 |-------|------|------|-------------|
 | **Packet Type** | 1 byte | uint8_t | Identifies the packet type (see PacketType enum) |
-| **Packet ID** | 2 bytes | uint16_t | Sequence number for packet ordering and acknowledgment |
-| **Timestamp** | 4 bytes | uint32_t | Timestamp for latency calculation and temporal ordering |
+| **Packet ID** | 2 bytes | uint16_t | Sequence number for packet ordering |
+| **Timestamp** | 4 bytes | uint32_t | Timestamp for temporal ordering |
 | **Payload** | Variable | uint8_t[] | Packet-specific data |
 
 **Total Header Size**: 7 bytes
@@ -39,6 +40,7 @@ All packets follow a common header structure followed by a variable-length paylo
 All multi-byte integers use **big-endian** (network byte order) encoding:
 - uint16_t: Most significant byte first
 - uint32_t: Most significant byte first
+- float: IEEE 754 format, big-endian byte order
 
 ## Packet Types
 
@@ -60,13 +62,13 @@ Player input commands sent from client to server.
 |-------|------|-------------|
 | Player ID | 1 byte | ID of the player sending input (0-3) |
 | Key Code | 1 byte | Key identifier (e.g., arrow keys, spacebar) |
-| Action | 1 byte | Action type: 0=Key Down, 1=Key Up |
+| Action | 1 byte | Action type: 0=Key Up, 1=Key Down |
 
 **Example**: Player 0 presses the up arrow key
 ```
-01 00 00 00 00 00 00 00 26 00
+01 00 00 00 00 00 00 00 26 01
 │  │     │  │        │  │  │
-│  │     │  │        │  │  └─ Action (0 = pressed)
+│  │     │  │        │  │  └─ Action (1 = pressed)
 │  │     │  │        │  └──── Key code (0x26 = Up arrow)
 │  │     │  │        └─────── Player ID (0)
 │  │     │  └──────────────── Timestamp
@@ -93,32 +95,20 @@ Connection request from client with player identification.
 
 | Field | Size | Description |
 |-------|------|-------------|
-| Username | Variable | UTF-8 encoded player username (null-terminated) |
+| Username | Variable | UTF-8 encoded player username (null-terminated or length-prefixed) |
 
 **Server Response**: Upon receiving a JOIN packet, the server assigns a Player ID and responds with a `PLAYER_ID_ASSIGNMENT` packet.
 
 **Example**: Client joins with username "Player1"
 ```
 02 00 00 00 00 00 00 50 6C 61 79 65 72 31
-│  │     │  │        │  
+│  │     │  │        │
 │  │     │  │        └─────── Username bytes (ASCII "Player1")
 │  │     │  └──────────────── Timestamp
 │  │     └─────────────────── Packet ID
 │  └───────────────────────── Type (JOIN)
 └──────────────────────────── Header
 ```
-
----
-
-### 0x03 - PING
-
-Latency measurement request.
-
-**Direction**: Client → Server
-
-**Payload**: Empty (0 bytes)
-
-**Server Response**: Server immediately responds with a `PING_RESPONSE` packet containing the same Packet ID and Timestamp for RTT calculation.
 
 ---
 
@@ -148,98 +138,39 @@ Server assigns a Player ID to a newly connected client.
 
 ### 0x10 - SNAPSHOT
 
-Game state update from server to clients.
+Game state update from server to clients. This packet contains the complete state of all visible entities in the game.
 
 **Direction**: Server → Client
 
 **Payload Structure**:
 ```
 ┌──────────────┬─────────────────────────────────┐
-│  Nb Entities │      Entity Data (repeated)     │
-│   (1 byte)   │         (Variable)              │
+│              │   Entity Data (repeated per    │
+│              │        entity with Renderable)  │
 └──────────────┴─────────────────────────────────┘
+
+Per Entity (repeated):
+┌─────────────┬─────────────┬─────────────┬─────────────┬──────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
+│  Entity ID  │  Position X │  Position Y │ Path Length │ Sprite Path  │  Rect Pos X │  Rect Pos Y │ Rect Size X │ Rect Size Y │
+│   (1 byte)  │  (4 bytes)  │  (4 bytes)  │  (1 byte)   │  (Variable)  │  (4 bytes)  │  (4 bytes)  │  (4 bytes)  │  (4 bytes)  │
+└─────────────┴─────────────┴─────────────┴─────────────┴──────────────┴─────────────┴─────────────┴─────────────┴─────────────┘
 ```
 
 | Field | Size | Description |
 |-------|------|-------------|
-| Entity Count | 1 byte | Number of entities in this snapshot |
-| Entity Data | Variable | Serialized entity information (format TBD) |
+| Entity ID | 1 byte | Unique identifier of the entity |
+| Position X | 4 bytes | X coordinate (float, big-endian) |
+| Position Y | 4 bytes | Y coordinate (float, big-endian) |
+| Path Length | 1 byte | Length of sprite sheet path string |
+| Sprite Path | Variable | UTF-8 encoded path to sprite sheet |
+| Rect Pos X | 4 bytes | Current sprite rectangle X position (float) |
+| Rect Pos Y | 4 bytes | Current sprite rectangle Y position (float) |
+| Rect Size X | 4 bytes | Sprite rectangle width (float) |
+| Rect Size Y | 4 bytes | Sprite rectangle height (float) |
 
-**Note**: The specific encoding of Entity Data depends on your game engine's entity serialization format. Typically includes: entity ID, position (x, y), velocity, sprite/type, health, etc.
+**Note**: The snapshot includes all entities that have both a `Renderable` and `Position` component. Entities without these components are not transmitted. The client should update or create entities based on the received data and remove entities not present in the snapshot.
 
----
-
-### 0x11 - ENTITY_EVENT
-
-Notification of entity-specific events (spawn, destruction, collision, etc.).
-
-**Direction**: Bidirectional (primarily Server → Client)
-
-**Payload Structure**:
-```
-┌─────────────┬─────────────┬─────────────────┐
-│  Entity ID  │  Event Type │   Extra Data    │
-│   (1 byte)  │   (1 byte)  │   (Variable)    │
-└─────────────┴─────────────┴─────────────────┘
-```
-
-| Field | Size | Description |
-|-------|------|-------------|
-| Entity ID | 1 byte | Identifier of the entity |
-| Event Type | 1 byte | Type of event (see Entity Event Types) |
-| Extra Data | Variable | Event-specific additional data |
-
-**Entity Event Types** (examples):
-- `0x00`: Entity spawned
-- `0x01`: Entity destroyed
-- `0x02`: Entity damaged
-- `0x03`: Entity fired weapon
-- `0x04`: Entity collision
-
----
-
-### 0x12 - PLAYER_EVENT
-
-Notification of player-specific events (join, leave, score update, death, etc.).
-
-**Direction**: Server → Client
-
-**Payload Structure**:
-```
-┌─────────────┬─────────────┬─────────────┐
-│  Player ID  │  Event Type │    Score    │
-│   (1 byte)  │   (1 byte)  │  (1 byte)   │
-└─────────────┴─────────────┴─────────────┘
-```
-
-| Field | Size | Description |
-|-------|------|-------------|
-| Player ID | 1 byte | Affected player (0-3) |
-| Event Type | 1 byte | Type of player event |
-| Score | 1 byte | Optional score value (0 if not applicable) |
-
-**Player Event Types**:
-- `0x00`: Player joined
-- `0x01`: Player left/disconnected
-- `0x02`: Player died
-- `0x03`: Player respawned
-- `0x04`: Score updated
-
----
-
-### 0x13 - PING_RESPONSE
-
-Response to a PING request for latency calculation.
-
-**Direction**: Server → Client
-
-**Payload**: Empty (0 bytes)
-
-**Usage**: The client calculates round-trip time (RTT) by comparing the timestamp in the response with the original PING timestamp:
-```
-RTT = current_time - original_timestamp
-Latency = RTT / 2
-```
+**Broadcast Frequency**: Snapshots are sent at a rate defined by `SNAPSHOT_RATE` (typically ~60 Hz or every 16ms).
 
 ---
 
@@ -254,15 +185,10 @@ Client                                Server
   |------------------------------------>|
   |                                     |
   |                          (2) Assign Player ID
+  |                          (3) Create Player Entity
   |                                     |
-  |  (3) PLAYER_ID_ASSIGNMENT           |
+  |  (4) PLAYER_ID_ASSIGNMENT           |
   |<------------------------------------|
-  |                                     |
-  |  (4) PLAYER_EVENT (other players)   |
-  |<------------------------------------|
-  |                                     |
-  |  (5) Broadcast JOIN to others       |
-  |                                 [Broadcast]
   |                                     |
   |  Ready to play                      |
   |<===================================>|
@@ -279,19 +205,15 @@ Client                                Server
   |  SNAPSHOT (game state, ~60Hz)       |
   |<------------------------------------|
   |                                     |
-  |  ENTITY_EVENT (spawn, destroy)      |
-  |<------------------------------------|
-  |                                     |
-  |  PLAYER_EVENT (score, death)        |
-  |<------------------------------------|
-  |                                     |
-  |  PING (periodic, every 1-5s)        |
-  |------------------------------------>|
-  |                                     |
-  |  PING_RESPONSE                      |
+  |  SNAPSHOT (game state, ~60Hz)       |
   |<------------------------------------|
   |                                     |
 ```
+
+**Key Points**:
+- All game events (player joins, deaths, spawns, collisions) are implicitly communicated through snapshots
+- Clients detect events by comparing snapshot differences
+- No explicit event packets are needed
 
 ---
 
@@ -323,6 +245,12 @@ When all 4 player slots are occupied:
 - Server responds with `PLAYER_ID_ASSIGNMENT` containing Player ID = `255`
 - Client should display "Server Full" message and disconnect
 
+### Client Timeout
+
+- Clients that don't send packets for 30 seconds are considered inactive
+- Server automatically cleans up inactive player slots
+- Player entities are destroyed and slots are freed for new players
+
 ---
 
 ## Security Considerations
@@ -347,11 +275,12 @@ When all 4 player slots are occupied:
 Current mitigations:
 - Fixed maximum packet size
 - Limited player slots (4 maximum)
+- Automatic cleanup of inactive connections
 
 Recommended additions:
-- Connection timeout for inactive clients
 - Rate limiting on JOIN requests per IP
 - Packet flood detection
+- Bandwidth throttling
 
 ---
 
@@ -369,34 +298,45 @@ std::vector<uint8_t> toBytes(T value);
 // Convert big-endian byte array to value
 template<typename T>
 T fromBytes(const uint8_t* data);
+
+// Convert float to big-endian byte array
+std::vector<uint8_t> floatToBytes(float value);
 ```
 
 ### Thread Safety
 
 - Client endpoint map (`_clients`) is protected by mutex (`_clientsMutex`)
-- Player slots array (`_playerSlots`) access is synchronized
+- Player slots array (`_playerSlots`) access is synchronized with `_playerSlotsMutex`
+- Registry access is protected by `_registryMutex`
 - ASIO's `async_receive_from` ensures safe concurrent packet handling
+
+### ECS Integration
+
+- Server runs ECS update loop at 120 Hz
+- Snapshots are broadcast at ~60 Hz (every 16ms)
+- Entity spawning (enemies) occurs every 5 seconds
+- Input commands are immediately applied to player entities via `InputControlled` component
 
 ### UDP Reliability Considerations
 
 Since UDP is unreliable:
 - Critical messages (JOIN, PLAYER_ID_ASSIGNMENT) may need retransmission
 - Client should retry JOIN if no response within timeout
-- Future enhancement: Implement ACK mechanism for reliable messages
+- Snapshot-based approach provides natural state recovery (missed packets are overwritten by next snapshot)
 
 ---
 
 ## Future Extensions
 
-Potential protocol enhancements for Part 2:
+Potential protocol enhancements:
 
 1. **Packet Compression**: Add compression flag in header, compress payload with LZ4/zlib
-2. **Sequence Acknowledgment**: ACK packets for reliable delivery over UDP
-3. **Delta Compression**: Send only changed entity data in SNAPSHOT
-4. **Message Fragmentation**: Support for packets > 1024 bytes
-5. **Encryption**: Add optional payload encryption for sensitive data
-6. **Voice/Text Chat**: New packet types for player communication
-7. **Lobby System**: Packets for game room creation, discovery, matchmaking
+2. **Delta Compression**: Send only changed entity data in SNAPSHOT (compare with previous snapshot)
+3. **Message Fragmentation**: Support for packets > 1024 bytes
+4. **Encryption**: Add optional payload encryption for sensitive data
+5. **Lobby System**: Packets for game room creation, discovery, matchmaking
+6. **Interpolation Data**: Include velocity/acceleration in snapshots for smoother client-side prediction
+7. **Acknowledged Messages**: Optional reliability layer for critical non-snapshot packets
 
 ---
 
@@ -406,14 +346,10 @@ Potential protocol enhancements for Part 2:
 |-----|-----|------|-----------|-------------|
 | 0x01 | 1 | INPUT | C→S | Player input command |
 | 0x02 | 2 | JOIN | C→S | Connection request |
-| 0x03 | 3 | PING | C→S | Latency measurement |
 | 0x08 | 8 | PLAYER_ID_ASSIGNMENT | S→C | Player ID assignment |
-| 0x10 | 16 | SNAPSHOT | S→C | Game state update |
-| 0x11 | 17 | ENTITY_EVENT | S↔C | Entity event notification |
-| 0x12 | 18 | PLAYER_EVENT | S→C | Player event notification |
-| 0x13 | 19 | PING_RESPONSE | S→C | Ping acknowledgment |
+| 0x10 | 16 | SNAPSHOT | S→C | Complete game state update |
 
-**Legend**: C = Client, S = Server, → = Unidirectional, ↔ = Bidirectional
+**Legend**: C = Client, S = Server, → = Unidirectional
 
 ---
 
@@ -421,6 +357,6 @@ Potential protocol enhancements for Part 2:
 
 For questions, bug reports, or protocol enhancement proposals, please refer to the project's developer documentation and contribution guidelines.
 
-**Protocol Version**: 1.0  
-**Last Updated**: January 2025  
-**Compatibility**: R-Type Server v1.x
+**Protocol Version**: 2.0
+**Last Updated**: January 2025
+**Compatibility**: R-Type Server v2.x

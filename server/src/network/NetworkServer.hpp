@@ -33,14 +33,8 @@ namespace rtype {
     enum class PacketType : uint8_t {
         INPUT = 0x01,
         JOIN = 0x02,
-        PING = 0x03,
-        SNAPSHOT = 0x10,
-        ENTITY_EVENT = 0x11,
-        PLAYER_EVENT = 0x12,
         PLAYER_ID_ASSIGNMENT = 0x08,
-        PLAYER_LIST = 0x09,
-        DISCONNECT = 0x0A,
-        PING_RESPONSE = 0x0B
+        SNAPSHOT = 0x10
     };
 
     struct PlayerSlot {
@@ -69,7 +63,6 @@ namespace rtype {
                 _playerSlots[index] = slot;
             }
 
-            std::vector<uint8_t> serializePingResponse(uint16_t packetId, uint32_t timestamp);
             std::vector<uint8_t> serializeSnapshot();
             EntityManager::Entity createEnemyEntity();
             void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
@@ -92,11 +85,6 @@ namespace rtype {
                 const std::vector<uint8_t>& payload
             );
 
-            void handlePingPacket(
-                const asio::ip::udp::endpoint& clientEndpoint,
-                uint16_t packetId, uint32_t timestamp
-            );
-
             void handleSnapshotPacket(
                 const asio::ip::udp::endpoint& clientEndpoint,
                 const std::vector<uint8_t>& payload
@@ -107,22 +95,7 @@ namespace rtype {
                 const std::vector<uint8_t>& payload
             );
 
-            void handleEntityEventPacket(
-                const asio::ip::udp::endpoint& clientEndpoint,
-                const std::vector<uint8_t>& payload
-            );
-
-            void handlePlayerEventPacket(
-                const asio::ip::udp::endpoint& clientEndpoint,
-                const std::vector<uint8_t>& payload
-            );
-
             void sendPlayerIdAssignment(
-                const asio::ip::udp::endpoint& clientEndpoint,
-                uint8_t playerId
-            );
-
-            void sendPlayerJoinEvent(
                 const asio::ip::udp::endpoint& clientEndpoint,
                 uint8_t playerId
             );

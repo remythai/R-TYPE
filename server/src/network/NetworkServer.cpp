@@ -258,15 +258,7 @@ void rtype::NetworkServer::cleanInactivePlayers()
                 std::cout << "[SERVER] Player " << int(slot.playerId)
                         << " (" << slot.username << ") timed out." << std::endl;
 
-                std::vector<uint8_t> leaveEvent = {
-                    static_cast<uint8_t>(rtype::PacketType::PLAYER_EVENT),
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                    slot.playerId, 1
-                };
-                broadcast(leaveEvent);
-
                 destroyPlayerEntity(slot.playerId);
-
                 slot.isUsed = false;
             }
         }
@@ -277,7 +269,7 @@ void rtype::NetworkServer::stop()
 {
     _running = false;
     _ioContext.stop();
-    
+
     std::lock_guard<std::mutex> lock(_clientsMutex);
     _clients.clear();
 
@@ -287,7 +279,7 @@ void rtype::NetworkServer::stop()
         }
         slot.isUsed = false;
     }
-    
+
     std::cout << "Server stopped." << std::endl;
 }
 
@@ -321,11 +313,7 @@ std::string rtype::NetworkServer::packetTypeToString(rtype::PacketType type)
     switch(type) {
         case rtype::PacketType::INPUT: return "INPUT";
         case rtype::PacketType::JOIN: return "JOIN";
-        case rtype::PacketType::PING: return "PING";
         case rtype::PacketType::SNAPSHOT: return "SNAPSHOT";
-        case rtype::PacketType::ENTITY_EVENT: return "ENTITY_EVENT";
-        case rtype::PacketType::PLAYER_EVENT: return "PLAYER_EVENT";
-        case rtype::PacketType::PING_RESPONSE: return "PING_RESPONSE";
         case rtype::PacketType::PLAYER_ID_ASSIGNMENT: return "PLAYER_ID_ASSIGNMENT";
         default: return "UNKNOWN";
     }
@@ -352,28 +340,6 @@ void rtype::NetworkServer::sendPlayerIdAssignment(
             << ") to " << clientEndpoint << std::endl;
 }
 
-void rtype::NetworkServer::sendPlayerJoinEvent(
-    const asio::ip::udp::endpoint& clientEndpoint,
-    uint8_t playerId)
-{
-    std::vector<uint8_t> packet;
-    packet.push_back(static_cast<uint8_t>(PacketType::PLAYER_EVENT));
-
-    auto idBytes = toBytes<uint16_t>(0);
-    packet.insert(packet.end(), idBytes.begin(), idBytes.end());
-
-    auto tsBytes = toBytes<uint32_t>(0);
-    packet.insert(packet.end(), tsBytes.begin(), tsBytes.end());
-
-    packet.push_back(playerId);
-    packet.push_back(0);
-
-    _socket.send_to(asio::buffer(packet), clientEndpoint);
-
-    std::cout << "[SERVER] Sent PLAYER_JOIN(" << int(playerId)
-            << ") to " << clientEndpoint << std::endl;
-}
-
 int rtype::NetworkServer::countActivePlayers() const
 {
     int count = 0;
@@ -381,17 +347,6 @@ int rtype::NetworkServer::countActivePlayers() const
         if (slot.isUsed) count++;
     }
     return count;
-}
-
-std::vector<uint8_t> rtype::NetworkServer::serializePingResponse(uint16_t packetId, uint32_t timestamp)
-{
-    std::vector<uint8_t> packet;
-    packet.push_back(static_cast<uint8_t>(PacketType::PING_RESPONSE));
-    auto idBytes = toBytes(packetId);
-    packet.insert(packet.end(), idBytes.begin(), idBytes.end());
-    auto tsBytes = toBytes(timestamp);
-    packet.insert(packet.end(), tsBytes.begin(), tsBytes.end());
-    return packet;
 }
 
 void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
@@ -455,7 +410,7 @@ void rtype::NetworkServer::sendSnapshot(const asio::ip::udp::endpoint& clientEnd
 void rtype::NetworkServer::broadcastSnapshot()
 {
     auto snapshot = serializeSnapshot();
-    
+
     std::lock_guard<std::mutex> lock(_clientsMutex);
     for (auto& [id, endpoint] : _clients) {
         _socket.send_to(asio::buffer(snapshot), endpoint);
