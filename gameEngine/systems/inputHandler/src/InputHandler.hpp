@@ -173,7 +173,7 @@ namespace GameEngine {
                             registry.emplace<GameEngine::Acceleration>(shoot, 10.0);
                             playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(shoot, playerPos.pos.x, playerPos.pos.y);
-                            registry.emplace<GameEngine::Collider>(shoot, vec2(0.0, 0.0), std::bitset<8>("01000000"), vec2(22.28, 22.28));
+                            registry.emplace<GameEngine::Collider>(shoot, vec2(0.0, 0.0), std::bitset<8>("01000000"), std::bitset<8>("00100000"), vec2(22.28, 22.28));
                             registry.emplace<GameEngine::Domain>(shoot, 0, 0, 1905.0, 1080.0);
                             break;
                         default:

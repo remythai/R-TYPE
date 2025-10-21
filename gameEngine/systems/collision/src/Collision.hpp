@@ -35,11 +35,13 @@ class Collision : public System<Collision>
         vec2 e1HitboxPos = e1Pos.pos + e1Collider.originTranslation;
         vec2 e2HitboxPos = e2Pos.pos + e2Collider.originTranslation;
 
-        if ((e1Collider.entitySelector & e2Collider.entitySelector).any() &&
+        if ((e1Collider.entitySelector & e2Collider.entityDiff).any() &&
+            (e2Collider.entitySelector & e1Collider.entityDiff).any() &&
             e1HitboxPos.x < e2HitboxPos.x + e2Collider.size.x &&
             e1HitboxPos.x + e1Collider.size.x > e2HitboxPos.x &&
             e1HitboxPos.y < e2HitboxPos.y + e2Collider.size.y &&
             e1HitboxPos.y + e1Collider.size.y > e2HitboxPos.y) {
+            std::cout << "collided e" << e1 << " & " << e2 << ";\n";
             e1Health.currentHp = e1Health.currentHp > 0 ? std::max(e1Health.currentHp - e2Damage.dmg, 0) : e1Health.currentHp;
             e2Health.currentHp = e2Health.currentHp > 0 ? std::max(e2Health.currentHp - e1Damage.dmg, 0) : e2Health.currentHp;
         }
