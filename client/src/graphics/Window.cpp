@@ -43,35 +43,31 @@ void CLIENT::Window::pollEvents() {
 
         if (event.is<sf::Event::KeyPressed>()) {
             if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
-                switch (keyEvent->code) {
-                    case sf::Keyboard::Key::Q:
-                        _window.close();
-                        break;
-                    case sf::Keyboard::Key::Up:
-                        std::cout << "Up\n";
-                        _pendingActions.push_back("MOVE_UP");
-                        break;
-                    case sf::Keyboard::Key::Down:
-                        std::cout << "Down\n";
-                        _pendingActions.push_back("MOVE_DOWN");
-                        break;
-                    case sf::Keyboard::Key::Left:
-                        std::cout << "Left\n";
-                        _pendingActions.push_back("MOVE_LEFT");
-                        break;
-                    case sf::Keyboard::Key::Right:
-                        std::cout << "Right\n";
-                        _pendingActions.push_back("MOVE_RIGHT");
-                        break;
-                    case sf::Keyboard::Key::Space:
-                        std::cout << "Shoot\n";
-                        _pendingActions.push_back("SHOOT");
-                        break;
-                    default:
-                        break;
+                if (keyEvent->code == sf::Keyboard::Key::Q) {
+                    _window.close();
+                } else if (keyEvent->code == sf::Keyboard::Key::Space) {
+                    std::cout << "Shoot\n";
+                    _pendingActions.push_back("SHOOT");
                 }
             }
         }
+    }
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
+        std::cout << "Up\n";
+        _pendingActions.push_back("MOVE_UP");
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
+        std::cout << "Down\n";
+        _pendingActions.push_back("MOVE_DOWN");
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+        std::cout << "Left\n";
+        _pendingActions.push_back("MOVE_LEFT");
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
+        std::cout << "Right\n";
+        _pendingActions.push_back("MOVE_RIGHT");
     }
     
     ImGui::SFML::Update(_window, sf::seconds(_deltaTime));
