@@ -3,7 +3,7 @@
 #include <chrono>
 #include <algorithm>
 
-// Composants de test
+// test composants
 struct Position {
     float x, y, z;
     Position(float x = 0, float y = 0, float z = 0) : x(x), y(y), z(z) {}
@@ -29,7 +29,6 @@ struct Renderable {
     Renderable(int l = 0) : layer(l) {}
 };
 
-// Système de test simple avec CRTP
 class MovementSystem : public System<MovementSystem> {
 public:
     int updateCount = 0;
@@ -61,8 +60,6 @@ public:
         updateCount++;
     }
 };
-
-// --- Tests de création/destruction d'entités ---
 
 TEST(RegistryTest, CreateEntity) {
     Registry registry;
@@ -105,8 +102,6 @@ TEST(RegistryTest, DestroyEntityWithComponents) {
     registry.destroy(e);
     EXPECT_EQ(registry.alive(), 0);
 }
-
-// --- Tests de composants ---
 
 TEST(RegistryTest, EmplaceComponent) {
     Registry registry;
@@ -197,8 +192,6 @@ TEST(RegistryTest, CountComponents) {
     EXPECT_EQ(registry.count<Position>(), 2);
 }
 
-// --- Tests de view ---
-
 TEST(RegistryTest, ViewSingleComponent) {
     Registry registry;
     auto e1 = registry.create();
@@ -210,8 +203,6 @@ TEST(RegistryTest, ViewSingleComponent) {
     auto& view = registry.view<Position>();
     EXPECT_EQ(view.size(), 2);
 }
-
-// --- Tests de each ---
 
 TEST(RegistryTest, EachSingleComponent) {
     Registry registry;
@@ -251,7 +242,7 @@ TEST(RegistryTest, EachMultipleComponents) {
         count++;
     });
     
-    EXPECT_EQ(count, 2); // Seulement e1 et e3 ont les deux composants
+    EXPECT_EQ(count, 2);
 }
 
 TEST(RegistryTest, EachWithNoMatchingEntities) {
@@ -266,8 +257,6 @@ TEST(RegistryTest, EachWithNoMatchingEntities) {
     
     EXPECT_EQ(count, 0);
 }
-
-// --- Tests de systèmes ---
 
 TEST(RegistryTest, AddSystem) {
     Registry registry;
@@ -303,8 +292,7 @@ TEST(RegistryTest, SystemPriority) {
 TEST(RegistryTest, SystemAvailabilityWithoutComponents) {
     Registry registry;
     auto& system = registry.addSystem<MovementSystem>();
-    
-    // Le système nécessite Position et Velocity, mais aucun n'existe
+
     EXPECT_FALSE(system.hasRequiredComponents);
 }
 
@@ -314,13 +302,11 @@ TEST(RegistryTest, SystemAvailabilityWithComponents) {
     
     auto e = registry.create();
     registry.emplace<Position>(e);
-    
-    // Toujours pas actif, il manque Velocity
+
     EXPECT_FALSE(system.hasRequiredComponents);
     
     registry.emplace<Velocity>(e);
-    
-    // Maintenant actif
+
     EXPECT_TRUE(system.hasRequiredComponents);
 }
 
@@ -330,12 +316,9 @@ TEST(RegistryTest, RemoveSystem) {
     registry.addSystem<MovementSystem>();
     
     registry.removeSystem<MovementSystem>();
-    
-    // Pas de crash lors de l'update
+
     registry.update(0.016f);
 }
-
-// --- Tests de clear ---
 
 TEST(RegistryTest, ClearEntities) {
     Registry registry;
@@ -354,8 +337,6 @@ TEST(RegistryTest, ClearEntities) {
     EXPECT_EQ(registry.count<Position>(), 0);
 }
 
-// --- Tests de reserve ---
-
 TEST(RegistryTest, ReserveDoesNotCreateEntities) {
     Registry registry;
     registry.reserve(1000);
@@ -363,23 +344,12 @@ TEST(RegistryTest, ReserveDoesNotCreateEntities) {
     EXPECT_EQ(registry.alive(), 0);
 }
 
-// --- Tests de cas limites ---
-
 TEST(RegistryTest, RemoveNonExistentComponent) {
     Registry registry;
     auto e = registry.create();
-    
-    // Ne devrait pas crasher
+
     registry.remove<Position>(e);
     EXPECT_FALSE(registry.has<Position>(e));
-}
-
-TEST(RegistryTest, GetNonExistentComponentThrows) {
-    Registry registry;
-    auto e = registry.create();
-    
-    // Comportement : peut throw ou undefined behavior selon SparseSet
-    // À adapter selon votre implémentation
 }
 
 TEST(RegistryTest, MultipleSystemsWithSameType) {
@@ -391,13 +361,10 @@ TEST(RegistryTest, MultipleSystemsWithSameType) {
     EXPECT_NE(&sys1, &sys2);
 }
 
-// --- Tests d'intégration ---
-
 TEST(RegistryTest, CompleteWorkflow) {
     Registry registry;
     auto& system = registry.addSystem<MovementSystem>();
-    
-    // Créer des entités avec composants
+
     auto e1 = registry.create();
     registry.emplace<Position>(e1, 0.0f, 0.0f, 0.0f);
     registry.emplace<Velocity>(e1, 1.0f, 0.0f, 0.0f);
@@ -407,14 +374,10 @@ TEST(RegistryTest, CompleteWorkflow) {
     registry.emplace<Velocity>(e2, -1.0f, 0.0f, 0.0f);
     
     EXPECT_TRUE(system.hasRequiredComponents);
-    
-    // Simuler un update
+
     registry.update(1.0f);
     
     EXPECT_GT(system.updateCount, 0);
-    
-    // Vérifier que les positions ont changé
-    // Note: dépend de votre GameClock et du fixed timestep
 }
 
 TEST(RegistryTest, EntityReuseAfterDestroy) {
@@ -426,13 +389,10 @@ TEST(RegistryTest, EntityReuseAfterDestroy) {
     registry.destroy(e1);
     
     auto e2 = registry.create();
-    EXPECT_EQ(e1, e2); // ID réutilisé
-    
-    // Le nouveau composant ne doit pas exister
+    EXPECT_EQ(e1, e2);
+
     EXPECT_FALSE(registry.has<Position>(e2));
 }
-
-// --- Tests de performance ---
 
 TEST(RegistryPerformance, CreateDestroyManyEntities) {
     Registry registry;
@@ -509,8 +469,7 @@ TEST(RegistryPerformance, EachIterationSpeed) {
 TEST(RegistryPerformance, MixedComponentIteration) {
     Registry registry;
     const size_t COUNT = 10000;
-    
-    // Créer des entités avec différentes combinaisons de composants
+
     for (size_t i = 0; i < COUNT; ++i) {
         auto e = registry.create();
         registry.emplace<Position>(e);
@@ -534,7 +493,7 @@ TEST(RegistryPerformance, MixedComponentIteration) {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     
-    EXPECT_EQ(count, COUNT / 2); // Seulement les entités paires
+    EXPECT_EQ(count, COUNT / 2);
     EXPECT_LT(duration.count(), 50);
 }
 
@@ -548,16 +507,14 @@ TEST(RegistryPerformance, FragmentationHandling) {
         entities.push_back(e);
         registry.emplace<Position>(e);
     }
-    
-    // Détruire les entités paires
+
     for (size_t i = 0; i < entities.size(); i += 2) {
         registry.destroy(entities[i]);
     }
     
     EXPECT_EQ(registry.alive(), 5000);
     EXPECT_EQ(registry.count<Position>(), 5000);
-    
-    // Recréer 5000 entités
+
     auto start = std::chrono::high_resolution_clock::now();
     
     for (int i = 0; i < 5000; ++i) {
@@ -574,14 +531,12 @@ TEST(RegistryPerformance, FragmentationHandling) {
 
 TEST(RegistryPerformance, SystemUpdateOverhead) {
     Registry registry;
-    
-    // Ajouter plusieurs systèmes et garder leurs références
+
     std::vector<MovementSystem*> systems;
     for (int i = 0; i < 10; ++i) {
         systems.push_back(&registry.addSystem<MovementSystem>(i));
     }
-    
-    // Créer des entités avec les composants requis
+
     for (int i = 0; i < 1000; ++i) {
         auto e = registry.create();
         registry.emplace<Position>(e, 0.0f, 0.0f, 0.0f);
@@ -597,14 +552,10 @@ TEST(RegistryPerformance, SystemUpdateOverhead) {
     
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    
-    // Vérifier que tous les systèmes ont bien été appelés
-    // Note: le nombre exact dépend du fixed timestep du GameClock
+
     for (auto* sys : systems) {
         EXPECT_GT(sys->updateCount, 0);
     }
-    
-    // 10 systèmes × ~100 updates × 1000 entités
-    // Avec fixed timestep, le nombre réel d'updates peut varier
+
     EXPECT_LT(duration.count(), 1000);
 }
