@@ -22,7 +22,6 @@ public:
                     const std::vector<uint8_t>& payload);
     void sendInput(uint8_t playerId, uint8_t keyCode, uint8_t action);
     void sendJoin(const std::string& username);
-    void sendPing(uint16_t packetId);
     void startReceiving();
 
     void setOnPlayerIdReceived(std::function<void(uint8_t)> callback);
@@ -32,7 +31,7 @@ public:
 private:
     void doReceive();
     void handlePacket(const std::vector<uint8_t>& buffer, size_t bytesReceived,
-                     const asio::ip::udp::endpoint& sender);
+                    const asio::ip::udp::endpoint& sender);
 
     asio::io_context _ioContext;
     asio::ip::udp::socket _socket;
