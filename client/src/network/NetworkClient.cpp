@@ -57,11 +57,6 @@ void NetworkClient::sendJoin(const std::string& username)
     sendPacket(rtype::PacketType::JOIN, 0, 0, payload);
 }
 
-void NetworkClient::sendPing(uint16_t packetId)
-{
-    sendPacket(rtype::PacketType::PING, packetId, 0, {});
-}
-
 void NetworkClient::startReceiving()
 {
     doReceive();
@@ -110,25 +105,12 @@ void NetworkClient::handlePacket(
             if (!payload.empty()) {
                 uint8_t playerId = payload[0];
                 std::cout << "[CLIENT] ✓ PLAYER_ID_ASSIGNMENT received: " << int(playerId) << std::endl;
-                
+
                 if (_onPlayerIdReceived) {
                     std::cout << "[CLIENT] Calling _onPlayerIdReceived callback..." << std::endl;
                     _onPlayerIdReceived(playerId);
                 } else {
                     std::cout << "[CLIENT] No callback set for _onPlayerIdReceived" << std::endl;
-                }
-            }
-            break;
-
-        case rtype::PacketType::PLAYER_EVENT:
-            if (payload.size() >= 2) {
-                uint8_t playerId = payload[0];
-                uint8_t eventType = payload[1];
-                std::cout << "[CLIENT] ✓ PLAYER_EVENT: Player " << int(playerId) 
-                          << " Event " << int(eventType) << std::endl;
-                
-                if (_onPlayerEvent) {
-                    _onPlayerEvent(playerId, eventType);
                 }
             }
             break;
@@ -185,14 +167,8 @@ void NetworkClient::handlePacket(
             }
             break;
 
-        case rtype::PacketType::PING_RESPONSE:
-            std::cout << "[CLIENT] ✓ PING_RESPONSE received" << std::endl;
-            break;
-
         case rtype::PacketType::INPUT:
         case rtype::PacketType::JOIN:
-        case rtype::PacketType::PING:
-        case rtype::PacketType::ENTITY_EVENT:
         default:
             std::cout << "[CLIENT] Unhandled packet type: " << int(type) << std::endl;
             break;
