@@ -19,6 +19,7 @@ add_executable(runTests
     entityManager_tests.cpp
     sparseSet_tests.cpp
     componentRegistry_tests.cpp
+    registry_tests.cpp
 )
 
 # Lier GoogleTest
