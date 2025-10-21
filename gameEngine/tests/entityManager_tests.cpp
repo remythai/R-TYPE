@@ -21,8 +21,6 @@ TEST(EntityManagerTest, CreateDestroySequence) {
     EXPECT_TRUE(std::find(entities.begin(), entities.end(), newEntity) != entities.end());
 }
 
-
-// --- Création basique ---
 TEST(EntityManagerTest, CreateIncrementsAliveCount) {
     EntityManager manager;
     auto e1 = manager.create();
@@ -32,7 +30,6 @@ TEST(EntityManagerTest, CreateIncrementsAliveCount) {
     EXPECT_NE(e1, e2);
 }
 
-// --- Destruction ---
 TEST(EntityManagerTest, DestroyDecrementsAliveCount) {
     EntityManager manager;
     auto e = manager.create();
@@ -42,7 +39,6 @@ TEST(EntityManagerTest, DestroyDecrementsAliveCount) {
     EXPECT_EQ(manager.alive(), 0);
 }
 
-// --- Réutilisation d'IDs ---
 TEST(EntityManagerTest, ReusesDestroyedIds) {
     EntityManager manager;
     auto e1 = manager.create();
@@ -52,7 +48,6 @@ TEST(EntityManagerTest, ReusesDestroyedIds) {
     EXPECT_EQ(e1, e2);
 }
 
-// --- Clear() remet tout à zéro ---
 TEST(EntityManagerTest, ClearResetsState) {
     EntityManager manager;
     for (int i = 0; i < 5; ++i) manager.create();
@@ -65,14 +60,12 @@ TEST(EntityManagerTest, ClearResetsState) {
     EXPECT_EQ(e, 0u);
 }
 
-// --- Réserve ---
 TEST(EntityManagerTest, ReserveDoesNotCreateEntities) {
     EntityManager manager;
     manager.reserve(100);
     EXPECT_EQ(manager.alive(), 0);
 }
 
-// --- Création et destruction en chaîne ---
 TEST(EntityManagerTest, CreateDestroySequenceChain) {
     EntityManager manager;
     std::vector<EntityManager::Entity> entities;
@@ -91,12 +84,10 @@ TEST(EntityManagerTest, CreateDestroySequenceChain) {
     EXPECT_TRUE(std::find(entities.begin(), entities.end(), newEntity) != entities.end());
 }
 
-// Test INVALID_ENTITY
 TEST(EntityManagerTest, InvalidEntityConstant) {
     EXPECT_EQ(EntityManager::INVALID_ENTITY, static_cast<uint32_t>(-1));
 }
 
-// Test ordre de réutilisation (LIFO - Last In First Out)
 TEST(EntityManagerTest, ReusesIdsInLIFOOrder) {
     EntityManager manager;
     auto e1 = manager.create();
@@ -113,7 +104,6 @@ TEST(EntityManagerTest, ReusesIdsInLIFOOrder) {
     EXPECT_EQ(e5, e1);
 }
 
-// Test destruction multiple de la même entité (comportement non défini)
 TEST(EntityManagerTest, DoubleDestroyBehavior) {
     EntityManager manager;
     auto e = manager.create();
@@ -125,7 +115,6 @@ TEST(EntityManagerTest, DoubleDestroyBehavior) {
     EXPECT_EQ(manager.alive(), static_cast<size_t>(-1));
 }
 
-// Test de capacité
 TEST(EntityManagerTest, HandlesLargeNumberOfEntities) {
     EntityManager manager;
     const size_t COUNT = 10000;

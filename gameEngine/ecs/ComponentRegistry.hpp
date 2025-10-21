@@ -93,7 +93,6 @@ class ComponentRegistry {
         * @return The ComponentID if found, otherwise INVALID_ID.
         */
         ComponentID getID(const std::string& name) const {
-            // O(1) lookup au lieu de O(n)
             auto it = nameToID.find(name);
             if (it != nameToID.end()) {
                 return it->second;

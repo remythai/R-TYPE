@@ -30,7 +30,6 @@ class EntityManager {
         * @return The newly created entity ID.
         */
         Entity create() {
-            // Reuse IDs from entities that were destroyed, if available
             if (!freeList.empty()) {
                 Entity e = freeList.back();
                 freeList.pop_back();
@@ -38,7 +37,6 @@ class EntityManager {
                 return e;
             }
 
-            // Otherwise, assign a new unique ID
             aliveCount++;
             return nextEntity++;
         }
