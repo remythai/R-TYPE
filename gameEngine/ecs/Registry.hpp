@@ -71,7 +71,6 @@ class Registry {
 
             pool.emplace(e, std::forward<Args>(args)...);
 
-            // If it's the first component of that type, systems may become active
             if (wasEmpty) {
                 std::cout << "[Registry] First component of type added, updating system availability\n";
                 availableComponents.set(id);
@@ -96,8 +95,7 @@ class Registry {
                 if (pool->contains(e)) {
                     pool->erase(e);
 
-                    // If no more of this component type exists, update system availability
-                    if (pool->empty()) {
+                    if (pool->size() == 0) {
                         std::cout << "[Registry] Last component of type removed, updating system availability\n";
                         availableComponents.reset(id);
                         updateSystemAvailability();
@@ -166,7 +164,6 @@ class Registry {
             IComponentPool* smallestPool = nullptr;
             size_t smallestSize = SIZE_MAX;
 
-            // Find the smallest pool to optimize iteration
             ((void)[&] {
                 ComponentID id = ComponentRegistry::instance().getOrCreateID<Components>();
                 assurePool<Components>(id);
@@ -182,7 +179,6 @@ class Registry {
             
             if (!smallestPool) return;
 
-            // Iterate and call function for entities that have all components
             for (size_t i = 0; i < smallestPool->size(); ++i) {
                 Entity e = smallestPool->getEntityAt(i);
                 if ((has<Components>(e) && ...)) {
@@ -253,12 +249,13 @@ class Registry {
         void update(float realDt) {
             int steps = gameClock.update(realDt);
 
-            // Fixed time-step updates for deterministic simulation
             for (int i = 0; i < steps; i++) {
                 float fixedDt = gameClock.getFixedDeltaTime();
                 
                 for (auto& system : systems) {
-                    system->update(*this, fixedDt);
+                    if (system->enabled) {
+                        system->update(*this, fixedDt);
+                    }
                 }
             }
         }
@@ -280,8 +277,8 @@ class Registry {
                 const auto& required = system->getSignature();
                 bool wasAvailable = system->hasRequiredComponents;
 
-                // A system is active only if all its required components exist
-                system->hasRequiredComponents = (required & availableComponents) == required;
+                bool hasNoRequirements = required.none();
+                system->hasRequiredComponents = hasNoRequirements || ((required & availableComponents) == required);
                 
                 if (wasAvailable != system->hasRequiredComponents) {
                     std::cout << "  System '" << system->getName() 
