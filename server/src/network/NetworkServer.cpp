@@ -92,7 +92,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     rectPos.push_back(vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
     rectPos.push_back(vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
     _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", rectPos, vec2{33.2f, 17.2f}, 1000, false);
-    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("10000000"), vec2(33.2, 17.2));
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("01000000"), std::bitset<8>("10000000"), vec2(33.2, 17.2));
     _registry->emplace<GameEngine::Health>(entity, 1, 1);
     _registry->emplace<GameEngine::Damage>(entity, 1);
     
@@ -125,7 +125,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
     rectPos.push_back(vec2{199.8f, 0.0f});
     rectPos.push_back(vec2{233.1f, 0.0f});
     _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet5.png", rectPos, vec2{33.3f, 36.0f}, 1000, true);
-    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("11000000"), vec2(33.3, 33.3));
+    _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("10100000"), std::bitset<8>("01000000"), vec2(33.3, 33.3));
     _registry->emplace<GameEngine::Domain>(entity, 5.0f, 0.0f, 1920.0f, 1080.0);
     _registry->emplace<GameEngine::Health>(entity, 1, 1);
     _registry->emplace<GameEngine::Damage>(entity, 1);
