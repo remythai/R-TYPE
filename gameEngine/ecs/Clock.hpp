@@ -46,9 +46,8 @@ namespace GameEngine {
             accumulator += realDt * timeScale;
 
             int steps = 0;
-            const int maxSteps = 5; // Limit how many fixed steps can happen per frame
+            const int maxSteps = 5;
 
-            // Consume fixed steps from the accumulator
             while (accumulator >= fixedDeltaTime && steps < maxSteps) {
                 totalTime += fixedDeltaTime;
                 frameCount++;
