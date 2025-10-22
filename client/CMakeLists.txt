@@ -61,7 +61,6 @@ set(SOURCES
     src/main.cpp
     src/core/Core.cpp
     src/graphics/Window.cpp
-    src/graphics/AnimatedSprite.cpp
     src/graphics/ResourceManager.cpp
     src/graphics/EntityManager.cpp
     src/graphics/ParallaxSystem.cpp

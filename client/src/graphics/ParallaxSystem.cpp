@@ -8,102 +8,96 @@
 #include "ParallaxSystem.hpp"
 #include <iostream>
 
-CLIENT::ParallaxSystem::ParallaxSystem(EntityManager* entityMgr, ResourceManager* resourceMgr)
-    : _entityManager(entityMgr), _resourceManager(resourceMgr)
+CLIENT::ParallaxSystem::ParallaxSystem(EntityManager* entityManager, 
+                                       ResourceManager* resourceManager)
+    : _entityManager(entityManager), _resourceManager(resourceManager)
 {
 }
 
-void CLIENT::ParallaxSystem::addLayer(const std::string& texturePath, float speed, float depth)
+void CLIENT::ParallaxSystem::addLayer(const std::string& texturePath, 
+                                       float scrollSpeed, float depth)
 {
-    _layers.emplace_back(texturePath, speed, depth);
-    std::cout << "[ParallaxSystem] Added layer: " << texturePath 
-              << " (speed=" << speed << ", depth=" << depth << ")\n";
+    ParallaxLayer layer;
+    layer.texturePath = texturePath;
+    layer.scrollSpeed = scrollSpeed;
+    layer.depth = depth;
+    _layers.push_back(layer);
 }
 
 void CLIENT::ParallaxSystem::createLayers()
 {
-    std::cout << "[ParallaxSystem] Creating " << _layers.size() << " layers...\n";
-    
-    for (const auto& layer : _layers) {
-        createLayerEntities(layer);
+    for (auto& layer : _layers) {
+        createTilesForLayer(layer);
     }
-    
-    std::cout << "[ParallaxSystem] All layers created\n";
 }
 
-void CLIENT::ParallaxSystem::createLayerEntities(const ParallaxLayer& layer)
+void CLIENT::ParallaxSystem::createTilesForLayer(ParallaxLayer& layer)
 {
-    auto* texture = _resourceManager->getTexture(layer.texturePath);
+    sf::Texture* texture = _resourceManager->getTexture(layer.texturePath);
     if (!texture) {
-        std::cerr << "[ParallaxSystem] Failed to load texture: " << layer.texturePath << "\n";
+        std::cerr << "[ParallaxSystem] Failed to get texture: " << layer.texturePath << "\n";
         return;
     }
 
-    float scaleY = static_cast<float>(WINDOW_HEIGHT) / texture->getSize().y;
+    sf::Vector2u textureSize = texture->getSize();
+    float scaleY = static_cast<float>(WINDOW_HEIGHT) / textureSize.y;
     float scaleX = scaleY;
-    float textureWidth = texture->getSize().x * scaleX;
+    float scaledWidth = textureSize.x * scaleX;
 
-    RenderLayer renderLayer = getRenderLayerFromDepth(layer.depth);
-
-    for (int i = 0; i < 3; ++i) {
-        uint32_t id = _entityManager->createLocalEntity(EntityType::BACKGROUND, renderLayer);
-        auto* entity = _entityManager->getEntity(id);
+    for (int i = 0; i < TILES_PER_LAYER; ++i) {
+        uint32_t entityId = _entityManager->createParallaxEntity();
+        GameEntity* entity = _entityManager->getEntity(entityId);
         
         if (entity) {
             entity->sprite = sf::Sprite(*texture);
-            entity->position = sf::Vector2f(static_cast<float>(i) * textureWidth, 0.0f);
-            entity->velocity = sf::Vector2f(-layer.speed, 0.0f);
-            entity->looping = false;
-            entity->scrollSpeed = textureWidth;
-
-            entity->sprite->setPosition(entity->position);
             entity->sprite->setScale(sf::Vector2f(scaleX, scaleY));
-
-            std::cout << "[ParallaxSystem] Created entity for " << layer.texturePath
-                      << " at x=" << entity->position.x
-                      << " (width=" << textureWidth
-                      << ", layer=" << static_cast<int>(renderLayer) << ")\n";
+            entity->position = sf::Vector2f(i * scaledWidth, 0.0f);
+            entity->sprite->setPosition(entity->position);
+            entity->velocity = sf::Vector2f(-layer.scrollSpeed, 0.0f);
+            entity->scrollSpeed = layer.scrollSpeed;
+            entity->looping = true;
+            entity->active = true;
+            entity->isParallax = true;
+            entity->currentSpritePath = layer.texturePath;
+            
+            layer.entityIds.push_back(entityId);
         }
-    }
-}
-
-CLIENT::RenderLayer CLIENT::ParallaxSystem::getRenderLayerFromDepth(float depth)
-{
-    if (depth < 0.5f) {
-        return RenderLayer::PARALLAX_FAR;
-    } else {
-        return RenderLayer::PARALLAX_NEAR;
     }
 }
 
 void CLIENT::ParallaxSystem::update(float deltaTime)
 {
-    for (int layer = static_cast<int>(RenderLayer::PARALLAX_FAR); 
-         layer <= static_cast<int>(RenderLayer::PARALLAX_NEAR); 
-         ++layer) {
+    for (auto& layer : _layers) {
+        float rightmostX = -std::numeric_limits<float>::max();
         
-        RenderLayer currentLayer = static_cast<RenderLayer>(layer);
-        auto layerEntities = _entityManager->getEntitiesByLayer(currentLayer);
-        
-        for (auto* entity : layerEntities) {
-            if (!entity || !entity->sprite.has_value()) continue;
+        for (uint32_t entityId : layer.entityIds) {
+            GameEntity* entity = _entityManager->getEntity(entityId);
+            if (!entity || !entity->active || !entity->sprite.has_value()) continue;
+
+            auto bounds = entity->sprite->getGlobalBounds();
+            float entityRight = entity->position.x + bounds.size.x;
             
+            if (entityRight > rightmostX) {
+                rightmostX = entityRight;
+            }
+        }
+        
+        for (uint32_t entityId : layer.entityIds) {
+            GameEntity* entity = _entityManager->getEntity(entityId);
+            if (!entity || !entity->active || !entity->sprite.has_value()) continue;
+
             entity->position.x += entity->velocity.x * deltaTime;
-            entity->position.y += entity->velocity.y * deltaTime;
+            auto bounds = entity->sprite->getGlobalBounds();
             
-            if (entity->looping && entity->scrollSpeed > 0) {
-                if (entity->position.x + entity->scrollSpeed < 0) {
-                    entity->position.x += entity->scrollSpeed * 3.0f;
-                }
+            if (entity->position.x + bounds.size.x < 0) {
+                entity->position.x = rightmostX;
             }
             
             entity->sprite->setPosition(entity->position);
         }
     }
 }
-
 void CLIENT::ParallaxSystem::clear()
 {
     _layers.clear();
-    std::cout << "[ParallaxSystem] All layers cleared\n";
 }
