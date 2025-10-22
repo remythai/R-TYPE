@@ -292,10 +292,10 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
             
             if (entity->sprite.has_value()) {
                 entity->sprite->setTextureRect(sf::IntRect(
-                    sf::Vector2i(static_cast<int>(rectPosX), 
-                                 static_cast<int>(rectPosY)),
-                    sf::Vector2i(static_cast<int>(rectSizeX), 
-                                 static_cast<int>(rectSizeY))
+                    sf::Vector2i(static_cast<int>(std::round(rectPosX)), 
+                                static_cast<int>(std::round(rectPosY))),
+                    sf::Vector2i(static_cast<int>(std::round(rectSizeX)), 
+                                static_cast<int>(std::round(rectSizeY)))
                 ));
                 
                 entity->sprite->setPosition(sf::Vector2f(x, y));
