@@ -105,7 +105,6 @@ void CLIENT::Core::setupNetworkCallbacks()
     });
 }
 
-
 void CLIENT::Core::loadResources()
 {
     auto &rm = ResourceManager::getInstance();
@@ -116,8 +115,6 @@ void CLIENT::Core::loadResources()
     rm.loadTexture("assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
     rm.loadTexture("assets/sprites/r-typesheet10.png", "assets/sprites/r-typesheet10.png");
     rm.loadTexture("assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
-    
-    rm.loadTexture("assets/sprites/background.png", "assets/sprites/background.png");
     
     rm.loadTexture("assets/sprites/parallax/1.png", "assets/sprites/parallax/1.png");
     rm.loadTexture("assets/sprites/parallax/2.png", "assets/sprites/parallax/2.png");
@@ -234,25 +231,9 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
             if (!entity->currentSpritePath.empty() && 
                 entity->currentSpritePath != spritePath) {
                 needsNewSprite = true;
-                
-                EntityType newType = determineEntityType(entityId, spritePath);
-                RenderLayer newLayer = determineRenderLayer(newType);
-                
-                if (entity->type != newType || entity->layer != newLayer) {
-                    std::cout << "[Entity " << int(entityId) 
-                              << "] Type/Layer changed: "
-                              << int(entity->type) << "/" << int(entity->layer)
-                              << " → " << int(newType) << "/" << int(newLayer) << "\n";
-                    
-                    entity->type = newType;
-                    entity->layer = newLayer;
-                }
             }
         } else {
-            EntityType type = determineEntityType(entityId, spritePath);
-            RenderLayer layer = determineRenderLayer(type);
-            
-            _entityManager->createServerEntity(entityId, type, layer);
+            _entityManager->createSimpleEntity(entityId);
             entity = _entityManager->getEntity(entityId);
             needsNewSprite = true;
         }
@@ -331,43 +312,6 @@ void CLIENT::Core::processIncomingMessages(Window& window)
                 window.getWindow().close();
             }
         }
-    }
-}
-
-CLIENT::EntityType CLIENT::Core::determineEntityType(uint32_t entityId, 
-                                                      const std::string& spritePath)
-{
-    if (spritePath.find("r-typesheet42") != std::string::npos) {
-        return EntityType::PLAYER;
-    } else if (spritePath.find("Projectile") != std::string::npos) {
-        return EntityType::PROJECTILE;
-    } else if (spritePath.find("r-typesheet5") != std::string::npos ||
-               spritePath.find("r-typesheet9") != std::string::npos ||
-               spritePath.find("r-typesheet10") != std::string::npos ||
-               spritePath.find("r-typesheet11") != std::string::npos) {
-        return EntityType::ENEMY;
-    }
-    
-    if (entityId < 100) return EntityType::PLAYER;
-    if (entityId < 1000) return EntityType::PROJECTILE;
-    return EntityType::ENEMY;
-}
-
-CLIENT::RenderLayer CLIENT::Core::determineRenderLayer(EntityType type)
-{
-    switch (type) {
-        case EntityType::PLAYER:
-            return RenderLayer::PLAYERS;
-        case EntityType::ENEMY:
-            return RenderLayer::ENEMIES;
-        case EntityType::PROJECTILE:
-            return RenderLayer::PROJECTILES;
-        case EntityType::OBSTACLE:
-            return RenderLayer::OBSTACLES;
-        case EntityType::BACKGROUND:
-            return RenderLayer::BACKGROUND;
-        default:
-            return RenderLayer::ENEMIES;
     }
 }
 
@@ -508,7 +452,6 @@ void CLIENT::Core::launchMapEditor()
         window.display();
     }
 }
-
 
 int execute_rtypeClient(char **argv)
 {

@@ -7,43 +7,39 @@
 
 #pragma once
 
-#include "EntityManager.hpp"
-#include "../graphics/ResourceManager.hpp"
-#include <random>
+#include <SFML/Graphics.hpp>
 #include <vector>
+#include <string>
+#include "EntityManager.hpp"
+#include "ResourceManager.hpp"
 
 namespace CLIENT {
 
 struct ParallaxLayer {
     std::string texturePath;
-    float speed;
+    float scrollSpeed;
     float depth;
-    
-    ParallaxLayer(const std::string& path, float spd, float dpt)
-        : texturePath(path), speed(spd), depth(dpt) {}
+    std::vector<uint32_t> entityIds;
 };
 
 class ParallaxSystem {
 public:
-    ParallaxSystem(EntityManager* entityMgr, ResourceManager* resourceMgr);
+    ParallaxSystem(EntityManager* entityManager, ResourceManager* resourceManager);
     ~ParallaxSystem() = default;
 
-    void addLayer(const std::string& texturePath, float speed, float depth);
-    
+    void addLayer(const std::string& texturePath, float scrollSpeed, float depth);
     void createLayers();
-    
     void update(float deltaTime);
-    
     void clear();
 
 private:
+    void createTilesForLayer(ParallaxLayer& layer);
+
     EntityManager* _entityManager;
     ResourceManager* _resourceManager;
     std::vector<ParallaxLayer> _layers;
     
-    void createLayerEntities(const ParallaxLayer& layer);
-    
-    RenderLayer getRenderLayerFromDepth(float depth);
+    static constexpr int TILES_PER_LAYER = 3;
 };
 
 } // namespace CLIENT

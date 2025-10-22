@@ -68,9 +68,6 @@ private:
     void processIncomingMessages(Window& window);
     void parseSnapshot(const std::vector<uint8_t>& payload);
 
-    EntityType determineEntityType(uint32_t entityId, const std::string& spritePath);
-    RenderLayer determineRenderLayer(EntityType type);
-
     void sendInput(KeyCode keyCode, InputAction action);
     void handleKeyStateChange(const std::string& action, bool isPressed, 
                              std::map<std::string, bool>& keyStates);
