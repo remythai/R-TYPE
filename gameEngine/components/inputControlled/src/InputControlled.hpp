@@ -5,7 +5,8 @@
 namespace GameEngine {
 struct InputControlled {
     std::vector<int> inputs;
-    InputControlled() {}
+    bool firstInput;
+    InputControlled() : firstInput(false) {}
 };
 } // namespace GameEngine
 
