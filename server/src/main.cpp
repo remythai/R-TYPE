@@ -12,7 +12,7 @@
 
 static void display_help(void)
 {
-    std::cout << "USAGE: ./r-type_server -p [port] -h [host] -g [game]\n";
+    std::cout << "USAGE: ./r-type_server -p [port] -h [host] -g [game]\nGAMES: | RType\n       | flappyByte\n";
 }
 
 static int check_args(int argc, char **argv, unsigned short &port, std::string &hostname, std::string &game)
