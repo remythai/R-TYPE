@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Format, Build & Deploy
 
 on:
   push:
@@ -6,17 +6,66 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+
+      - name: Apply clang-format
+        run: |
+          find client/src client/include server/src server/include gameEngine/src gameEngine/include \
+            \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
+            -exec clang-format -i --style=file {} +
+
+      - name: Check for formatting changes
+        id: format_check
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes needed"
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Formatting changes detected"
+            echo "changes=true" >> $GITHUB_OUTPUT
+            git diff
+          fi
+
+      - name: Commit and push formatting changes
+        if: steps.format_check.outputs.changes == 'true' && github.event_name == 'push'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "style: apply clang-format [skip ci]"
+          git push
+
+      - name: Fail on PR if formatting needed
+        if: steps.format_check.outputs.changes == 'true' && github.event_name == 'pull_request'
+        run: |
+          echo "::error::Code formatting is required. Please run clang-format locally."
+          exit 1
+
   build:
     runs-on: ubuntu-latest
+    needs: format
 
     steps:
       - name: Code checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Install dependencies
         run: |
@@ -25,43 +74,104 @@ jobs:
             libx11-dev libxrandr-dev libxcursor-dev libxi-dev \
             libudev-dev libgl1-mesa-dev libflac-dev libogg-dev \
             libvorbis-dev libopenal-dev libfreetype-dev \
-            clang-format clang-tidy doxygen graphviz
-
-      # - name: Check code formatting
-      #   run: |
-      #     find client/src client/include server/src server/include \
-      #       -name '*.cpp' -o -name '*.hpp' -o -name '*.h' | \
-      #       xargs clang-format --dry-run --Werror
+            clang-format clang-tidy clangd doxygen graphviz
 
       - name: Run clang-tidy on client
         run: |
           cd client
-          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          clang-tidy -p .build/compile_commands.json \
-            $(find src include -name '*.cpp')
+          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          
+          # Verify compile_commands.json exists
+          if [ ! -f .build/compile_commands.json ]; then
+            echo "::error::compile_commands.json not generated"
+            exit 1
+          fi
+          
+          # Run clang-tidy with config file
+          clang-tidy --config-file=../.clang-tidy \
+            -p .build/compile_commands.json \
+            $(find src include -name '*.cpp') \
+            2>&1 | tee clang-tidy-output.txt
+          
+          # Check for errors
+          if grep -q "error:" clang-tidy-output.txt; then
+            echo "::error::clang-tidy found errors in client code"
+            exit 1
+          fi
 
       - name: Run clang-tidy on server
         run: |
           cd server
-          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          clang-tidy -p .build/compile_commands.json \
-            $(find src include -name '*.cpp')
+          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          
+          if [ ! -f .build/compile_commands.json ]; then
+            echo "::error::compile_commands.json not generated"
+            exit 1
+          fi
+          
+          clang-tidy --config-file=../.clang-tidy \
+            -p .build/compile_commands.json \
+            $(find src include -name '*.cpp') \
+            2>&1 | tee clang-tidy-output.txt
+          
+          if grep -q "error:" clang-tidy-output.txt; then
+            echo "::error::clang-tidy found errors in server code"
+            exit 1
+          fi
+
+      - name: Run clang-tidy on gameEngine
+        run: |
+          cd gameEngine
+          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          
+          if [ ! -f .build/compile_commands.json ]; then
+            echo "::error::compile_commands.json not generated"
+            exit 1
+          fi
+          
+          clang-tidy --config-file=../.clang-tidy \
+            -p .build/compile_commands.json \
+            $(find src include -name '*.cpp') \
+            2>&1 | tee clang-tidy-output.txt
+          
+          if grep -q "error:" clang-tidy-output.txt; then
+            echo "::error::clang-tidy found errors in gameEngine code"
+            exit 1
+          fi
+
+      - name: Verify clangd config
+        run: |
+          if [ ! -f .clangd ]; then
+            echo "::warning::.clangd file not found in root directory"
+          else
+            echo "✓ .clangd configuration file found"
+            cat .clangd
+          fi
 
       - name: Client build
         run: |
           cd client/.build
-          make
+          make -j$(nproc)
 
       - name: Server build 
         run: |
           cd server/.build
-          make
+          make -j$(nproc)
+
+      - name: GameEngine build
+        run: |
+          cd gameEngine
+          cmake -B .build
+          cd .build
+          make -j$(nproc)
 
       - name: Generate documentation
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           mkdir -p docs_output
-          
           # GameEngine documentation
           if [ -f "gameEngine/Doxyfile" ]; then
             echo "Generating GameEngine documentation..."
@@ -77,7 +187,6 @@ jobs:
             fi
           fi
           
-          # Server documentation (future)
           if [ -f "server/Doxyfile" ]; then
             echo "Generating Server documentation..."
             cd server
@@ -89,7 +198,6 @@ jobs:
             fi
           fi
           
-          # Client documentation (future)
           if [ -f "client/Doxyfile" ]; then
             echo "Generating Client documentation..."
             cd client
@@ -101,7 +209,6 @@ jobs:
             fi
           fi
           
-          # Create index page if multiple docs exist
           cat > docs_output/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en">
@@ -174,7 +281,7 @@ jobs:
           </head>
           <body>
             <div class="container">
-              <h1>📚 Project Documentation</h1>
+              <h1>📚Project Documentation by Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot</h1>
               <p class="subtitle">Welcome to the technical documentation</p>
               <div class="doc-links">
                 <a href="gameEngine/index.html" class="doc-link">
@@ -195,7 +302,6 @@ jobs:
               </div>
             </div>
             <script>
-              // Show links only if docs exist
               fetch('server/index.html').then(() => {
                 document.getElementById('server-link').style.display = 'block';
               }).catch(() => {});

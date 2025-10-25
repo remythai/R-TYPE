@@ -13,6 +13,8 @@
 #include <mutex>
 #include <queue>
 #include <map>
+#include <set>
+#include <chrono>
 #include <SFML/Audio.hpp>
 #include "../network/NetworkClient.hpp"
 #include "../graphics/EntityManager.hpp"
@@ -56,17 +58,50 @@ private:
     std::unique_ptr<MapEditor> _mapEditor;
 
     std::mutex _playerIdMutex;
+    
     void parseCommandLineArgs(char **argv);
     void initializeNetwork();
     void setupNetworkCallbacks();
     void loadResources();
+    void loadGameTextures();
+    void loadParallaxTextures();
+    void loadBackgroundMusic();
+    
+    void handlePlayerIdReceived(uint8_t playerId);
+    void handlePlayerEvent(uint8_t playerId, uint8_t eventType);
+    void handleSnapshotReceived(const std::vector<uint8_t>& payload);
 
     void networkLoop();
     void graphicsLoop();
+    
+    void initializeGraphicsComponents();
+    void updateFromSnapshot();
+    bool shouldCleanupEntities(const std::chrono::steady_clock::time_point& lastCleanup, float interval);
+    void renderFrame(Window& window, float deltaTime);
 
     void processOutgoingMessages();
+    void sendInputMessage(const std::string& msg);
     void processIncomingMessages(Window& window);
+    void handleIncomingMessage(const std::string& msg, Window& window);
+    void handlePlayerLeave(const std::string& msg, Window& window);
+    
     void parseSnapshot(const std::vector<uint8_t>& payload);
+    float readFloat(const std::vector<uint8_t>& payload, size_t& offset);
+    bool parseSnapshotEntity(const std::vector<uint8_t>& payload, size_t& offset,
+                            std::set<uint8_t>& activeEntities);
+    void updateOrCreateEntity(uint8_t entityId, float x, float y,
+                             const std::string& spritePath,
+                             float rectPosX, float rectPosY,
+                             float rectSizeX, float rectSizeY);
+    void updateEntityPosition(GameEntity* entity, float x, float y);
+    void updateEntitySprite(GameEntity* entity, uint8_t entityId,
+                           const std::string& spritePath, bool needsNewSprite,
+                           float rectPosX, float rectPosY,
+                           float rectSizeX, float rectSizeY);
+    sf::Texture* findTexture(const std::string& spritePath, uint8_t entityId);
+    void applySpriteTransform(sf::Sprite& sprite, float rectPosX, float rectPosY,
+                             float rectSizeX, float rectSizeY,
+                             const sf::Vector2f& position);
 
     void sendInput(KeyCode keyCode, InputAction action);
     void handleKeyStateChange(const std::string& action, bool isPressed, 
