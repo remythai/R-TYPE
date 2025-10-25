@@ -66,17 +66,14 @@ jobs:
           git commit -m "style: apply clang-format [skip ci]"
           git push
 
-      - name: Fail on PR if formatting needed
+      - name: Commit and push formatting changes on PR
         if: steps.format_check.outputs.changes == 'true' && github.event_name == 'pull_request'
         run: |
-          echo "::error::Code formatting is required. Run this command locally:"
-          echo ""
-          echo "find client/src server/src gameEngine/components gameEngine/systems gameEngine/ecs \\"
-          echo "  \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \\"
-          echo "  -exec clang-format -i --style=file {} +"
-          echo ""
-          echo "Then commit and push the changes."
-          exit 1
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "style: apply clang-format [skip ci]"
+          git push
 
   build:
     runs-on: ubuntu-latest
