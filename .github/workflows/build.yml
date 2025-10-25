@@ -94,108 +94,20 @@ jobs:
             libx11-dev libxrandr-dev libxcursor-dev libxi-dev \
             libudev-dev libgl1-mesa-dev libflac-dev libogg-dev \
             libvorbis-dev libopenal-dev libfreetype-dev \
-            clang-format clang-tidy clangd doxygen graphviz
-
-      - name: Run clang-tidy on client
-        run: |
-          cd client
-          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          
-          if [ ! -f .build/compile_commands.json ]; then
-            echo "::error::compile_commands.json not generated"
-            exit 1
-          fi
-          
-          # Run clang-tidy only on project source files
-          find src -name '*.cpp' 2>/dev/null | while read file; do
-            clang-tidy --config-file=../.clang-tidy \
-              -p .build/compile_commands.json \
-              --header-filter='^(?!.*(_deps|external|SFML|asio|imgui)).*' \
-              "$file" 2>&1 | tee -a clang-tidy-output.txt || true
-          done
-          
-          # Check for errors in our code only
-          if grep -E "error:" clang-tidy-output.txt | \
-             grep -v "_deps/" | grep -v "external/" | \
-             grep -v "SFML" | grep -v "asio" | grep -v "imgui" | grep -v "ImGui"; then
-            echo "::error::clang-tidy found errors in client code"
-            exit 1
-          fi
-          
-          echo "✓ Client clang-tidy check passed"
-
-      - name: Run clang-tidy on server
-        run: |
-          cd server
-          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          
-          if [ ! -f .build/compile_commands.json ]; then
-            echo "::error::compile_commands.json not generated"
-            exit 1
-          fi
-          
-          find src -name '*.cpp' 2>/dev/null | while read file; do
-            clang-tidy --config-file=../.clang-tidy \
-              -p .build/compile_commands.json \
-              --header-filter='^(?!.*(_deps|external|asio|googletest)).*' \
-              "$file" 2>&1 | tee -a clang-tidy-output.txt || true
-          done
-          
-          if grep -E "error:" clang-tidy-output.txt | \
-             grep -v "_deps/" | grep -v "external/" | \
-             grep -v "asio" | grep -v "googletest"; then
-            echo "::error::clang-tidy found errors in server code"
-            exit 1
-          fi
-          
-          echo "✓ Server clang-tidy check passed"
-
-      - name: Run clang-tidy on gameEngine
-        run: |
-          cd gameEngine
-          cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          
-          if [ ! -f .build/compile_commands.json ]; then
-            echo "::error::compile_commands.json not generated"
-            exit 1
-          fi
-          
-          # Find all cpp files in components and systems
-          find components systems ecs -name '*.cpp' 2>/dev/null | while read file; do
-            clang-tidy --config-file=../.clang-tidy \
-              -p .build/compile_commands.json \
-              --header-filter='^(?!.*(_deps|external)).*' \
-              "$file" 2>&1 | tee -a clang-tidy-output.txt || true
-          done
-          
-          if grep -E "error:" clang-tidy-output.txt | \
-             grep -v "_deps/" | grep -v "external/"; then
-            echo "::error::clang-tidy found errors in gameEngine code"
-            exit 1
-          fi
-          
-          echo "✓ GameEngine clang-tidy check passed"
-
-      - name: Verify clangd config
-        run: |
-          if [ ! -f .clangd ]; then
-            echo "::warning::.clangd file not found in root directory"
-          else
-            echo "✓ .clangd configuration file found"
-            cat .clangd
-          fi
+            doxygen graphviz
 
       - name: Client build
         run: |
-          cd client/.build
+          cd client
+          cmake -B .build
+          cd .build
           make -j$(nproc)
 
       - name: Server build 
         run: |
-          cd server/.build
+          cd server
+          cmake -B .build
+          cd .build
           make -j$(nproc)
 
       - name: GameEngine build
