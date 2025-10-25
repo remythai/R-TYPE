@@ -2,30 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Core.hpp 
+** Core.hpp
 */
 
 #pragma once
 
-#include <string>
+#include <SFML/Audio.hpp>
+#include <chrono>
+#include <map>
 #include <memory>
-#include <thread>
 #include <mutex>
 #include <queue>
-#include <map>
 #include <set>
-#include <chrono>
-#include <SFML/Audio.hpp>
-#include "../network/NetworkClient.hpp"
+#include <string>
+#include <thread>
+
 #include "../graphics/EntityManager.hpp"
 #include "../graphics/ParallaxSystem.hpp"
 #include "../mapEditor/MapEditor.hpp"
+#include "../network/NetworkClient.hpp"
 
 namespace CLIENT {
 
 class Window;
 
-enum class KeyCode : uint8_t {
+enum class KeyCode : uint8_t
+{
     DOWN = 0,
     UP = 1,
     LEFT = 2,
@@ -33,50 +35,59 @@ enum class KeyCode : uint8_t {
     SHOOT = 4
 };
 
-enum class InputAction : uint8_t {
+enum class InputAction : uint8_t
+{
     PRESSED = 1,
     RELEASED = 0
 };
 
-class Core {
-public:
-    class CoreError : public std::exception {
-    private:
+class Core
+{
+   public:
+    class CoreError : public std::exception
+    {
+       private:
         std::string _msg;
-    public:
-        explicit CoreError(const std::string &msg) : _msg(msg) {}
-        const char *what() const noexcept override { return _msg.c_str(); }
+
+       public:
+        explicit CoreError(const std::string& msg) : _msg(msg) {}
+        const char* what() const noexcept override
+        {
+            return _msg.c_str();
+        }
     };
 
-    explicit Core(char **argv);
+    explicit Core(char** argv);
     ~Core();
 
     void run();
     static void launchMapEditor();
 
-private:
+   private:
     std::unique_ptr<MapEditor> _mapEditor;
 
     std::mutex _playerIdMutex;
-    
-    void parseCommandLineArgs(char **argv);
+
+    void parseCommandLineArgs(char** argv);
     void initializeNetwork();
     void setupNetworkCallbacks();
     void loadResources();
     void loadGameTextures();
     void loadParallaxTextures();
     void loadBackgroundMusic();
-    
+
     void handlePlayerIdReceived(uint8_t playerId);
     void handlePlayerEvent(uint8_t playerId, uint8_t eventType);
     void handleSnapshotReceived(const std::vector<uint8_t>& payload);
 
     void networkLoop();
     void graphicsLoop();
-    
+
     void initializeGraphicsComponents();
     void updateFromSnapshot();
-    bool shouldCleanupEntities(const std::chrono::steady_clock::time_point& lastCleanup, float interval);
+    bool shouldCleanupEntities(
+        const std::chrono::steady_clock::time_point& lastCleanup,
+        float interval);
     void renderFrame(Window& window, float deltaTime);
 
     void processOutgoingMessages();
@@ -84,28 +95,29 @@ private:
     void processIncomingMessages(Window& window);
     void handleIncomingMessage(const std::string& msg, Window& window);
     void handlePlayerLeave(const std::string& msg, Window& window);
-    
+
     void parseSnapshot(const std::vector<uint8_t>& payload);
     float readFloat(const std::vector<uint8_t>& payload, size_t& offset);
-    bool parseSnapshotEntity(const std::vector<uint8_t>& payload, size_t& offset,
-                            std::set<uint8_t>& activeEntities);
-    void updateOrCreateEntity(uint8_t entityId, float x, float y,
-                             const std::string& spritePath,
-                             float rectPosX, float rectPosY,
-                             float rectSizeX, float rectSizeY);
+    bool parseSnapshotEntity(
+        const std::vector<uint8_t>& payload, size_t& offset,
+        std::set<uint8_t>& activeEntities);
+    void updateOrCreateEntity(
+        uint8_t entityId, float x, float y, const std::string& spritePath,
+        float rectPosX, float rectPosY, float rectSizeX, float rectSizeY);
     void updateEntityPosition(GameEntity* entity, float x, float y);
-    void updateEntitySprite(GameEntity* entity, uint8_t entityId,
-                           const std::string& spritePath, bool needsNewSprite,
-                           float rectPosX, float rectPosY,
-                           float rectSizeX, float rectSizeY);
+    void updateEntitySprite(
+        GameEntity* entity, uint8_t entityId, const std::string& spritePath,
+        bool needsNewSprite, float rectPosX, float rectPosY, float rectSizeX,
+        float rectSizeY);
     sf::Texture* findTexture(const std::string& spritePath, uint8_t entityId);
-    void applySpriteTransform(sf::Sprite& sprite, float rectPosX, float rectPosY,
-                             float rectSizeX, float rectSizeY,
-                             const sf::Vector2f& position);
+    void applySpriteTransform(
+        sf::Sprite& sprite, float rectPosX, float rectPosY, float rectSizeX,
+        float rectSizeY, const sf::Vector2f& position);
 
     void sendInput(KeyCode keyCode, InputAction action);
-    void handleKeyStateChange(const std::string& action, bool isPressed, 
-                             std::map<std::string, bool>& keyStates);
+    void handleKeyStateChange(
+        const std::string& action, bool isPressed,
+        std::map<std::string, bool>& keyStates);
     void processInputs(Window& window, std::map<std::string, bool>& keyStates);
 
     std::unique_ptr<NetworkClient> _networkClient;
@@ -130,6 +142,6 @@ private:
     std::unique_ptr<sf::Music> _backgroundMusic;
 };
 
-} // namespace CLIENT
+}  // namespace CLIENT
 
-int execute_rtypeClient(char **argv);
+int execute_rtypeClient(char** argv);

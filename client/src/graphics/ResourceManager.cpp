@@ -6,10 +6,11 @@
 */
 
 #include "ResourceManager.hpp"
+
 #include <iostream>
 
-
-CLIENT::ResourceManager &CLIENT::ResourceManager::getInstance() {
+CLIENT::ResourceManager &CLIENT::ResourceManager::getInstance()
+{
     static ResourceManager instance;
     return instance;
 }
@@ -17,7 +18,9 @@ CLIENT::ResourceManager &CLIENT::ResourceManager::getInstance() {
 CLIENT::ResourceManager::ResourceManager() = default;
 CLIENT::ResourceManager::~ResourceManager() = default;
 
-bool CLIENT::ResourceManager::loadTexture(const std::string &id, const std::string &filepath) {
+bool CLIENT::ResourceManager::loadTexture(
+    const std::string &id, const std::string &filepath)
+{
     auto texture = std::make_unique<sf::Texture>();
     if (!texture->loadFromFile(filepath)) {
         std::cerr << "Failed to load texture: " << filepath << "\n";
@@ -28,7 +31,8 @@ bool CLIENT::ResourceManager::loadTexture(const std::string &id, const std::stri
     return true;
 }
 
-sf::Texture *CLIENT::ResourceManager::getTexture(const std::string &id) {
+sf::Texture *CLIENT::ResourceManager::getTexture(const std::string &id)
+{
     auto it = _textures.find(id);
     if (it != _textures.end())
         return it->second.get();
@@ -36,6 +40,7 @@ sf::Texture *CLIENT::ResourceManager::getTexture(const std::string &id) {
     return nullptr;
 }
 
-void CLIENT::ResourceManager::clear() {
+void CLIENT::ResourceManager::clear()
+{
     _textures.clear();
 }

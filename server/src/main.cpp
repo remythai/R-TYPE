@@ -8,6 +8,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+
 #include "network/NetworkServer.hpp"
 
 static void display_help(void)

@@ -8,30 +8,35 @@
 #pragma once
 
 #include <asio.hpp>
+#include <functional>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <functional>
+
 #include "../../../server/src/network/NetworkServer.hpp"
 
-class NetworkClient {
-public:
+class NetworkClient
+{
+   public:
     NetworkClient(const std::string& host, unsigned short port);
 
-    void sendPacket(rtype::PacketType type, uint16_t packetId, uint32_t timestamp, 
-                    const std::vector<uint8_t>& payload);
+    void sendPacket(
+        rtype::PacketType type, uint16_t packetId, uint32_t timestamp,
+        const std::vector<uint8_t>& payload);
     void sendInput(uint8_t playerId, uint8_t keyCode, uint8_t action);
     void sendJoin(const std::string& username);
     void startReceiving();
 
     void setOnPlayerIdReceived(std::function<void(uint8_t)> callback);
     void setOnPlayerEvent(std::function<void(uint8_t, uint8_t)> callback);
-    void setOnSnapshot(std::function<void(const std::vector<uint8_t>&)> callback);
+    void setOnSnapshot(
+        std::function<void(const std::vector<uint8_t>&)> callback);
 
-private:
+   private:
     void doReceive();
-    void handlePacket(const std::vector<uint8_t>& buffer, size_t bytesReceived,
-                    const asio::ip::udp::endpoint& sender);
+    void handlePacket(
+        const std::vector<uint8_t>& buffer, size_t bytesReceived,
+        const asio::ip::udp::endpoint& sender);
 
     asio::io_context _ioContext;
     asio::ip::udp::socket _socket;
