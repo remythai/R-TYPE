@@ -28,6 +28,9 @@
 #include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
 #include "../../../gameEngine/systems/death/src/Death.hpp"
 #include "../../../gameEngine/systems/animation/src/Animation.hpp"
+#include "../../../gameEngine/systems/FPMotion/src/FPMotion.hpp"
+#include "../../../gameEngine/systems/FPApplyGravity/src/FPApplyGravity.hpp"
+#include "../../../gameEngine/systems/FPInputHandler/src/FPInputHandler.hpp"
 
 namespace rtype {
     enum class PacketType : uint8_t {
@@ -48,7 +51,7 @@ namespace rtype {
 
     class NetworkServer {
         public:
-            NetworkServer(unsigned short port, std::string const &hostname);
+            NetworkServer(unsigned short port, std::string const &hostname, std::string const &game);
             ~NetworkServer();
 
             void run();
@@ -116,6 +119,7 @@ namespace rtype {
             std::mutex _clientsMutex;
             int _nextClientId = 1;
             std::string _hostname;
+            std::string _game;
 
             std::array<PlayerSlot, 4> _playerSlots;
             std::mutex _playerSlotsMutex;
