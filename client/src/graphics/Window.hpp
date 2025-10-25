@@ -13,8 +13,9 @@
 
 namespace CLIENT {
 
-class Window {
-public:
+class Window
+{
+   public:
     Window(const std::string &title, unsigned int width, unsigned int height);
     ~Window();
 
@@ -27,11 +28,11 @@ public:
     const std::vector<std::string> &getPendingActions() const;
     float getDeltaTime() const;
 
-private:
+   private:
     sf::RenderWindow _window;
     std::vector<std::string> _pendingActions;
     sf::Clock _clock;
     float _deltaTime;
 };
 
-} // namespace CLIENT
+}  // namespace CLIENT

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 namespace GameEngine {
-struct InputControlled {
+struct InputControlled
+{
     std::vector<int> inputs;
     InputControlled() {}
 };
-} // namespace GameEngine
-
+}  // namespace GameEngine

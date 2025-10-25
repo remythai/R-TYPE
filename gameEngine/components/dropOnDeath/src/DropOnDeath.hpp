@@ -1,6 +1,6 @@
 #pragma once
 
 namespace GameEngine {
-struct DropOnDeath {
-};
-}
+struct DropOnDeath
+{};
+}  // namespace GameEngine
