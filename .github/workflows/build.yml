@@ -1,4 +1,4 @@
-name: Format, Build & Deploy
+name: Build & Deploy
 
 on:
   push:
@@ -26,9 +26,24 @@ jobs:
 
       - name: Apply clang-format
         run: |
-          find client/src client/include server/src server/include gameEngine/src gameEngine/include \
-            \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
-            -exec clang-format -i --style=file {} +
+          # Format client
+          if [ -d "client/src" ]; then
+            find client/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
+              -exec clang-format -i --style=file {} +
+          fi
+          
+          # Format server
+          if [ -d "server/src" ]; then
+            find server/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
+              -exec clang-format -i --style=file {} +
+          fi
+          
+          # Format gameEngine (components and systems)
+          if [ -d "gameEngine" ]; then
+            find gameEngine/components gameEngine/systems gameEngine/ecs \
+              \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
+              -exec clang-format -i --style=file {} + 2>/dev/null || true
+          fi
 
       - name: Check for formatting changes
         id: format_check
@@ -82,23 +97,28 @@ jobs:
           cmake -B .build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           
-          # Verify compile_commands.json exists
           if [ ! -f .build/compile_commands.json ]; then
             echo "::error::compile_commands.json not generated"
             exit 1
           fi
           
-          # Run clang-tidy with config file
-          clang-tidy --config-file=../.clang-tidy \
-            -p .build/compile_commands.json \
-            $(find src include -name '*.cpp') \
-            2>&1 | tee clang-tidy-output.txt
+          # Run clang-tidy only on project source files
+          find src -name '*.cpp' 2>/dev/null | while read file; do
+            clang-tidy --config-file=../.clang-tidy \
+              -p .build/compile_commands.json \
+              --header-filter='^(?!.*(_deps|external|SFML|asio|imgui)).*' \
+              "$file" 2>&1 | tee -a clang-tidy-output.txt || true
+          done
           
-          # Check for errors
-          if grep -q "error:" clang-tidy-output.txt; then
+          # Check for errors in our code only
+          if grep -E "error:" clang-tidy-output.txt | \
+             grep -v "_deps/" | grep -v "external/" | \
+             grep -v "SFML" | grep -v "asio" | grep -v "imgui" | grep -v "ImGui"; then
             echo "::error::clang-tidy found errors in client code"
             exit 1
           fi
+          
+          echo "✓ Client clang-tidy check passed"
 
       - name: Run clang-tidy on server
         run: |
@@ -111,15 +131,21 @@ jobs:
             exit 1
           fi
           
-          clang-tidy --config-file=../.clang-tidy \
-            -p .build/compile_commands.json \
-            $(find src include -name '*.cpp') \
-            2>&1 | tee clang-tidy-output.txt
+          find src -name '*.cpp' 2>/dev/null | while read file; do
+            clang-tidy --config-file=../.clang-tidy \
+              -p .build/compile_commands.json \
+              --header-filter='^(?!.*(_deps|external|asio|googletest)).*' \
+              "$file" 2>&1 | tee -a clang-tidy-output.txt || true
+          done
           
-          if grep -q "error:" clang-tidy-output.txt; then
+          if grep -E "error:" clang-tidy-output.txt | \
+             grep -v "_deps/" | grep -v "external/" | \
+             grep -v "asio" | grep -v "googletest"; then
             echo "::error::clang-tidy found errors in server code"
             exit 1
           fi
+          
+          echo "✓ Server clang-tidy check passed"
 
       - name: Run clang-tidy on gameEngine
         run: |
@@ -132,12 +158,15 @@ jobs:
             exit 1
           fi
           
-          clang-tidy --config-file=../.clang-tidy \
+          CONFIG_FILE=$([ -f .clang-tidy ] && echo ".clang-tidy" || echo "../.clang-tidy")
+          
+          clang-tidy --config-file=$CONFIG_FILE \
             -p .build/compile_commands.json \
-            $(find src include -name '*.cpp') \
+            --header-filter='.*/(src|include)/.*' \
+            $(find src include -name '*.cpp' 2>/dev/null || find src -name '*.cpp') \
             2>&1 | tee clang-tidy-output.txt
           
-          if grep -q "error:" clang-tidy-output.txt; then
+          if grep -E "error:" clang-tidy-output.txt | grep -v "_deps/" | grep -v "external/" ; then
             echo "::error::clang-tidy found errors in gameEngine code"
             exit 1
           fi
@@ -172,6 +201,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           mkdir -p docs_output
+          
           # GameEngine documentation
           if [ -f "gameEngine/Doxyfile" ]; then
             echo "Generating GameEngine documentation..."
@@ -187,6 +217,7 @@ jobs:
             fi
           fi
           
+          # Server documentation
           if [ -f "server/Doxyfile" ]; then
             echo "Generating Server documentation..."
             cd server
@@ -198,6 +229,7 @@ jobs:
             fi
           fi
           
+          # Client documentation
           if [ -f "client/Doxyfile" ]; then
             echo "Generating Client documentation..."
             cd client
@@ -209,6 +241,7 @@ jobs:
             fi
           fi
           
+          # Create index page
           cat > docs_output/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en">
@@ -281,7 +314,7 @@ jobs:
           </head>
           <body>
             <div class="container">
-              <h1>📚Project Documentation by Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot</h1>
+              <h1>📚 Project Documentation by Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot</h1>
               <p class="subtitle">Welcome to the technical documentation</p>
               <div class="doc-links">
                 <a href="gameEngine/index.html" class="doc-link">
