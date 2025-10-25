@@ -69,7 +69,13 @@ jobs:
       - name: Fail on PR if formatting needed
         if: steps.format_check.outputs.changes == 'true' && github.event_name == 'pull_request'
         run: |
-          echo "::error::Code formatting is required. Please run clang-format locally."
+          echo "::error::Code formatting is required. Run this command locally:"
+          echo ""
+          echo "find client/src server/src gameEngine/components gameEngine/systems gameEngine/ecs \\"
+          echo "  \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \\"
+          echo "  -exec clang-format -i --style=file {} +"
+          echo ""
+          echo "Then commit and push the changes."
           exit 1
 
   build:
@@ -158,18 +164,21 @@ jobs:
             exit 1
           fi
           
-          CONFIG_FILE=$([ -f .clang-tidy ] && echo ".clang-tidy" || echo "../.clang-tidy")
+          # Find all cpp files in components and systems
+          find components systems ecs -name '*.cpp' 2>/dev/null | while read file; do
+            clang-tidy --config-file=../.clang-tidy \
+              -p .build/compile_commands.json \
+              --header-filter='^(?!.*(_deps|external)).*' \
+              "$file" 2>&1 | tee -a clang-tidy-output.txt || true
+          done
           
-          clang-tidy --config-file=$CONFIG_FILE \
-            -p .build/compile_commands.json \
-            --header-filter='.*/(src|include)/.*' \
-            $(find src include -name '*.cpp' 2>/dev/null || find src -name '*.cpp') \
-            2>&1 | tee clang-tidy-output.txt
-          
-          if grep -E "error:" clang-tidy-output.txt | grep -v "_deps/" | grep -v "external/" ; then
+          if grep -E "error:" clang-tidy-output.txt | \
+             grep -v "_deps/" | grep -v "external/"; then
             echo "::error::clang-tidy found errors in gameEngine code"
             exit 1
           fi
+          
+          echo "✓ GameEngine clang-tidy check passed"
 
       - name: Verify clangd config
         run: |
