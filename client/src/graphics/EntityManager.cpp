@@ -99,6 +99,37 @@ void CLIENT::EntityManager::cleanupInactiveEntities() {
     }
 }
 
+void CLIENT::EntityManager::deactivateEntitiesNotInSet(const std::set<uint8_t>& activeIds) {
+    for (auto& [id, entity] : _entities) {
+        if (id >= 10000) continue;
+        
+        if (activeIds.find(static_cast<uint8_t>(id)) == activeIds.end()) {
+            if (entity.active) {
+                std::cout << "[EntityManager] Deactivating entity " 
+                          << id << " (not in snapshot)\n";
+                entity.active = false;
+                entity.currentSpritePath = "";
+                entity.sprite.reset();
+            }
+        }
+    }
+}
+
+void CLIENT::EntityManager::cleanupInactiveEntities() {
+    std::vector<uint32_t> toRemove;
+    
+    for (auto& [id, entity] : _entities) {
+        if (id < 10000 && !entity.active) {
+            toRemove.push_back(id);
+        }
+    }
+    
+    for (uint32_t id : toRemove) {
+        std::cout << "[EntityManager] Removing inactive entity " << id << "\n";
+        removeEntity(id);
+    }
+}
+
 void CLIENT::EntityManager::update(float deltaTime) {
     for (auto& [id, entity] : _entities) {
         if (!entity.active || !entity.sprite.has_value()) continue;
