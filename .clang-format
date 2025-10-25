@@ -1,84 +1,13 @@
 ---
-# Style C++ personnalisé - lisible, moderne, 4 espaces partout
-BasedOnStyle: LLVM
-
-# Indentation globale
+BasedOnStyle: Google
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-ContinuationIndentWidth: 4
-ConstructorInitializerIndentWidth: 4
-NamespaceIndentation: All
-
-# Braces et blocs
+AllowShortBlocksOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+AlignAfterOpenBracket: AlwaysBreak
 BreakBeforeBraces: Mozilla
-BraceWrapping:
-  AfterClass: true
-  AfterControlStatement: true
-  AfterEnum: true
-  AfterFunction: true
-  AfterNamespace: true
-  AfterStruct: true
-  AfterUnion: true
-  BeforeCatch: true
-  BeforeElse: true
-  IndentBraces: false
-
-# Alignement et gestion des parenthèses
-AlignAfterOpenBracket: DontAlign   # empêche les indentations à 2
-AlignOperands: true
-AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
-BinPackParameters: false
-BinPackArguments: false
-
-# Espacements et ponctuation
-SpaceBeforeParens: ControlStatements
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCtorInitializerColon: true
-SpaceAfterCtorInitializerColon: true
-SpaceBeforeRangeBasedForLoopColon: true
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
-SpacesInAngles: false
-SpaceAfterLogicalNot: false
-SpaceBeforeCpp11BracedList: false
-
-# Includes et organisation
-IncludeBlocks: Regroup
-SortIncludes: true
-IncludeCategories:
-  - Regex: '^<.*\.h>'
-    Priority: 1
-  - Regex: '^<.*>'
-    Priority: 2
-  - Regex: '^".*"'
-    Priority: 3
-
-# Colonnes et coupures
-ColumnLimit: 120
-BreakConstructorInitializers: AfterColon
-BreakInheritanceList: AfterColon
-
-# Pointeurs et références
-PointerAlignment: Left
-ReferenceAlignment: Left
-DerivePointerAlignment: false
-
-# Préprocesseur
 IndentPPDirectives: BeforeHash
-
-# Divers
-KeepEmptyLinesAtTheStartOfBlocks: false
-Cpp11BracedListStyle: true
-SortUsingDeclarations: true
-ReflowComments: true
-FixNamespaceComments: true
-
-# Bonus : meilleure gestion des lambdas et des listes d’init
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowAllArgumentsOnNextLine: false
-AlwaysBreakAfterReturnType: None
-AlwaysBreakAfterDefinitionReturnType: None
 ...
-
