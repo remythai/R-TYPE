@@ -13,10 +13,13 @@
 
 static void display_help(void)
 {
-    std::cout << "USAGE: ./r-type_server -p [port] -h [host] -g [game]\nGAMES: | RType\n       | flappyByte\n";
+    std::cout << "USAGE: ./r-type_server -p [port] -h [host] -g [game]\nGAMES: "
+                 "| RType\n       | flappyByte\n";
 }
 
-static int check_args(int argc, char **argv, unsigned short &port, std::string &hostname, std::string &game)
+static int check_args(
+    int argc, char **argv, unsigned short &port, std::string &hostname,
+    std::string &game)
 {
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
@@ -32,7 +35,8 @@ static int check_args(int argc, char **argv, unsigned short &port, std::string &
             i++;
         }
     }
-    if (hostname == std::string("") || port == 0 || game != "flappyByte" && game != "RType") {
+    if (hostname == std::string("") || port == 0 ||
+        game != "flappyByte" && game != "RType") {
         display_help();
         return 84;
     }

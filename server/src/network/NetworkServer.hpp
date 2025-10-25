@@ -23,13 +23,12 @@
 #include "../../../gameEngine/components/renderable/src/Renderable.hpp"
 #include "../../../gameEngine/components/velocity/src/Velocity.hpp"
 #include "../../../gameEngine/ecs/Registry.hpp"
+#include "../../../gameEngine/systems/FPApplyGravity/src/FPApplyGravity.hpp"
+#include "../../../gameEngine/systems/FPInputHandler/src/FPInputHandler.hpp"
+#include "../../../gameEngine/systems/FPMotion/src/FPMotion.hpp"
 #include "../../../gameEngine/systems/animation/src/Animation.hpp"
 #include "../../../gameEngine/systems/collision/src/Collision.hpp"
 #include "../../../gameEngine/systems/death/src/Death.hpp"
-#include "../../../gameEngine/systems/animation/src/Animation.hpp"
-#include "../../../gameEngine/systems/FPMotion/src/FPMotion.hpp"
-#include "../../../gameEngine/systems/FPApplyGravity/src/FPApplyGravity.hpp"
-#include "../../../gameEngine/systems/FPInputHandler/src/FPInputHandler.hpp"
 #include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
 #include "../../../gameEngine/systems/inputHandler/src/InputHandler.hpp"
 #include "../../../gameEngine/systems/motion/src/Motion.hpp"
@@ -53,10 +52,13 @@ struct PlayerSlot
     EntityManager::Entity entity;
 };
 
-class NetworkServer {
-    public:
-        NetworkServer(unsigned short port, std::string const &hostname, std::string const &game);
-        ~NetworkServer();
+class NetworkServer
+{
+   public:
+    NetworkServer(
+        unsigned short port, std::string const& hostname,
+        std::string const& game);
+    ~NetworkServer();
 
     void run();
     void stop();

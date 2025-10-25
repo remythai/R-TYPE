@@ -45,12 +45,13 @@ std::vector<uint8_t> floatToBytes(float value)
     return bytes;
 }
 
-rtype::NetworkServer::NetworkServer(unsigned short port, std::string const &hostname, std::string const &game)
+rtype::NetworkServer::NetworkServer(
+    unsigned short port, std::string const& hostname, std::string const& game)
     : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
-    _running(false),
-    _hostname(hostname),
-    _game(game),
-    _registry(std::make_unique<Registry>())
+      _running(false),
+      _hostname(hostname),
+      _game(game),
+      _registry(std::make_unique<Registry>())
 {
     for (int i = 0; i < 4; ++i) {
         _playerSlots[i].isUsed = false;
@@ -69,7 +70,8 @@ rtype::NetworkServer::~NetworkServer()
 void rtype::NetworkServer::initECS()
 {
     if (this->_game == std::string("flappyByte")) {
-        std::cout << "[SERVER] ECS initialized with flappyByte Systems" << std::endl;
+        std::cout << "[SERVER] ECS initialized with flappyByte Systems"
+                  << std::endl;
         _registry->addSystem<GameEngine::FPApplyGravity>(0);
         _registry->addSystem<GameEngine::FPInputHandler>(1);
         _registry->addSystem<GameEngine::FPMotion>(2);
@@ -91,45 +93,72 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 
     if (this->_game == std::string("flappyByte")) {
         std::vector<vec2> rectPos;
-        rectPos.push_back(vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
         _registry->emplace<GameEngine::InputControlled>(entity);
         _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
-        _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
+        _registry->emplace<GameEngine::Position>(
+            entity, 100.0f, 100.0f + playerId * 50.0f);
         _registry->emplace<GameEngine::Velocity>(entity, 500.0f);
-        _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", rectPos, vec2{33.2f, 17.2f}, 500, false);
-        _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("01000000"), std::bitset<8>("10000000"), vec2(33.2, 17.2));
+        _registry->emplace<GameEngine::Renderable>(
+            entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png",
+            rectPos, vec2{33.2f, 17.2f}, 500, false);
+        _registry->emplace<GameEngine::Collider>(
+            entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
+            std::bitset<8>("10000000"), vec2(33.2, 17.2));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 0);
         _registry->emplace<GameEngine::Gravity>(entity, 400.0f);
     } else {
         std::vector<vec2> rectPos;
-        rectPos.push_back(vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(
+            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
         _registry->emplace<GameEngine::InputControlled>(entity);
         _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
-        _registry->emplace<GameEngine::Position>(entity, 100.0f, 100.0f + playerId * 50.0f);
+        _registry->emplace<GameEngine::Position>(
+            entity, 100.0f, 100.0f + playerId * 50.0f);
         _registry->emplace<GameEngine::Velocity>(entity, 5.0f);
-        _registry->emplace<GameEngine::Renderable>(entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png", rectPos, vec2{33.2f, 17.2f}, 1000, false);
-        _registry->emplace<GameEngine::Collider>(entity, vec2(0.0, 0.0), std::bitset<8>("01000000"), std::bitset<8>("10000000"), vec2(33.2, 17.2));
+        _registry->emplace<GameEngine::Renderable>(
+            entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png",
+            rectPos, vec2{33.2f, 17.2f}, 1000, false);
+        _registry->emplace<GameEngine::Collider>(
+            entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
+            std::bitset<8>("10000000"), vec2(33.2, 17.2));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 1);
     }
-    
-    std::cout << "[SERVER] Created ECS entity " << entity << " for Player " << int(playerId) << std::endl;
-    
+
+    std::cout << "[SERVER] Created ECS entity " << entity << " for Player "
+              << int(playerId) << std::endl;
+
     return entity;
 }
 
