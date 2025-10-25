@@ -110,13 +110,6 @@ jobs:
           cd .build
           make -j$(nproc)
 
-      - name: GameEngine build
-        run: |
-          cd gameEngine
-          cmake -B .build
-          cd .build
-          make -j$(nproc)
-
       - name: Generate documentation
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
