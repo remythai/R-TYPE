@@ -8,6 +8,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+
 #include "network/NetworkServer.hpp"
 
 static void display_help(void)
@@ -15,7 +16,8 @@ static void display_help(void)
     std::cout << "USAGE: ./r-type_server -p [port] -h [host]\n";
 }
 
-static int check_args(int argc, char **argv, unsigned short &port, std::string &hostname)
+static int check_args(
+    int argc, char **argv, unsigned short &port, std::string &hostname)
 {
     if (argc != 5) {
         display_help();

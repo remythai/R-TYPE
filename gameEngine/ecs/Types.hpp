@@ -1,11 +1,12 @@
 #pragma once
 
-#include <cstdint>
 #include <bitset>
+#include <cstdint>
 
 /**
  * @file Types.hpp
- * @brief Core type definitions used throughout the ECS (Entity Component System).
+ * @brief Core type definitions used throughout the ECS (Entity Component
+ * System).
  *
  * This header defines essential type aliases and constants for component,
  * system, and signature management. These definitions provide a consistent
@@ -34,8 +35,8 @@ using SystemID = uint32_t;
  * @def MAX_COMPONENTS
  * @brief Maximum number of distinct component types supported by the ECS.
  *
- * This value defines the size of the bitset used to represent component signatures.
- * Adjust if your project requires more components.
+ * This value defines the size of the bitset used to represent component
+ * signatures. Adjust if your project requires more components.
  */
 constexpr size_t MAX_COMPONENTS = 128;
 

@@ -3,10 +3,12 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+
 #include "../../../ecs/utils.hpp"
 
 namespace GameEngine {
-struct Renderable {
+struct Renderable
+{
     float screenSizeX, screenSizeY;
     std::string spriteSheetPath;
     vec2 currentRectPos;
@@ -14,6 +16,18 @@ struct Renderable {
     vec2 rectSize;
     int frameDuration;
     bool autoAnimate;
-    Renderable(float val_screenSizeX, float val_screenSizeY, std::string val_spriteSheetPath, std::vector<vec2> val_rectPos, vec2 val_rectSize, int val_frameDuration, bool val_autoAnimate) : screenSizeX(val_screenSizeX), screenSizeY(val_screenSizeY), spriteSheetPath(std::move(val_spriteSheetPath)), rectPos(std::move(val_rectPos)), rectSize(val_rectSize), frameDuration(val_frameDuration), autoAnimate(val_autoAnimate) {}
+    Renderable(
+        float val_screenSizeX, float val_screenSizeY,
+        std::string val_spriteSheetPath, std::vector<vec2> val_rectPos,
+        vec2 val_rectSize, int val_frameDuration, bool val_autoAnimate)
+        : screenSizeX(val_screenSizeX),
+          screenSizeY(val_screenSizeY),
+          spriteSheetPath(std::move(val_spriteSheetPath)),
+          rectPos(std::move(val_rectPos)),
+          rectSize(val_rectSize),
+          frameDuration(val_frameDuration),
+          autoAnimate(val_autoAnimate)
+    {
+    }
 };
-} // namespace GameEngine
+}  // namespace GameEngine
