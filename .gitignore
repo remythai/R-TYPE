@@ -7,3 +7,4 @@ r-type_server
 *.json
 r-type_tests
 *.ini
+lib/
