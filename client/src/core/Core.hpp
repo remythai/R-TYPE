@@ -21,6 +21,8 @@
 #include "../graphics/ParallaxSystem.hpp"
 #include "../mapEditor/MapEditor.hpp"
 #include "../network/NetworkClient.hpp"
+#include "../keybind/KeybindManager.hpp"
+#include "../keybind/KeybindMenu.hpp"
 
 namespace CLIENT {
 
@@ -140,6 +142,9 @@ class Core
     std::unique_ptr<EntityManager> _entityManager;
     std::unique_ptr<ParallaxSystem> _parallaxSystem;
     std::unique_ptr<sf::Music> _backgroundMusic;
+
+    std::unique_ptr<KeybindManager> _keybindManager;
+    std::unique_ptr<KeybindMenu> _keybindMenu;
 };
 
 }  // namespace CLIENT
