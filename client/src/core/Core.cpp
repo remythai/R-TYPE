@@ -42,6 +42,9 @@ CLIENT::Core::Core(char** argv)
     if (_username.empty())
         _username = "Player";
 
+    _keybindManager = std::make_unique<KeybindManager>();
+    _keybindManager->loadFromFile("keybinds.cfg");
+    
     initializeNetwork();
     loadResources();
 }
@@ -500,6 +503,9 @@ void CLIENT::Core::graphicsLoop()
     auto lastCleanup = std::chrono::steady_clock::now();
     const float CLEANUP_INTERVAL = 5.0f;
 
+    _keybindMenu = std::make_unique<KeybindMenu>(*_keybindManager);
+    window.setKeybindComponents(_keybindManager.get(), _keybindMenu.get());
+
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();
 
@@ -507,8 +513,10 @@ void CLIENT::Core::graphicsLoop()
         processIncomingMessages(window);
 
         window.pollEvents();
+        
+        _keybindMenu->update(deltaTime);
+        
         processInputs(window, keyStates);
-
         _entityManager->update(deltaTime);
 
         if (shouldCleanupEntities(lastCleanup, CLEANUP_INTERVAL)) {
@@ -516,7 +524,13 @@ void CLIENT::Core::graphicsLoop()
             lastCleanup = std::chrono::steady_clock::now();
         }
 
-        renderFrame(window, deltaTime);
+        window.clear();
+        _entityManager->render(window.getWindow());
+        _parallaxSystem->update(deltaTime);
+        
+        _keybindMenu->render(window.getWindow());
+        
+        window.display();
     }
 
     _running = false;

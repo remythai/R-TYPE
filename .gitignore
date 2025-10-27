@@ -8,3 +8,5 @@ r-type_server
 r-type_tests
 *.ini
 lib/
+config/
+*.cfg

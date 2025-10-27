@@ -64,6 +64,10 @@ set(SOURCES
     src/graphics/ResourceManager.cpp
     src/graphics/EntityManager.cpp
     src/graphics/ParallaxSystem.cpp
+
+    src/keybind/KeybindManager.cpp
+    src/keybind/KeybindMenu.cpp
+
     src/network/NetworkClient.cpp
     src/mapEditor/MapEditor.cpp
 )
