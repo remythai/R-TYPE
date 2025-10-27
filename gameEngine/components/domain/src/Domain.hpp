@@ -1,7 +1,9 @@
 #pragma once
 
+#include "../../../ecs/Component.hpp"
+
 namespace GameEngine {
-struct Domain
+struct Domain : public Component<Domain>
 {
     float ax, ay, bx, by;
     Domain(
@@ -9,5 +11,8 @@ struct Domain
         : ax(val_ax), ay(val_ay), bx(val_bx), by(val_by)
     {
     }
+
+    static constexpr const char* Name = "Domain";
+    static constexpr const char* Version = "1.0.0";
 };
 }  // namespace GameEngine
