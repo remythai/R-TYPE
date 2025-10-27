@@ -12,7 +12,6 @@ struct Weapon : public Component<Weapon>
         Laser,
         Rocket
     };
-
     WeaponType type;
     float fireRate;
     int projectileCount;
