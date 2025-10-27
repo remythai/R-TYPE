@@ -151,7 +151,8 @@ void CLIENT::Core::loadGameTextures()
     rm.loadTexture(
         "assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
     rm.loadTexture(
-        "assets/sprites/r-typesheet30a.png", "assets/sprites/r-typesheet30a.png");
+        "assets/sprites/r-typesheet30a.png",
+        "assets/sprites/r-typesheet30a.png");
 }
 
 void CLIENT::Core::loadParallaxTextures()
