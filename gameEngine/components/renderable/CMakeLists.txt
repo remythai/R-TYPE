@@ -1,29 +1,29 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-set(COMPONENT_NAME velocity)
+set(COMPONENT_NAME renderable)
 project(component_${COMPONENT_NAME} VERSION 1.0.0)
 
 set(PLUGIN_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${COMPONENT_NAME}.cpp")
 
 file(WRITE ${PLUGIN_SOURCE}
-"#include \"../src/Velocity.hpp\"
+"#include \"../src/Renderable.hpp\"
 
 extern \"C\" {
-    IComponent* createVelocity() {
-        return new GameEngine::Velocity();
+    IComponent* createRenderable() {
+        return new GameEngine::Renderable();
     }
     
-    void destroyVelocity(IComponent* component) {
+    void destroyRenderable(IComponent* component) {
         delete component;
     }
     
     const char* getComponentName() {
-        return GameEngine::Velocity::Name;
+        return GameEngine::Renderable::Name;
     }
     
     const char* getComponentVersion() {
-        return GameEngine::Velocity::Version;
+        return GameEngine::Renderable::Version;
     }
 }
 ")
@@ -54,7 +54,7 @@ install(TARGETS ${COMPONENT_NAME}
     RUNTIME DESTINATION bin/components
 )
 
-install(FILES src/Velocity.hpp
+install(FILES src/Renderable.hpp
     DESTINATION include/components
 )
 
