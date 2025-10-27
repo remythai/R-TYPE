@@ -83,8 +83,7 @@ class FPMotion : public System<FPMotion>
     {
         requireComponents<
             GameEngine::Position, GameEngine::Velocity,
-            GameEngine::Acceleration, GameEngine::Renderable,
-            GameEngine::Gravity>();
+            GameEngine::Acceleration, GameEngine::Renderable>();
     }
 
     /**
@@ -164,10 +163,10 @@ class FPMotion : public System<FPMotion>
     {
         updateCount++;
 
-        registry.each<Position, Velocity, Acceleration, Renderable, Gravity>(
+        registry.each<Position, Velocity, Acceleration, Renderable>(
             [dt](
                 auto e, Position& pos, Velocity& vel, Acceleration& acc,
-                Renderable& render, Gravity& grav) {
+                Renderable& render) {
                 // Phase 2: Acceleration (apply forces and clamp to speed limit)
                 vel.x = std::clamp(
                     vel.x + (acc.x * dt), -vel.speedMax, vel.speedMax);
@@ -180,10 +179,6 @@ class FPMotion : public System<FPMotion>
                     pos.pos.x + (vel.x * dt), float(0), render.screenSizeX);
                 pos.pos.y = std::clamp(
                     pos.pos.y + (vel.y * dt), float(0), render.screenSizeY);
-                std::cout << "Acc: " << acc.x << ", " << acc.y << "\n"
-                          << "Vel: " << vel.x << ", " << vel.y << "\n"
-                          << "Pos: " << pos.pos.x << ", " << pos.pos.y
-                          << std::endl;
             });
     }
 
