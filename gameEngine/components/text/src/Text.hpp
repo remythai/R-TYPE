@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
 
-#include "../../../utils.hpp"
+#include "../../../ecs/utils.hpp"
+#include "../../../ecs/Component.hpp"
 
 namespace GameEngine {
-struct Text
+struct Text  : public Component<Text>
 {
     std::string content;
     int fontSize;
@@ -13,5 +14,8 @@ struct Text
         : content(val_content), fontSize(val_fontSize)
     {
     }
+
+    static constexpr const char* Name = "Text";
+    static constexpr const char* Version = "1.0.0";
 };
 }  // namespace GameEngine
