@@ -8,12 +8,8 @@
 #include "Core.hpp"
 
 #include <algorithm>
-#include <array>
 #include <chrono>
 #include <iostream>
-#include <memory>
-#include <random>
-#include <sstream>
 #include <thread>
 
 #include "../graphics/ResourceManager.hpp"
@@ -504,7 +500,14 @@ void CLIENT::Core::graphicsLoop()
     const float CLEANUP_INTERVAL = 5.0f;
 
     _keybindMenu = std::make_unique<KeybindMenu>(*_keybindManager);
+    
+    _colorBlindFilter = std::make_unique<ColorBlindFilter>();
+    _keybindMenu->setColorBlindFilter(_colorBlindFilter.get());
+    
     window.setKeybindComponents(_keybindManager.get(), _keybindMenu.get());
+
+    sf::RenderTexture renderTexture;
+    renderTexture.resize(sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT));
 
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();
@@ -524,11 +527,25 @@ void CLIENT::Core::graphicsLoop()
             lastCleanup = std::chrono::steady_clock::now();
         }
 
-        window.clear();
-        _entityManager->render(window.getWindow());
+        renderTexture.clear();
+        _entityManager->render(renderTexture);
         _parallaxSystem->update(deltaTime);
+        _keybindMenu->render(renderTexture);
+        renderTexture.display();
 
-        _keybindMenu->render(window.getWindow());
+        window.clear();
+        sf::Sprite screenSprite(renderTexture.getTexture());
+        
+        if (_colorBlindFilter->isActive()) {
+            const sf::RenderStates* states = _colorBlindFilter->getRenderStates();
+            if (states) {
+                window.getWindow().draw(screenSprite, *states);
+            } else {
+                window.getWindow().draw(screenSprite);
+            }
+        } else {
+            window.getWindow().draw(screenSprite);
+        }
 
         window.display();
     }
