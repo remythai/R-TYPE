@@ -102,11 +102,11 @@ std::string CLIENT::ColorBlindFilter::getModeName(ColorBlindMode mode)
         case ColorBlindMode::NONE:
             return "Aucun";
         case ColorBlindMode::PROTANOPIA:
-            return "Protanopia (Rouge-Vert)";
+            return "Protanopia (Red-Green)";
         case ColorBlindMode::DEUTERANOPIA:
-            return "Deuteranopia (Rouge-Vert)";
+            return "Deuteranopia (Red-Green)";
         case ColorBlindMode::TRITANOPIA:
-            return "Tritanopia (Bleu-Jaune)";
+            return "Tritanopia (Blue-Yellow)";
         default:
             return "Inconnu";
     }

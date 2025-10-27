@@ -16,6 +16,7 @@
 #include <set>
 #include <string>
 #include <thread>
+#include <cmath>
 
 #include "../graphics/EntityManager.hpp"
 #include "../graphics/ParallaxSystem.hpp"
