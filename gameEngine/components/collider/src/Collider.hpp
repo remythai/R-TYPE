@@ -5,6 +5,10 @@
 
 #include "../../../ecs/Component.hpp"
 #include "../../../ecs/utils.hpp"
+<<<<<<< HEAD
+=======
+#include "../../../ecs/Component.hpp"
+>>>>>>> bee2543 (feat: AIControlled, Audio, Collider and Damage in sharedlib)
 
 namespace GameEngine {
 /**
