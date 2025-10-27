@@ -85,7 +85,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     }
 
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player "
-              << int(playerId) << std::endl;
+            << int(playerId) << std::endl;
 
     return entity;
 }
@@ -180,23 +180,33 @@ void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
     std::lock_guard<std::mutex> lock(_registryMutex);
     if (playerId < 4 &&
         _playerSlots[playerId].entity != EntityManager::INVALID_ENTITY) {
+
+        EntityManager::Entity entityId = _playerSlots[playerId].entity;
+        std::string username = _playerSlots[playerId].username;
+
         _registry->destroy(_playerSlots[playerId].entity);
         _playerSlots[playerId].entity = EntityManager::INVALID_ENTITY;
 
-        std::string elimMsg = "Player " + std::to_string(playerId) + " (" +
-                              _playerSlots[playerId].username +
-                              ") has been eliminated.";
-
         std::vector<uint8_t> message;
-        message.push_back(static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
+        message.push_back(static_cast<uint8_t>(rtype::PacketType::KILLED));
 
         auto idBytes = toBytes<uint16_t>(0);
         message.insert(message.end(), idBytes.begin(), idBytes.end());
 
-        auto tsBytes = toBytes<uint32_t>(0);
+        auto now = std::chrono::steady_clock::now();
+        uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                now.time_since_epoch()).count();
+        auto tsBytes = toBytes<uint32_t>(timestamp);
         message.insert(message.end(), tsBytes.begin(), tsBytes.end());
 
-        message.insert(message.end(), elimMsg.begin(), elimMsg.end());
+        message.push_back(static_cast<uint8_t>(entityId));
+
+        message.push_back(playerId);
+
+        uint8_t usernameLen = static_cast<uint8_t>(username.size());
+        message.push_back(usernameLen);
+
+        message.insert(message.end(), username.begin(), username.end());
 
         broadcast(message);
     }

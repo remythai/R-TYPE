@@ -162,23 +162,43 @@ void rtype::NetworkServer::cleanInactivePlayers()
                                 now - slot.lastActive)
                                 .count();
             if (duration > 30) {
-                destroyPlayerEntity(slot.playerId);
+                uint8_t playerId = slot.playerId;
+                EntityManager::Entity entityId = slot.entity;
+                std::string username = slot.username;
+
+                {
+                    std::lock_guard<std::mutex> regLock(_registryMutex);
+                    if (entityId != EntityManager::INVALID_ENTITY) {
+                        _registry->destroy(entityId);
+                        slot.entity = EntityManager::INVALID_ENTITY;
+                    }
+                }
+
                 slot.isUsed = false;
 
                 std::vector<uint8_t> message;
-                message.push_back(
-                    static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
+                message.push_back(static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
 
                 auto idBytes = toBytes<uint16_t>(0);
                 message.insert(message.end(), idBytes.begin(), idBytes.end());
 
-                auto tsBytes = toBytes<uint32_t>(0);
+                uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                        now.time_since_epoch()).count();
+                auto tsBytes = toBytes<uint32_t>(timestamp);
                 message.insert(message.end(), tsBytes.begin(), tsBytes.end());
 
-                std::string msgText = "Player " + slot.username + " timed out.";
-                message.insert(message.end(), msgText.begin(), msgText.end());
+                message.push_back(static_cast<uint8_t>(entityId));
+                message.push_back(playerId);
+
+                uint8_t usernameLen = static_cast<uint8_t>(username.size());
+                message.push_back(usernameLen);
+                message.insert(message.end(), username.begin(), username.end());
 
                 broadcast(message);
+
+                std::cout << "[SERVER] Player " << int(playerId)
+                        << " (" << username << ") timed out. Entity: "
+                        << int(entityId) << std::endl;
             }
         }
     }
@@ -223,6 +243,10 @@ std::string rtype::NetworkServer::packetTypeToString(rtype::PacketType type)
             return "SNAPSHOT";
         case rtype::PacketType::PLAYER_ID_ASSIGNMENT:
             return "PLAYER_ID_ASSIGNMENT";
+        case rtype::PacketType::TIMEOUT:
+            return "TIMEOUT";
+        case rtype::PacketType::KILLED:
+            return "KILLED";
         default:
             return "UNKNOWN";
     }
@@ -245,7 +269,7 @@ void rtype::NetworkServer::sendPlayerIdAssignment(
     _socket.send_to(asio::buffer(packet), clientEndpoint);
 
     std::cout << "[SERVER] Sent PLAYER_ID_ASSIGNMENT(" << int(playerId)
-              << ") to " << clientEndpoint << std::endl;
+            << ") to " << clientEndpoint << std::endl;
 }
 
 int rtype::NetworkServer::countActivePlayers() const
@@ -276,8 +300,8 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 
     auto now = std::chrono::steady_clock::now();
     uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             now.time_since_epoch())
-                             .count();
+                            now.time_since_epoch())
+                            .count();
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 

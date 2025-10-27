@@ -174,6 +174,99 @@ Per Entity (repeated):
 
 ---
 
+### 0x20 - TIMEOUT
+
+Player disconnection notification sent from server to all clients when a player becomes inactive.
+Direction: Server → Client (Broadcast)
+Payload Structure:
+┌─────────────┬─────────────┬──────────────┬──────────────┐
+│  Entity ID  │  Player ID  │ Username Len │   Username   │
+│   (1 byte)  │   (1 byte)  │   (1 byte)   │  (Variable)  │
+└─────────────┴─────────────┴──────────────┴──────────────┘
+FieldSizeDescriptionEntity ID1 byteID of the destroyed entity (0-255)Player ID1 byteID of the disconnected player (0-3)Username Length1 byteLength of the username string (0-255)UsernameVariableUTF-8 encoded player username
+Trigger Conditions:
+
+Player inactive for 30+ seconds (no packets received)
+Manual disconnection without proper cleanup
+
+Example: Player 2 ("Alice") times out with entity ID 5
+20 00 00 00 00 00 00 05 02 05 41 6C 69 63 65
+│  │     │  │        │  │  │  │
+│  │     │  │        │  │  │  └─────── Username bytes (ASCII "Alice")
+│  │     │  │        │  │  └────────── Username length (5)
+│  │     │  │        │  └───────────── Player ID (2)
+│  │     │  │        └──────────────── Entity ID (5)
+│  │     │  └───────────────────────── Timestamp
+│  │     └──────────────────────────── Packet ID
+│  └────────────────────────────────── Type (TIMEOUT = 0x20)
+└───────────────────────────────────── Header
+**Server Behavior:**
+
+Detect player inactivity (30+ seconds without packets)
+Destroy the player's entity in the ECS registry
+Free the player slot for reuse
+Construct and broadcast TIMEOUT packet to all remaining clients
+Log: "Player <ID> (<username>) timed out. Entity: <entityID>"
+
+**Client Behavior:**
+Upon receiving a TIMEOUT packet, clients should:
+
+Parse the entity ID, player ID, and username from payload
+Remove the specified entity from the local game world
+Display notification: "Player <username> timed out"
+Update UI/HUD to reflect player count
+If local player ID matches: initiate graceful client shutdown
+
+---
+
+### 0x20 - KILLED
+
+Player elimination notification sent from server to all clients when a player entity is destroyed due to in-game death.
+Direction: Server → Client (Broadcast)
+Payload Structure:
+
+┌─────────────┬─────────────┬──────────────┬──────────────┐
+│  Entity ID  │  Player ID  │ Username Len │   Username   │
+│   (1 byte)  │   (1 byte)  │   (1 byte)   │  (Variable)  │
+└─────────────┴─────────────┴──────────────┴──────────────┘
+
+FieldSizeDescriptionEntity ID1 byteID of the destroyed entity (0-255)Player ID1 byteID of the eliminated player (0-3)Username Length1 byteLength of the username string (0-255)UsernameVariableUTF-8 encoded player username
+Trigger Conditions:
+
+Player entity Health component reaches 0
+Death system (GameEngine::Death) processes entity destruction
+Manual entity elimination (e.g., out-of-bounds)
+
+Example: Player 1 ("Bob") is killed with entity ID 3
+40 00 00 00 00 00 00 03 01 03 42 6F 62
+│  │     │  │        │  │  │  │
+│  │     │  │        │  │  │  └─────── Username bytes (ASCII "Bob")
+│  │     │  │        │  │  └────────── Username length (3)
+│  │     │  │        │  └───────────── Player ID (1)
+│  │     │  │        └──────────────── Entity ID (3)
+│  │     │  └───────────────────────── Timestamp
+│  │     └──────────────────────────── Packet ID
+│  └────────────────────────────────── Type (KILLED = 0x40)
+└───────────────────────────────────── Header
+**Server Behavior**:
+
+Detect entity death (Health <= 0 or Death component trigger)
+Destroy the player's entity in the ECS registry
+Mark player slot as unused (can respawn or rejoin)
+Construct and broadcast KILLED packet to all clients
+Log: "Player <ID> (<username>) eliminated. Entity: <entityID>"
+
+**Client Behavior**:
+Upon receiving a KILLED packet, clients should:
+
+Parse the entity ID, player ID, and username from payload
+Play death animation/effect for the entity (if applicable)
+Remove the specified entity from the local game world after animation
+Display notification: "Player <username> was eliminated"
+Update kill feed/scoreboard
+If local player ID matches: show "You were eliminated" screen
+Optional: Spectator mode or respawn countdown
+
 ## Connection Flow
 
 ### Initial Connection Sequence

@@ -39,6 +39,7 @@ enum class PacketType : uint8_t
     PLAYER_ID_ASSIGNMENT = 0x08,
     SNAPSHOT = 0x10,
     TIMEOUT = 0x20,
+    KILLED = 0x40
 };
 
 struct PlayerSlot

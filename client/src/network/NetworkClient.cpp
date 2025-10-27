@@ -113,7 +113,7 @@ void NetworkClient::handlePacket(
             if (!payload.empty()) {
                 uint8_t playerId = payload[0];
                 std::cout << "[CLIENT] ✓ PLAYER_ID_ASSIGNMENT received: "
-                          << int(playerId) << std::endl;
+                        << int(playerId) << std::endl;
 
                 if (_onPlayerIdReceived) {
                     std::cout
@@ -175,11 +175,11 @@ void NetworkClient::handlePacket(
                     float rectSizeY = readFloat();
 
                     std::cout << "[Entity:" << int(entityId) << " pos:("
-                              << std::fixed << std::setprecision(1) << x << ","
-                              << y << ")" << " sprite:" << spritePath
-                              << " rectPos:(" << rectPosX << "," << rectPosY
-                              << ")" << " rectSize:(" << rectSizeX << ","
-                              << rectSizeY << ")]" << std::endl;
+                            << std::fixed << std::setprecision(1) << x << ","
+                            << y << ")" << " sprite:" << spritePath
+                            << " rectPos:(" << rectPosX << "," << rectPosY
+                            << ")" << " rectSize:(" << rectSizeX << ","
+                            << rectSizeY << ")]" << std::endl;
                 }
 
                 if (_onSnapshot) {
@@ -189,17 +189,52 @@ void NetworkClient::handlePacket(
             break;
 
         case rtype::PacketType::TIMEOUT:
-            if (!payload.empty()) {
-                std::string message(payload.begin(), payload.end());
-                std::cout << "[CLIENT] " << message << std::endl;
+            if (payload.size() >= 3) {
+                size_t offset = 0;
+                uint8_t entityId = payload[offset++];
+                uint8_t playerId = payload[offset++];
+                uint8_t usernameLen = payload[offset++];
 
-                _ioContext.stop();
-                break;
+                if (offset + usernameLen <= payload.size()) {
+                    std::string username(
+                        payload.begin() + offset,
+                        payload.begin() + offset + usernameLen);
+
+                    std::cout << "[CLIENT] TIMEOUT - Player " << int(playerId)
+                            << " (" << username << ") timed out. Entity: "
+                            << int(entityId) << std::endl;
+
+                    if (_onPlayerEvent) {
+                        _onPlayerEvent(playerId, 0);
+                    }
+                }
             }
+            break;
+
+        case rtype::PacketType::KILLED:
+            if (payload.size() >= 3) {
+                size_t offset = 0;
+                uint8_t entityId = payload[offset++];
+                uint8_t playerId = payload[offset++];
+                uint8_t usernameLen = payload[offset++];
+
+                if (offset + usernameLen <= payload.size()) {
+                    std::string username(
+                        payload.begin() + offset,
+                        payload.begin() + offset + usernameLen);
+                    std::cout << "[CLIENT] KILLED - Player " << int(playerId)
+                            << " (" << username << ") was eliminated. Entity: "
+                            << int(entityId) << std::endl;
+                    if (_onPlayerEvent) {
+                        _onPlayerEvent(playerId, 1);
+                    }
+                }
+            }
+            break;
 
         default:
             std::cout << "[CLIENT] Unhandled packet type: " << int(type)
-                      << std::endl;
+                    << std::endl;
             break;
     }
 }
