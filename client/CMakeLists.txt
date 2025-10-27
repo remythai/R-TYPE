@@ -59,7 +59,9 @@ endif()
 
 set(SOURCES
     src/main.cpp
+
     src/core/Core.cpp
+
     src/graphics/Window.cpp
     src/graphics/ResourceManager.cpp
     src/graphics/EntityManager.cpp
@@ -69,7 +71,10 @@ set(SOURCES
     src/keybind/KeybindMenu.cpp
 
     src/network/NetworkClient.cpp
+
     src/mapEditor/MapEditor.cpp
+
+    src/colorBlindFilter/ColorBlindFilter.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
