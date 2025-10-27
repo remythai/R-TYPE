@@ -1,8 +1,8 @@
-#include "Motion.hpp"
+#include "DomainHandler.hpp"
 
 extern "C" {
     ISystem* createSystem() {
-        return new GameEngine::Motion();
+        return new GameEngine::DomainHandler();
     }
 
     void destroySystem(ISystem* system) {
@@ -10,7 +10,7 @@ extern "C" {
     }
 
     const char* getSystemName() {
-        return "Motion";
+        return "DomainHandler";
     }
 
     const char* getSystemVersion() {

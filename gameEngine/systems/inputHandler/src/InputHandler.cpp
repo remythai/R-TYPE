@@ -1,8 +1,8 @@
-#include "Motion.hpp"
+#include "InputHandler.hpp"
 
 extern "C" {
     ISystem* createSystem() {
-        return new GameEngine::Motion();
+        return new GameEngine::InputHandler();
     }
 
     void destroySystem(ISystem* system) {
@@ -10,7 +10,7 @@ extern "C" {
     }
 
     const char* getSystemName() {
-        return "Motion";
+        return "InputHandler";
     }
 
     const char* getSystemVersion() {

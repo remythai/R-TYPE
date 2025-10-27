@@ -10,11 +10,11 @@ file(WRITE ${PLUGIN_SOURCE}
 "#include \"../src/Renderable.hpp\"
 
 extern \"C\" {
-    IComponent* createRenderable() {
+    IComponent* createComponent() {
         return new GameEngine::Renderable();
     }
     
-    void destroyRenderable(IComponent* component) {
+    void destroyComponent(IComponent* component) {
         delete component;
     }
     
