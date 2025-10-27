@@ -177,13 +177,16 @@ void rtype::NetworkServer::cleanInactivePlayers()
                 slot.isUsed = false;
 
                 std::vector<uint8_t> message;
-                message.push_back(static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
+                message.push_back(
+                    static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
 
                 auto idBytes = toBytes<uint16_t>(0);
                 message.insert(message.end(), idBytes.begin(), idBytes.end());
 
-                uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                        now.time_since_epoch()).count();
+                uint32_t timestamp =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(
+                        now.time_since_epoch())
+                        .count();
                 auto tsBytes = toBytes<uint32_t>(timestamp);
                 message.insert(message.end(), tsBytes.begin(), tsBytes.end());
 
@@ -196,9 +199,10 @@ void rtype::NetworkServer::cleanInactivePlayers()
 
                 broadcast(message);
 
-                std::cout << "[SERVER] Player " << int(playerId)
-                        << " (" << username << ") timed out. Entity: "
-                        << int(entityId) << std::endl;
+                std::cout << "[SERVER] Player " << int(playerId) << " ("
+                          << username
+                          << ") timed out. Entity: " << int(entityId)
+                          << std::endl;
             }
         }
     }
@@ -269,7 +273,7 @@ void rtype::NetworkServer::sendPlayerIdAssignment(
     _socket.send_to(asio::buffer(packet), clientEndpoint);
 
     std::cout << "[SERVER] Sent PLAYER_ID_ASSIGNMENT(" << int(playerId)
-            << ") to " << clientEndpoint << std::endl;
+              << ") to " << clientEndpoint << std::endl;
 }
 
 int rtype::NetworkServer::countActivePlayers() const
@@ -300,8 +304,8 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 
     auto now = std::chrono::steady_clock::now();
     uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                            now.time_since_epoch())
-                            .count();
+                             now.time_since_epoch())
+                             .count();
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 

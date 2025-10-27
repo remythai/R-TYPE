@@ -85,7 +85,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     }
 
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player "
-            << int(playerId) << std::endl;
+              << int(playerId) << std::endl;
 
     return entity;
 }
@@ -180,7 +180,6 @@ void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
     std::lock_guard<std::mutex> lock(_registryMutex);
     if (playerId < 4 &&
         _playerSlots[playerId].entity != EntityManager::INVALID_ENTITY) {
-
         EntityManager::Entity entityId = _playerSlots[playerId].entity;
         std::string username = _playerSlots[playerId].username;
 
@@ -194,8 +193,10 @@ void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
         message.insert(message.end(), idBytes.begin(), idBytes.end());
 
         auto now = std::chrono::steady_clock::now();
-        uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                now.time_since_epoch()).count();
+        uint32_t timestamp =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                now.time_since_epoch())
+                .count();
         auto tsBytes = toBytes<uint32_t>(timestamp);
         message.insert(message.end(), tsBytes.begin(), tsBytes.end());
 
