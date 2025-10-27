@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Component.hpp"
+
 namespace GameEngine {
-struct Weapon
+struct Weapon : public Component<Weapon>
 {
     enum class WeaponType
     {
@@ -10,8 +12,18 @@ struct Weapon
         Laser,
         Rocket
     };
-    WeaponType type{WeaponType::Pistol};
-    float fireRate{1.0f};
-    int projectileCount{1};
+    
+    WeaponType type;
+    float fireRate;
+    int projectileCount;
+
+
+    Weapon(WeaponType weaponType = WeaponType::Pistol, float rate = 1.0f, int count = 1)
+        : type(weaponType), 
+          fireRate(rate), 
+          projectileCount(count) {}
+
+    static constexpr const char* Name = "Weapon";
+    static constexpr const char* Version = "1.0.0";
 };
 }  // namespace GameEngine
