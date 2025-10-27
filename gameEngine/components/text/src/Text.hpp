@@ -1,11 +1,11 @@
 #pragma once
 #include <string>
 
-#include "../../../ecs/utils.hpp"
 #include "../../../ecs/Component.hpp"
+#include "../../../ecs/utils.hpp"
 
 namespace GameEngine {
-struct Text  : public Component<Text>
+struct Text : public Component<Text>
 {
     std::string content;
     int fontSize;
