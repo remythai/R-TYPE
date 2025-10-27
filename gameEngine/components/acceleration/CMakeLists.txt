@@ -10,11 +10,11 @@ file(WRITE ${PLUGIN_SOURCE}
 "#include \"../src/Acceleration.hpp\"
 
 extern \"C\" {
-    IComponent* createAcceleration() {
+    IComponent* createComponent() {
         return new GameEngine::Acceleration();
     }
     
-    void destroyAcceleration(IComponent* component) {
+    void destroyComponent(IComponent* component) {
         delete component;
     }
     

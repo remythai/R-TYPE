@@ -1,8 +1,8 @@
-#include "Motion.hpp"
+#include "Death.hpp"
 
 extern "C" {
     ISystem* createSystem() {
-        return new GameEngine::Motion();
+        return new GameEngine::Death();
     }
 
     void destroySystem(ISystem* system) {
@@ -10,7 +10,7 @@ extern "C" {
     }
 
     const char* getSystemName() {
-        return "Motion";
+        return "Death";
     }
 
     const char* getSystemVersion() {

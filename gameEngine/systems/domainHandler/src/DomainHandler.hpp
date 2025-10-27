@@ -5,6 +5,9 @@
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
+#include "../../../components/position/src/Position.hpp"
+#include "../../../components/domain/src/Domain.hpp"
+
 namespace GameEngine {
 /**
  * @class DomainHandler
