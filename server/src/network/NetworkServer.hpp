@@ -12,7 +12,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
-#include "../../../gameEngine/ecs/Registry.hpp"
+
 #include "../../../gameEngine/components/AIControlled/src/AIControlled.hpp"
 #include "../../../gameEngine/components/acceleration/src/Acceleration.hpp"
 #include "../../../gameEngine/components/domain/src/Domain.hpp"
@@ -32,115 +32,118 @@
 #include "../../../gameEngine/systems/motion/src/Motion.hpp"
 
 namespace rtype {
-    enum class PacketType : uint8_t {
-        INPUT = 0x01,
-        JOIN = 0x02,
-        PLAYER_ID_ASSIGNMENT = 0x08,
-        SNAPSHOT = 0x10,
-        TIMEOUT = 0x20,
-    };
+enum class PacketType : uint8_t
+{
+    INPUT = 0x01,
+    JOIN = 0x02,
+    PLAYER_ID_ASSIGNMENT = 0x08,
+    SNAPSHOT = 0x10,
+    TIMEOUT = 0x20,
+};
 
-    struct PlayerSlot {
-        bool isUsed;
-        uint8_t playerId;
-        asio::ip::udp::endpoint endpoint;
-        std::string username;
-        std::chrono::steady_clock::time_point lastActive;
-        EntityManager::Entity entity;
-    };
+struct PlayerSlot
+{
+    bool isUsed;
+    uint8_t playerId;
+    asio::ip::udp::endpoint endpoint;
+    std::string username;
+    std::chrono::steady_clock::time_point lastActive;
+    EntityManager::Entity entity;
+};
 
-    class NetworkServer {
-        public:
-            NetworkServer(unsigned short port, std::string const& game);
-            ~NetworkServer();
+class NetworkServer
+{
+   public:
+    NetworkServer(unsigned short port, std::string const& game);
+    ~NetworkServer();
 
-            void run();
+    void run();
 
-            void broadcast(const std::vector<uint8_t>& message);
+    void broadcast(const std::vector<uint8_t>& message);
 
-            int countActivePlayers() const;
+    int countActivePlayers() const;
 
-            EntityManager::Entity createPlayerEntity(uint8_t playerId);
-            void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
-            void destroyPlayerEntity(uint8_t playerId);
-            EntityManager::Entity createEnemyEntity();
+    EntityManager::Entity createPlayerEntity(uint8_t playerId);
+    void applyInputToEntity(uint8_t playerId, uint8_t keyCode, uint8_t action);
+    void destroyPlayerEntity(uint8_t playerId);
+    EntityManager::Entity createEnemyEntity();
 
-            void setPlayerSlot(size_t index, const PlayerSlot& slot)
-            {
-                if (index >= _playerSlots.size())
-                    return;
-                std::lock_guard<std::mutex> lock(_playerSlotsMutex);
-                _playerSlots[index] = slot;
-            }
+    void setPlayerSlot(size_t index, const PlayerSlot& slot)
+    {
+        if (index >= _playerSlots.size())
+            return;
+        std::lock_guard<std::mutex> lock(_playerSlotsMutex);
+        _playerSlots[index] = slot;
+    }
 
-            std::vector<uint8_t> serializeSnapshot();
-            static std::string packetTypeToString(PacketType type);
+    std::vector<uint8_t> serializeSnapshot();
+    static std::string packetTypeToString(PacketType type);
 
-        private:
-            template <typename T>
-            std::vector<uint8_t> toBytes(T value)
-            {
-                std::vector<uint8_t> bytes(sizeof(T));
-                for (size_t i = 0; i < sizeof(T); ++i)
-                    bytes[sizeof(T) - 1 - i] = (value >> (i * 8)) & 0xFF;
-                return bytes;
-            }
+   private:
+    template <typename T>
+    std::vector<uint8_t> toBytes(T value)
+    {
+        std::vector<uint8_t> bytes(sizeof(T));
+        for (size_t i = 0; i < sizeof(T); ++i)
+            bytes[sizeof(T) - 1 - i] = (value >> (i * 8)) & 0xFF;
+        return bytes;
+    }
 
-            template <typename T>
-            T fromBytes(const uint8_t* data)
-            {
-                T value = 0;
-                for (size_t i = 0; i < sizeof(T); ++i)
-                    value |= data[i] << (8 * (sizeof(T) - 1 - i));
-                return value;
-            }
+    template <typename T>
+    T fromBytes(const uint8_t* data)
+    {
+        T value = 0;
+        for (size_t i = 0; i < sizeof(T); ++i)
+            value |= data[i] << (8 * (sizeof(T) - 1 - i));
+        return value;
+    }
 
-            void doReceive();
+    void doReceive();
 
-            void initECS();
-            void updateECS(float dt);
+    void initECS();
+    void updateECS(float dt);
 
-            void handleClientPacket(
-                const asio::ip::udp::endpoint& clientEndpoint, PacketType type,
-                uint16_t packetId, uint32_t timestamp,
-                const std::vector<uint8_t>& payload);
+    void handleClientPacket(
+        const asio::ip::udp::endpoint& clientEndpoint, PacketType type,
+        uint16_t packetId, uint32_t timestamp,
+        const std::vector<uint8_t>& payload);
 
-            void handleInputPacket(
-                const asio::ip::udp::endpoint& clientEndpoint,
-                const std::vector<uint8_t>& payload);
+    void handleInputPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload);
 
-            void handleJoinPacket(
-                const asio::ip::udp::endpoint& clientEndpoint,
-                const std::vector<uint8_t>& payload);
+    void handleJoinPacket(
+        const asio::ip::udp::endpoint& clientEndpoint,
+        const std::vector<uint8_t>& payload);
 
-            void sendPlayerIdAssignment(
-                const asio::ip::udp::endpoint& clientEndpoint, uint8_t playerId);
+    void sendPlayerIdAssignment(
+        const asio::ip::udp::endpoint& clientEndpoint, uint8_t playerId);
 
-            uint8_t findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint);
+    uint8_t findPlayerIdByEndpoint(const asio::ip::udp::endpoint& endpoint);
 
-            void checkInactivePlayers();
-            void cleanInactivePlayers();
+    void checkInactivePlayers();
+    void cleanInactivePlayers();
 
-            void broadcastSnapshot();
+    void broadcastSnapshot();
 
-            bool _running;
-            std::string _hostname;
-            asio::io_context _ioContext;
-            asio::ip::udp::socket _socket;
-            std::map<int, asio::ip::udp::endpoint> _clients;
-            std::mutex _clientsMutex;
-            int _nextClientId = 1;
-            std::string _game;
+    bool _running;
+    std::string _hostname;
+    asio::io_context _ioContext;
+    asio::ip::udp::socket _socket;
+    std::map<int, asio::ip::udp::endpoint> _clients;
+    std::mutex _clientsMutex;
+    int _nextClientId = 1;
+    std::string _game;
 
-            std::array<PlayerSlot, 4> _playerSlots;
-            std::mutex _playerSlotsMutex;
+    std::array<PlayerSlot, 4> _playerSlots;
+    std::mutex _playerSlotsMutex;
 
-            std::unique_ptr<Registry> _registry;
-            std::chrono::steady_clock::time_point _lastUpdate;
+    std::unique_ptr<Registry> _registry;
+    std::chrono::steady_clock::time_point _lastUpdate;
 
-            std::chrono::steady_clock::time_point _lastSnapshot;
-            static constexpr float SNAPSHOT_RATE = 1.0f / 20.0f;
+    std::chrono::steady_clock::time_point _lastSnapshot;
+    static constexpr float SNAPSHOT_RATE = 1.0f / 20.0f;
 
-            std::mutex _registryMutex;
-    };
+    std::mutex _registryMutex;
+};
 }  // namespace rtype

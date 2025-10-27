@@ -31,7 +31,7 @@ void rtype::NetworkServer::handleJoinPacket(
     for (const auto& slot : _playerSlots) {
         if (slot.isUsed && slot.endpoint == clientEndpoint) {
             std::cout << " [Already connected as Player " << int(slot.playerId)
-                    << "]" << std::endl;
+                      << "]" << std::endl;
             sendPlayerIdAssignment(clientEndpoint, slot.playerId);
             return;
         }
@@ -72,8 +72,8 @@ void rtype::NetworkServer::handleJoinPacket(
     _clients[clientId] = clientEndpoint;
 
     std::cout << " -> Assigned Player ID " << int(assignedPlayerId)
-            << ", Total players: " << countActivePlayers() << "/4"
-            << std::endl;
+              << ", Total players: " << countActivePlayers() << "/4"
+              << std::endl;
 
     sendPlayerIdAssignment(clientEndpoint, assignedPlayerId);
 }
@@ -88,13 +88,13 @@ void rtype::NetworkServer::handleInputPacket(
         uint8_t action = payload[2];
 
         std::cout << "[PlayerId=" << int(playerId)
-                << "][KeyCode=" << int(keyCode) << "][Action=" << int(action)
-                << "]";
+                  << "][KeyCode=" << int(keyCode) << "][Action=" << int(action)
+                  << "]";
 
         uint8_t expectedPlayerId = findPlayerIdByEndpoint(clientEndpoint);
         if (expectedPlayerId != playerId) {
             std::cout << " [WARNING: PlayerId mismatch! Expected "
-                    << int(expectedPlayerId) << "]";
+                      << int(expectedPlayerId) << "]";
         } else {
             applyInputToEntity(playerId, keyCode, action);
             std::cout << " [Input applied to ECS]";
