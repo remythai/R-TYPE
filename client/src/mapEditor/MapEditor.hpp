@@ -9,6 +9,7 @@
 
 #include <imgui-SFML.h>
 #include <imgui.h>
+
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <memory>
@@ -42,7 +43,7 @@ struct MapEntity
 
 class MapEditor
 {
-public:
+   public:
     MapEditor();
     ~MapEditor() = default;
 
@@ -51,22 +52,37 @@ public:
     void renderUI();
     void handleMouseInput(sf::RenderWindow& window);
 
-    [[nodiscard]] bool isEnabled() const { return _enabled; }
-    void setEnabled(bool enabled) { _enabled = enabled; }
-    void toggle() { _enabled = !_enabled; }
-    [[nodiscard]] const std::vector<MapEntity>& getEntities() const { return _entities; }
+    [[nodiscard]] bool isEnabled() const
+    {
+        return _enabled;
+    }
+    void setEnabled(bool enabled)
+    {
+        _enabled = enabled;
+    }
+    void toggle()
+    {
+        _enabled = !_enabled;
+    }
+    [[nodiscard]] const std::vector<MapEntity>& getEntities() const
+    {
+        return _entities;
+    }
 
     void saveMap(const std::string& filename);
     void loadMap(const std::string& filename);
     void clearMap();
 
-private:
+   private:
     void renderGrid(sf::RenderWindow& window);
     void renderEntities(sf::RenderWindow& window);
-    void renderEntity(sf::RenderWindow& window, const MapEntity& entity, bool selected);
-    void renderEntitySprite(sf::RenderWindow& window, const MapEntity& entity, 
-                           sf::Texture* texture, bool selected);
-    void renderEntityFallback(sf::RenderWindow& window, const MapEntity& entity, bool selected);
+    void renderEntity(
+        sf::RenderWindow& window, const MapEntity& entity, bool selected);
+    void renderEntitySprite(
+        sf::RenderWindow& window, const MapEntity& entity, sf::Texture* texture,
+        bool selected);
+    void renderEntityFallback(
+        sf::RenderWindow& window, const MapEntity& entity, bool selected);
     void renderPreview(sf::RenderWindow& window);
 
     void renderUIHeader();
@@ -84,18 +100,30 @@ private:
     void placeEntity();
     void deleteEntityAtMouse();
 
-    sf::IntRect getEntityTemplateData(EntityTemplate type, std::string& spritePath) const;
-    sf::Texture* loadTexture(ResourceManager& rm, const std::string& path) const;
+    sf::IntRect getEntityTemplateData(
+        EntityTemplate type, std::string& spritePath) const;
+    sf::Texture* loadTexture(
+        ResourceManager& rm, const std::string& path) const;
     [[nodiscard]] std::string getEntityName(EntityTemplate type) const;
     [[nodiscard]] sf::Color getEntityColor(EntityTemplate type) const;
 
     void parseJSONEntities(const std::string& content);
-    MapEntity parseJSONEntity(const std::string& content, size_t start, size_t end);
-    int parseJSONInt(const std::string& content, const std::string& key, size_t start, size_t end);
-    float parseJSONFloat(const std::string& content, const std::string& key, size_t start, size_t end);
-    std::string parseJSONString(const std::string& content, const std::string& key, size_t start, size_t end);
-    sf::IntRect parseJSONTextureRect(const std::string& content, size_t start, size_t end);
-    std::string extractJSONValue(const std::string& content, const std::string& key, size_t start, size_t end);
+    MapEntity parseJSONEntity(
+        const std::string& content, size_t start, size_t end);
+    int parseJSONInt(
+        const std::string& content, const std::string& key, size_t start,
+        size_t end);
+    float parseJSONFloat(
+        const std::string& content, const std::string& key, size_t start,
+        size_t end);
+    std::string parseJSONString(
+        const std::string& content, const std::string& key, size_t start,
+        size_t end);
+    sf::IntRect parseJSONTextureRect(
+        const std::string& content, size_t start, size_t end);
+    std::string extractJSONValue(
+        const std::string& content, const std::string& key, size_t start,
+        size_t end);
     static std::string trim(const std::string& str);
 
     bool _enabled;
