@@ -16,8 +16,9 @@
 
 namespace CLIENT {
 
-class Window {
-public:
+class Window
+{
+   public:
     Window(const std::string& title, unsigned int width, unsigned int height);
     ~Window();
 
@@ -31,9 +32,12 @@ public:
     float getDeltaTime() const;
 
     void setKeybindComponents(KeybindManager* manager, KeybindMenu* menu);
-    void setColorBlindFilter(ColorBlindFilter* filter) { _colorBlindFilter = filter; }
+    void setColorBlindFilter(ColorBlindFilter* filter)
+    {
+        _colorBlindFilter = filter;
+    }
 
-private:
+   private:
     sf::RenderWindow _window;
     sf::Clock _clock;
     float _deltaTime;
@@ -45,4 +49,4 @@ private:
     ColorBlindFilter* _colorBlindFilter;
 };
 
-} // namespace CLIENT
+}  // namespace CLIENT

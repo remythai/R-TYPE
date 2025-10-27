@@ -12,13 +12,14 @@
 #include <optional>
 #include <vector>
 
-#include "KeybindManager.hpp"
 #include "../colorBlindFilter/ColorBlindFilter.hpp"
+#include "KeybindManager.hpp"
 
 namespace CLIENT {
 
-class KeybindMenu {
-public:
+class KeybindMenu
+{
+   public:
     explicit KeybindMenu(KeybindManager& keybindManager);
     ~KeybindMenu() = default;
 
@@ -29,10 +30,13 @@ public:
     void handleEvent(const sf::Event& event);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);  // ← CHANGÉ ICI
-    
-    void setColorBlindFilter(ColorBlindFilter* filter) { _colorBlindFilter = filter; }
 
-private:
+    void setColorBlindFilter(ColorBlindFilter* filter)
+    {
+        _colorBlindFilter = filter;
+    }
+
+   private:
     void initializeUI();
     void updateUI();
     void handleMouseClick(const sf::Vector2i& mousePos);
@@ -41,7 +45,7 @@ private:
 
     KeybindManager& _keybindManager;
     ColorBlindFilter* _colorBlindFilter;
-    
+
     bool _isOpen;
     std::shared_ptr<sf::Font> _font;
 
@@ -59,7 +63,7 @@ private:
     sf::Text _resetText;
     sf::RectangleShape _closeButton;
     sf::Text _closeText;
-    
+
     // Boutons pour le filtre daltonien
     sf::RectangleShape _colorBlindPrevButton;
     sf::RectangleShape _colorBlindNextButton;
@@ -72,4 +76,4 @@ private:
     float _blinkTimer;
 };
 
-} // namespace CLIENT
+}  // namespace CLIENT
