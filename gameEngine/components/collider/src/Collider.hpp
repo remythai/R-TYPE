@@ -3,8 +3,8 @@
 #include <bitset>
 #include <variant>
 
-#include "../../../ecs/utils.hpp"
 #include "../../../ecs/Component.hpp"
+#include "../../../ecs/utils.hpp"
 
 namespace GameEngine {
 struct HitBox
@@ -16,7 +16,8 @@ struct Collider : public Component<Collider>
     std::bitset<8> entityDiff;
     vec2 size;
     Collider(
-        vec2 val_translation = vec2(0, 0), std::bitset<8> val_selector = std::bitset<8>(0),
+        vec2 val_translation = vec2(0, 0),
+        std::bitset<8> val_selector = std::bitset<8>(0),
         std::bitset<8> val_diff = std::bitset<8>(0), vec2 val_size = vec2(0, 0))
         : originTranslation(val_translation),
           entitySelector(val_selector),

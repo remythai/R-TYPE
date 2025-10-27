@@ -3,7 +3,7 @@
 #include "../../../ecs/Component.hpp"
 
 namespace GameEngine {
-struct AIControlled  : public Component<AIControlled>
+struct AIControlled : public Component<AIControlled>
 {
     AIControlled() {}
 
