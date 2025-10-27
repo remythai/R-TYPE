@@ -51,7 +51,6 @@ void CLIENT::KeybindMenu::initializeUI()
     _instructionText.setFillColor(sf::Color(200, 200, 200));
     _instructionText.setPosition(sf::Vector2f(320, 170));
 
-    // Section filtre daltonien
     _colorBlindLabel.setString("Color Blind Filter:");
     _colorBlindLabel.setCharacterSize(24);
     _colorBlindLabel.setFillColor(sf::Color::White);
@@ -83,7 +82,6 @@ void CLIENT::KeybindMenu::initializeUI()
     _colorBlindNextText.setFillColor(sf::Color::White);
     _colorBlindNextText.setPosition(sf::Vector2f(897, 550));
 
-    // Boutons du bas
     _saveButton.setSize(sf::Vector2f(180, 50));
     _saveButton.setPosition(sf::Vector2f(300, 720));
     _saveButton.setFillColor(sf::Color(50, 150, 50));
