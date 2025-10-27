@@ -1,7 +1,9 @@
 #pragma once
 
+#include "../../../ecs/Component.hpp"
+
 namespace GameEngine {
-struct Health
+struct Health : public Component<Health>
 {
     int currentHp;
     int maxHp;
@@ -9,5 +11,8 @@ struct Health
         : currentHp(val_currentHp), maxHp(val_maxHp)
     {
     }
+
+    static constexpr const char* Name = "Health";
+    static constexpr const char* Version = "1.0.0";
 };
 }  // namespace GameEngine
