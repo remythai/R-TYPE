@@ -62,7 +62,7 @@ class EntityManager
 
     void update(float deltaTime);
 
-    void render(sf::RenderTarget &target);
+    void render(sf::RenderTarget& target);
 
     void clear();
     [[nodiscard]] size_t getEntityCount() const;

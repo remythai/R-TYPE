@@ -243,16 +243,20 @@ void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
         if (isPointInRect(mousePos, _colorBlindPrevButton)) {
             int currentMode = static_cast<int>(_colorBlindFilter->getMode());
             currentMode--;
-            if (currentMode < 0) currentMode = 3;
-            _colorBlindFilter->setMode(static_cast<ColorBlindMode>(currentMode));
+            if (currentMode < 0)
+                currentMode = 3;
+            _colorBlindFilter->setMode(
+                static_cast<ColorBlindMode>(currentMode));
             updateUI();
         }
 
         if (isPointInRect(mousePos, _colorBlindNextButton)) {
             int currentMode = static_cast<int>(_colorBlindFilter->getMode());
             currentMode++;
-            if (currentMode > 3) currentMode = 0;
-            _colorBlindFilter->setMode(static_cast<ColorBlindMode>(currentMode));
+            if (currentMode > 3)
+                currentMode = 0;
+            _colorBlindFilter->setMode(
+                static_cast<ColorBlindMode>(currentMode));
             updateUI();
         }
     }

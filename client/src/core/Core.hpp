@@ -9,6 +9,7 @@
 
 #include <SFML/Audio.hpp>
 #include <chrono>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -16,15 +17,14 @@
 #include <set>
 #include <string>
 #include <thread>
-#include <cmath>
 
+#include "../colorBlindFilter/ColorBlindFilter.hpp"
 #include "../graphics/EntityManager.hpp"
 #include "../graphics/ParallaxSystem.hpp"
 #include "../keybind/KeybindManager.hpp"
 #include "../keybind/KeybindMenu.hpp"
 #include "../mapEditor/MapEditor.hpp"
 #include "../network/NetworkClient.hpp"
-#include "../colorBlindFilter/ColorBlindFilter.hpp"
 
 namespace CLIENT {
 

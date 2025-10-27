@@ -11,27 +11,35 @@
 
 namespace CLIENT {
 
-enum class ColorBlindMode {
+enum class ColorBlindMode
+{
     NONE,
     PROTANOPIA,
     DEUTERANOPIA,
     TRITANOPIA
 };
 
-class ColorBlindFilter {
-public:
+class ColorBlindFilter
+{
+   public:
     ColorBlindFilter();
     ~ColorBlindFilter() = default;
 
     void setMode(ColorBlindMode mode);
-    ColorBlindMode getMode() const { return _currentMode; }
-    
+    ColorBlindMode getMode() const
+    {
+        return _currentMode;
+    }
+
     const sf::RenderStates* getRenderStates() const;
-    bool isActive() const { return _currentMode != ColorBlindMode::NONE && _shaderLoaded; }
-    
+    bool isActive() const
+    {
+        return _currentMode != ColorBlindMode::NONE && _shaderLoaded;
+    }
+
     static std::string getModeName(ColorBlindMode mode);
 
-private:
+   private:
     void updateShader();
 
     ColorBlindMode _currentMode;
@@ -39,4 +47,4 @@ private:
     bool _shaderLoaded;
 };
 
-} // namespace CLIENT
+}  // namespace CLIENT
