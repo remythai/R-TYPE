@@ -79,7 +79,7 @@ class Collision : public System<Collision>
             gridWidth, std::vector<std::vector<uint32_t>>(gridHeight));
 
         registry.each<Position, Renderable, Collider, Damage, Health>(
-            [dt, &grid, hitboxSizeMean](
+            [dt, &grid, hitboxSizeMean, gridWidth, gridHeight](
                 auto e, Position& pos, Renderable& render, Collider& collider,
                 Damage& damage, Health& health) {
                 if (pos.pos.x < 0 || pos.pos.y < 0)
@@ -91,6 +91,9 @@ class Collision : public System<Collision>
                 int bottomCell = pos.pos.y / hitboxSizeMean;
                 int rightCell = rightPos / hitboxSizeMean;
                 int topCell = topPos / hitboxSizeMean;
+
+                rightCell = std::min(rightCell, gridWidth - 1);
+                topCell = std::min(topCell, gridHeight - 1);
 
                 for (int i = leftCell; i <= rightCell; i++) {
                     for (int j = bottomCell; j <= topCell; j++) {
