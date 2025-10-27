@@ -31,6 +31,7 @@ set(SOURCES
     src/main.cpp
     src/network/NetworkServer.cpp
     src/network/handleClient.cpp
+    src/network/manageEntities.cpp
 )
 
 # Exécutable principal
@@ -72,6 +73,7 @@ if(ENABLE_TESTS)
             ${TEST_SOURCES}
             src/network/NetworkServer.cpp
             src/network/handleClient.cpp
+            src/network/manageEntities.cpp
         )
 
         target_include_directories(r-type_tests PRIVATE
