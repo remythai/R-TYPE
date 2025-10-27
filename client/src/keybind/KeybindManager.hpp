@@ -14,7 +14,8 @@
 
 namespace CLIENT {
 
-enum class GameAction {
+enum class GameAction
+{
     MOVE_UP,
     MOVE_DOWN,
     MOVE_LEFT,
@@ -23,8 +24,9 @@ enum class GameAction {
     OPEN_KEYBIND_MENU
 };
 
-class KeybindManager {
-public:
+class KeybindManager
+{
+   public:
     KeybindManager();
     ~KeybindManager() = default;
 
@@ -32,22 +34,22 @@ public:
     sf::Keyboard::Key getKeybind(GameAction action) const;
     std::string getActionName(GameAction action) const;
     std::string getKeyName(sf::Keyboard::Key key) const;
-    
+
     void saveToFile(const std::string& filename);
     void loadFromFile(const std::string& filename);
-    
+
     void resetToDefaults();
-    
+
     bool isActionPressed(GameAction action) const;
-    
+
     std::vector<GameAction> getAllActions() const;
 
-private:
+   private:
     std::map<GameAction, sf::Keyboard::Key> _keybinds;
     std::map<GameAction, std::string> _actionNames;
-    
+
     void initializeDefaults();
     void initializeActionNames();
 };
 
-} // namespace CLIENT
+}  // namespace CLIENT

@@ -19,10 +19,10 @@
 
 #include "../graphics/EntityManager.hpp"
 #include "../graphics/ParallaxSystem.hpp"
-#include "../mapEditor/MapEditor.hpp"
-#include "../network/NetworkClient.hpp"
 #include "../keybind/KeybindManager.hpp"
 #include "../keybind/KeybindMenu.hpp"
+#include "../mapEditor/MapEditor.hpp"
+#include "../network/NetworkClient.hpp"
 
 namespace CLIENT {
 
