@@ -182,7 +182,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
             _registry->emplace<GameEngine::Damage>(entity, 1);
         }
-        for (size_t i = 1; i < 29 - randomNum; i++) {
+        for (size_t i = 1; i < 30 - randomNum; i++) {
             std::lock_guard<std::mutex> lock(_registryMutex);
             auto entity = _registry->create();
             _registry->emplace<GameEngine::AIControlled>(entity);
