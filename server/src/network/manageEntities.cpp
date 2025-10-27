@@ -5,13 +5,14 @@
 ** manageEntities.cpp
 */
 
-#include "NetworkServer.hpp"
-#include <cstdint>
-#include <vector>
 #include <algorithm>
+#include <bitset>
+#include <cstdint>
 #include <iostream>
 #include <random>
-#include <bitset>
+#include <vector>
+
+#include "NetworkServer.hpp"
 
 EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 {
@@ -84,7 +85,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
     }
 
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player "
-            << int(playerId) << std::endl;
+              << int(playerId) << std::endl;
 
     return entity;
 }
@@ -97,9 +98,9 @@ void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
         _registry->destroy(_playerSlots[playerId].entity);
         _playerSlots[playerId].entity = EntityManager::INVALID_ENTITY;
 
-        std::string elimMsg = "Player " + std::to_string(playerId) +
-                            " (" + _playerSlots[playerId].username +
-                            ") has been eliminated.";
+        std::string elimMsg = "Player " + std::to_string(playerId) + " (" +
+                              _playerSlots[playerId].username +
+                              ") has been eliminated.";
 
         std::vector<uint8_t> message;
         message.push_back(static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
