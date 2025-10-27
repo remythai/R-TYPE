@@ -113,7 +113,7 @@ void NetworkClient::handlePacket(
             if (!payload.empty()) {
                 uint8_t playerId = payload[0];
                 std::cout << "[CLIENT] ✓ PLAYER_ID_ASSIGNMENT received: "
-                        << int(playerId) << std::endl;
+                          << int(playerId) << std::endl;
 
                 if (_onPlayerIdReceived) {
                     std::cout
@@ -175,11 +175,11 @@ void NetworkClient::handlePacket(
                     float rectSizeY = readFloat();
 
                     std::cout << "[Entity:" << int(entityId) << " pos:("
-                            << std::fixed << std::setprecision(1) << x << ","
-                            << y << ")" << " sprite:" << spritePath
-                            << " rectPos:(" << rectPosX << "," << rectPosY
-                            << ")" << " rectSize:(" << rectSizeX << ","
-                            << rectSizeY << ")]" << std::endl;
+                              << std::fixed << std::setprecision(1) << x << ","
+                              << y << ")" << " sprite:" << spritePath
+                              << " rectPos:(" << rectPosX << "," << rectPosY
+                              << ")" << " rectSize:(" << rectSizeX << ","
+                              << rectSizeY << ")]" << std::endl;
                 }
 
                 if (_onSnapshot) {
@@ -199,7 +199,7 @@ void NetworkClient::handlePacket(
 
         default:
             std::cout << "[CLIENT] Unhandled packet type: " << int(type)
-                    << std::endl;
+                      << std::endl;
             break;
     }
 }

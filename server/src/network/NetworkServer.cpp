@@ -6,11 +6,12 @@
 */
 
 #include "NetworkServer.hpp"
-#include <vector>
+
 #include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 std::vector<uint8_t> floatToBytes(float value)
 {
@@ -26,12 +27,10 @@ std::vector<uint8_t> floatToBytes(float value)
 
 rtype::NetworkServer::NetworkServer(
     unsigned short port, std::string const& game)
-    : _socket(_ioContext,
-        asio::ip::udp::endpoint(asio::ip::udp::v4(),
-        port)),
-    _running(false),
-    _game(game),
-    _registry(std::make_unique<Registry>())
+    : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
+      _running(false),
+      _game(game),
+      _registry(std::make_unique<Registry>())
 {
     for (int i = 0; i < 4; ++i) {
         _playerSlots[i].isUsed = false;
@@ -167,7 +166,8 @@ void rtype::NetworkServer::cleanInactivePlayers()
                 slot.isUsed = false;
 
                 std::vector<uint8_t> message;
-                message.push_back(static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
+                message.push_back(
+                    static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
 
                 auto idBytes = toBytes<uint16_t>(0);
                 message.insert(message.end(), idBytes.begin(), idBytes.end());
@@ -245,7 +245,7 @@ void rtype::NetworkServer::sendPlayerIdAssignment(
     _socket.send_to(asio::buffer(packet), clientEndpoint);
 
     std::cout << "[SERVER] Sent PLAYER_ID_ASSIGNMENT(" << int(playerId)
-            << ") to " << clientEndpoint << std::endl;
+              << ") to " << clientEndpoint << std::endl;
 }
 
 int rtype::NetworkServer::countActivePlayers() const
@@ -276,8 +276,8 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 
     auto now = std::chrono::steady_clock::now();
     uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                            now.time_since_epoch())
-                            .count();
+                             now.time_since_epoch())
+                             .count();
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 
