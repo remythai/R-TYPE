@@ -23,6 +23,7 @@
 #include "../keybind/KeybindMenu.hpp"
 #include "../mapEditor/MapEditor.hpp"
 #include "../network/NetworkClient.hpp"
+#include "../colorBlindFilter/ColorBlindFilter.hpp"
 
 namespace CLIENT {
 
@@ -145,6 +146,8 @@ class Core
 
     std::unique_ptr<KeybindManager> _keybindManager;
     std::unique_ptr<KeybindMenu> _keybindMenu;
+
+    std::unique_ptr<ColorBlindFilter> _colorBlindFilter;
 };
 
 }  // namespace CLIENT

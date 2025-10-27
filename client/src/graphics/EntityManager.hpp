@@ -62,11 +62,11 @@ class EntityManager
 
     void update(float deltaTime);
 
-    void render(sf::RenderWindow& window);
+    void render(sf::RenderTarget &target);
 
     void clear();
-    size_t getEntityCount() const;
-    size_t getActiveEntityCount() const;
+    [[nodiscard]] size_t getEntityCount() const;
+    [[nodiscard]] size_t getActiveEntityCount() const;
 
     std::vector<GameEntity*> getAllActiveEntities();
 

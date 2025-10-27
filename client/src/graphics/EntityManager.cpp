@@ -159,17 +159,17 @@ void CLIENT::EntityManager::update(float deltaTime)
     }
 }
 
-void CLIENT::EntityManager::render(sf::RenderWindow& window)
+void CLIENT::EntityManager::render(sf::RenderTarget& target)
 {
     for (auto& [id, entity] : _entities) {
         if (entity.active && entity.sprite.has_value() && entity.isParallax) {
-            window.draw(*entity.sprite);
+            target.draw(*entity.sprite);
         }
     }
 
     for (auto& [id, entity] : _entities) {
         if (entity.active && entity.sprite.has_value() && !entity.isParallax) {
-            window.draw(*entity.sprite);
+            target.draw(*entity.sprite);
         }
     }
 }

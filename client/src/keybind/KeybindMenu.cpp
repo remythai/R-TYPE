@@ -12,6 +12,7 @@
 
 CLIENT::KeybindMenu::KeybindMenu(KeybindManager& keybindManager)
     : _keybindManager(keybindManager),
+      _colorBlindFilter(nullptr),
       _isOpen(false),
       _font(std::make_shared<sf::Font>()),
       _titleText(*_font),
@@ -19,7 +20,10 @@ CLIENT::KeybindMenu::KeybindMenu(KeybindManager& keybindManager)
       _saveText(*_font),
       _resetText(*_font),
       _closeText(*_font),
-      _selectedIndex(-1),
+      _colorBlindLabel(*_font),
+      _colorBlindModeText(*_font),
+      _colorBlindPrevText(*_font),
+      _colorBlindNextText(*_font),
       _blinkTimer(0.0f)
 {
     if (!_font->openFromFile("assets/fonts/BoldPixels.ttf")) {
@@ -30,8 +34,8 @@ CLIENT::KeybindMenu::KeybindMenu(KeybindManager& keybindManager)
 
 void CLIENT::KeybindMenu::initializeUI()
 {
-    _background.setSize(sf::Vector2f(800, 600));
-    _background.setPosition(sf::Vector2f(260, 140));
+    _background.setSize(sf::Vector2f(800, 700));
+    _background.setPosition(sf::Vector2f(260, 100));
     _background.setFillColor(sf::Color(20, 20, 40, 230));
     _background.setOutlineColor(sf::Color::White);
     _background.setOutlineThickness(3.0f);
@@ -39,16 +43,49 @@ void CLIENT::KeybindMenu::initializeUI()
     _titleText.setString("KEYBIND SETTINGS");
     _titleText.setCharacterSize(40);
     _titleText.setFillColor(sf::Color::White);
-    _titleText.setPosition(sf::Vector2f(480, 160));
+    _titleText.setPosition(sf::Vector2f(480, 120));
 
     _instructionText.setString(
         "Click on a key to rebind it, or press ESC to cancel");
     _instructionText.setCharacterSize(18);
     _instructionText.setFillColor(sf::Color(200, 200, 200));
-    _instructionText.setPosition(sf::Vector2f(320, 210));
+    _instructionText.setPosition(sf::Vector2f(320, 170));
 
+    // Section filtre daltonien
+    _colorBlindLabel.setString("Color Blind Filter:");
+    _colorBlindLabel.setCharacterSize(24);
+    _colorBlindLabel.setFillColor(sf::Color::White);
+    _colorBlindLabel.setPosition(sf::Vector2f(320, 550));
+
+    _colorBlindPrevButton.setSize(sf::Vector2f(50, 45));
+    _colorBlindPrevButton.setPosition(sf::Vector2f(580, 545));
+    _colorBlindPrevButton.setFillColor(sf::Color(60, 60, 80));
+    _colorBlindPrevButton.setOutlineColor(sf::Color::White);
+    _colorBlindPrevButton.setOutlineThickness(2.0f);
+
+    _colorBlindPrevText.setString("<");
+    _colorBlindPrevText.setCharacterSize(28);
+    _colorBlindPrevText.setFillColor(sf::Color::White);
+    _colorBlindPrevText.setPosition(sf::Vector2f(597, 550));
+
+    _colorBlindModeText.setCharacterSize(20);
+    _colorBlindModeText.setFillColor(sf::Color(150, 255, 150));
+    _colorBlindModeText.setPosition(sf::Vector2f(650, 555));
+
+    _colorBlindNextButton.setSize(sf::Vector2f(50, 45));
+    _colorBlindNextButton.setPosition(sf::Vector2f(880, 545));
+    _colorBlindNextButton.setFillColor(sf::Color(60, 60, 80));
+    _colorBlindNextButton.setOutlineColor(sf::Color::White);
+    _colorBlindNextButton.setOutlineThickness(2.0f);
+
+    _colorBlindNextText.setString(">");
+    _colorBlindNextText.setCharacterSize(28);
+    _colorBlindNextText.setFillColor(sf::Color::White);
+    _colorBlindNextText.setPosition(sf::Vector2f(897, 550));
+
+    // Boutons du bas
     _saveButton.setSize(sf::Vector2f(180, 50));
-    _saveButton.setPosition(sf::Vector2f(300, 650));
+    _saveButton.setPosition(sf::Vector2f(300, 720));
     _saveButton.setFillColor(sf::Color(50, 150, 50));
     _saveButton.setOutlineColor(sf::Color::White);
     _saveButton.setOutlineThickness(2.0f);
@@ -56,10 +93,10 @@ void CLIENT::KeybindMenu::initializeUI()
     _saveText.setString("SAVE");
     _saveText.setCharacterSize(24);
     _saveText.setFillColor(sf::Color::White);
-    _saveText.setPosition(sf::Vector2f(350, 662));
+    _saveText.setPosition(sf::Vector2f(350, 732));
 
     _resetButton.setSize(sf::Vector2f(180, 50));
-    _resetButton.setPosition(sf::Vector2f(520, 650));
+    _resetButton.setPosition(sf::Vector2f(520, 720));
     _resetButton.setFillColor(sf::Color(150, 100, 50));
     _resetButton.setOutlineColor(sf::Color::White);
     _resetButton.setOutlineThickness(2.0f);
@@ -67,10 +104,10 @@ void CLIENT::KeybindMenu::initializeUI()
     _resetText.setString("RESET");
     _resetText.setCharacterSize(24);
     _resetText.setFillColor(sf::Color::White);
-    _resetText.setPosition(sf::Vector2f(560, 662));
+    _resetText.setPosition(sf::Vector2f(560, 732));
 
     _closeButton.setSize(sf::Vector2f(180, 50));
-    _closeButton.setPosition(sf::Vector2f(740, 650));
+    _closeButton.setPosition(sf::Vector2f(740, 720));
     _closeButton.setFillColor(sf::Color(150, 50, 50));
     _closeButton.setOutlineColor(sf::Color::White);
     _closeButton.setOutlineThickness(2.0f);
@@ -78,7 +115,7 @@ void CLIENT::KeybindMenu::initializeUI()
     _closeText.setString("CLOSE");
     _closeText.setCharacterSize(24);
     _closeText.setFillColor(sf::Color::White);
-    _closeText.setPosition(sf::Vector2f(780, 662));
+    _closeText.setPosition(sf::Vector2f(780, 732));
 
     updateUI();
 }
@@ -90,7 +127,7 @@ void CLIENT::KeybindMenu::updateUI()
     _buttons.clear();
 
     auto actions = _keybindManager.getAllActions();
-    float startY = 270;
+    float startY = 230;
     float spacing = 60;
 
     for (size_t i = 0; i < actions.size(); ++i) {
@@ -111,7 +148,6 @@ void CLIENT::KeybindMenu::updateUI()
         button.setOutlineThickness(2.0f);
         _buttons.push_back(button);
 
-        // Key text
         sf::Text keyText(*_font);
         sf::Keyboard::Key key = _keybindManager.getKeybind(action);
         keyText.setString(_keybindManager.getKeyName(key));
@@ -119,6 +155,13 @@ void CLIENT::KeybindMenu::updateUI()
         keyText.setFillColor(sf::Color::White);
         keyText.setPosition(sf::Vector2f(700, startY + i * spacing));
         _keyTexts.push_back(keyText);
+    }
+
+    if (_colorBlindFilter) {
+        _colorBlindModeText.setString(
+            ColorBlindFilter::getModeName(_colorBlindFilter->getMode()));
+    } else {
+        _colorBlindModeText.setString("Aucun");
     }
 }
 
@@ -185,6 +228,8 @@ void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
 
     if (isPointInRect(mousePos, _saveButton)) {
         _keybindManager.saveToFile("keybinds.cfg");
+        close();
+        return;
     }
 
     if (isPointInRect(mousePos, _resetButton)) {
@@ -194,6 +239,24 @@ void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
 
     if (isPointInRect(mousePos, _closeButton)) {
         close();
+    }
+
+    if (_colorBlindFilter) {
+        if (isPointInRect(mousePos, _colorBlindPrevButton)) {
+            int currentMode = static_cast<int>(_colorBlindFilter->getMode());
+            currentMode--;
+            if (currentMode < 0) currentMode = 3;
+            _colorBlindFilter->setMode(static_cast<ColorBlindMode>(currentMode));
+            updateUI();
+        }
+
+        if (isPointInRect(mousePos, _colorBlindNextButton)) {
+            int currentMode = static_cast<int>(_colorBlindFilter->getMode());
+            currentMode++;
+            if (currentMode > 3) currentMode = 0;
+            _colorBlindFilter->setMode(static_cast<ColorBlindMode>(currentMode));
+            updateUI();
+        }
     }
 }
 
@@ -213,14 +276,14 @@ void CLIENT::KeybindMenu::update(float deltaTime)
     _blinkTimer += deltaTime;
 }
 
-void CLIENT::KeybindMenu::render(sf::RenderWindow& window)
+void CLIENT::KeybindMenu::render(sf::RenderTarget& target)
 {
     if (!_isOpen)
         return;
 
-    window.draw(_background);
-    window.draw(_titleText);
-    window.draw(_instructionText);
+    target.draw(_background);
+    target.draw(_titleText);
+    target.draw(_instructionText);
 
     for (size_t i = 0; i < _buttons.size(); ++i) {
         sf::RectangleShape button = _buttons[i];
@@ -234,8 +297,8 @@ void CLIENT::KeybindMenu::render(sf::RenderWindow& window)
             }
         }
 
-        window.draw(button);
-        window.draw(_actionTexts[i]);
+        target.draw(button);
+        target.draw(_actionTexts[i]);
 
         if (_waitingForKey.has_value()) {
             auto actions = _keybindManager.getAllActions();
@@ -245,19 +308,26 @@ void CLIENT::KeybindMenu::render(sf::RenderWindow& window)
                 waitText.setCharacterSize(20);
                 waitText.setFillColor(sf::Color::Yellow);
                 waitText.setPosition(_keyTexts[i].getPosition());
-                window.draw(waitText);
+                target.draw(waitText);
             } else {
-                window.draw(_keyTexts[i]);
+                target.draw(_keyTexts[i]);
             }
         } else {
-            window.draw(_keyTexts[i]);
+            target.draw(_keyTexts[i]);
         }
     }
 
-    window.draw(_saveButton);
-    window.draw(_saveText);
-    window.draw(_resetButton);
-    window.draw(_resetText);
-    window.draw(_closeButton);
-    window.draw(_closeText);
+    target.draw(_colorBlindLabel);
+    target.draw(_colorBlindPrevButton);
+    target.draw(_colorBlindPrevText);
+    target.draw(_colorBlindModeText);
+    target.draw(_colorBlindNextButton);
+    target.draw(_colorBlindNextText);
+
+    target.draw(_saveButton);
+    target.draw(_saveText);
+    target.draw(_resetButton);
+    target.draw(_resetText);
+    target.draw(_closeButton);
+    target.draw(_closeText);
 }
