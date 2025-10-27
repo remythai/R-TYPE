@@ -1,4 +1,3 @@
-#include <vector>
 /*
 ** EPITECH PROJECT, 2025
 ** r-type-mirror
@@ -6,32 +5,12 @@
 ** NetworkServer.cpp
 */
 
+#include "NetworkServer.hpp"
+#include <vector>
 #include <algorithm>
-#include <bitset>
 #include <chrono>
 #include <iostream>
-#include <random>
 #include <thread>
-
-#include "NetworkServer.hpp"
-
-template <typename T>
-std::vector<uint8_t> toBytes(T value)
-{
-    std::vector<uint8_t> bytes(sizeof(T));
-    for (size_t i = 0; i < sizeof(T); ++i)
-        bytes[sizeof(T) - 1 - i] = (value >> (i * 8)) & 0xFF;
-    return bytes;
-}
-
-template <typename T>
-T fromBytes(const uint8_t* data)
-{
-    T value = 0;
-    for (size_t i = 0; i < sizeof(T); ++i)
-        value |= data[i] << (8 * (sizeof(T) - 1 - i));
-    return value;
-}
 
 std::vector<uint8_t> floatToBytes(float value)
 {
@@ -46,12 +25,13 @@ std::vector<uint8_t> floatToBytes(float value)
 }
 
 rtype::NetworkServer::NetworkServer(
-    unsigned short port, std::string const& hostname, std::string const& game)
-    : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
-      _running(false),
-      _hostname(hostname),
-      _game(game),
-      _registry(std::make_unique<Registry>())
+    unsigned short port, std::string const& game)
+    : _socket(_ioContext,
+        asio::ip::udp::endpoint(asio::ip::udp::v4(),
+        port)),
+    _running(false),
+    _game(game),
+    _registry(std::make_unique<Registry>())
 {
     for (int i = 0; i < 4; ++i) {
         _playerSlots[i].isUsed = false;
@@ -64,19 +44,30 @@ rtype::NetworkServer::NetworkServer(
 
 rtype::NetworkServer::~NetworkServer()
 {
-    stop();
+    _running = false;
+    _ioContext.stop();
+
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+    _clients.clear();
+
+    for (auto& slot : _playerSlots) {
+        if (slot.isUsed)
+            destroyPlayerEntity(slot.playerId);
+        slot.isUsed = false;
+    }
+
+    std::cout << "Server stopped.\n";
 }
 
 void rtype::NetworkServer::initECS()
 {
     if (this->_game == std::string("flappyByte")) {
-        std::cout << "[SERVER] ECS initialized with flappyByte Systems"
-                  << std::endl;
+        std::cout << "[SERVER] ECS initialized with flappyByte Systems\n";
         _registry->addSystem<GameEngine::FPApplyGravity>(0);
         _registry->addSystem<GameEngine::FPInputHandler>(1);
         _registry->addSystem<GameEngine::FPMotion>(2);
     } else {
-        std::cout << "[SERVER] ECS initialized with RTYPE Systems" << std::endl;
+        std::cout << "[SERVER] ECS initialized with RTYPE Systems\n";
         _registry->addSystem<GameEngine::InputHandler>(0);
         _registry->addSystem<GameEngine::Motion>(1);
     }
@@ -84,164 +75,6 @@ void rtype::NetworkServer::initECS()
     _registry->addSystem<GameEngine::Death>(3);
     _registry->addSystem<GameEngine::DomainHandler>(4);
     _registry->addSystem<GameEngine::Animation>(5);
-}
-
-EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
-{
-    std::lock_guard<std::mutex> lock(_registryMutex);
-    auto entity = _registry->create();
-
-    if (this->_game == std::string("flappyByte")) {
-        std::vector<vec2> rectPos;
-        rectPos.push_back(
-            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        _registry->emplace<GameEngine::InputControlled>(entity);
-        _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
-        _registry->emplace<GameEngine::Position>(
-            entity, 100.0f, 100.0f + playerId * 50.0f);
-        _registry->emplace<GameEngine::Velocity>(entity, 500.0f);
-        _registry->emplace<GameEngine::Renderable>(
-            entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png",
-            rectPos, vec2{33.2f, 17.2f}, 500, false);
-        _registry->emplace<GameEngine::Collider>(
-            entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
-            std::bitset<8>("10000000"), vec2(33.2, 17.2));
-        _registry->emplace<GameEngine::Health>(entity, 1, 1);
-        _registry->emplace<GameEngine::Damage>(entity, 0);
-        _registry->emplace<GameEngine::Gravity>(entity, 400.0f);
-    } else {
-        std::vector<vec2> rectPos;
-        rectPos.push_back(
-            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        _registry->emplace<GameEngine::InputControlled>(entity);
-        _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
-        _registry->emplace<GameEngine::Position>(
-            entity, 100.0f, 100.0f + playerId * 50.0f);
-        _registry->emplace<GameEngine::Velocity>(entity, 5.0f);
-        _registry->emplace<GameEngine::Renderable>(
-            entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png",
-            rectPos, vec2{33.2f, 17.2f}, 1000, false);
-        _registry->emplace<GameEngine::Collider>(
-            entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
-            std::bitset<8>("10000000"), vec2(33.2, 17.2));
-        _registry->emplace<GameEngine::Health>(entity, 1, 1);
-        _registry->emplace<GameEngine::Damage>(entity, 1);
-    }
-
-    std::cout << "[SERVER] Created ECS entity " << entity << " for Player "
-              << int(playerId) << std::endl;
-
-    return entity;
-}
-
-EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
-{
-    std::lock_guard<std::mutex> lock(_registryMutex);
-    auto entity = _registry->create();
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(10, 1070);
-
-    int randomNum = distrib(gen);
-
-    _registry->emplace<GameEngine::AIControlled>(entity);
-    _registry->emplace<GameEngine::Acceleration>(entity, -3.0f, 0.0f);
-    _registry->emplace<GameEngine::Position>(entity, 1900, randomNum);
-    _registry->emplace<GameEngine::Velocity>(entity, 3.0f);
-    std::vector<vec2> rectPos;
-    rectPos.push_back(vec2{0.0f, 0.0f});
-    rectPos.push_back(vec2{33.3f, 0.0f});
-    rectPos.push_back(vec2{66.6f, 0.0f});
-    rectPos.push_back(vec2{99.9f, 0.0f});
-    rectPos.push_back(vec2{133.2f, 0.0f});
-    rectPos.push_back(vec2{166.5f, 0.0f});
-    rectPos.push_back(vec2{199.8f, 0.0f});
-    rectPos.push_back(vec2{233.1f, 0.0f});
-    _registry->emplace<GameEngine::Renderable>(
-        entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet5.png", rectPos,
-        vec2{33.3f, 36.0f}, 1000, true);
-    _registry->emplace<GameEngine::Collider>(
-        entity, vec2(0.0, 0.0), std::bitset<8>("10100000"),
-        std::bitset<8>("01000000"), vec2(33.3, 33.3));
-    _registry->emplace<GameEngine::Domain>(entity, 5.0f, 0.0f, 1920.0f, 1080.0);
-    _registry->emplace<GameEngine::Health>(entity, 1, 1);
-    _registry->emplace<GameEngine::Damage>(entity, 1);
-
-    return entity;
-}
-
-void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
-{
-    std::lock_guard<std::mutex> lock(_registryMutex);
-    if (playerId < 4 &&
-        _playerSlots[playerId].entity != EntityManager::INVALID_ENTITY) {
-        _registry->destroy(_playerSlots[playerId].entity);
-        _playerSlots[playerId].entity = EntityManager::INVALID_ENTITY;
-        std::cout << "[SERVER] Destroyed ECS entity for Player "
-                  << int(playerId) << std::endl;
-    }
-}
-
-void rtype::NetworkServer::applyInputToEntity(
-    uint8_t playerId, uint8_t keyCode, uint8_t action)
-{
-    if (playerId >= 4 || !_playerSlots[playerId].isUsed) {
-        return;
-    }
-
-    std::lock_guard<std::mutex> lock(_registryMutex);
-
-    auto entity = _playerSlots[playerId].entity;
-    if (entity == EntityManager::INVALID_ENTITY) {
-        return;
-    }
-
-    if (!_registry->has<GameEngine::InputControlled>(entity)) {
-        return;
-    }
-
-    auto& inputCtrl = _registry->get<GameEngine::InputControlled>(entity);
-
-    if (action == 1) {
-        if (std::find(
-                inputCtrl.inputs.begin(), inputCtrl.inputs.end(), keyCode) ==
-            inputCtrl.inputs.end()) {
-            inputCtrl.inputs.push_back(keyCode);
-        }
-    } else if (action == 0) {
-        inputCtrl.inputs.erase(
-            std::remove(
-                inputCtrl.inputs.begin(), inputCtrl.inputs.end(), keyCode),
-            inputCtrl.inputs.end());
-    }
 }
 
 void rtype::NetworkServer::updateECS(float dt)
@@ -330,32 +163,25 @@ void rtype::NetworkServer::cleanInactivePlayers()
                                 now - slot.lastActive)
                                 .count();
             if (duration > 30) {
-                std::cout << "[SERVER] Player " << int(slot.playerId) << " ("
-                          << slot.username << ") timed out." << std::endl;
-
                 destroyPlayerEntity(slot.playerId);
                 slot.isUsed = false;
+
+                std::vector<uint8_t> message;
+                message.push_back(static_cast<uint8_t>(rtype::PacketType::TIMEOUT));
+
+                auto idBytes = toBytes<uint16_t>(0);
+                message.insert(message.end(), idBytes.begin(), idBytes.end());
+
+                auto tsBytes = toBytes<uint32_t>(0);
+                message.insert(message.end(), tsBytes.begin(), tsBytes.end());
+
+                std::string msgText = "Player " + slot.username + " timed out.";
+                message.insert(message.end(), msgText.begin(), msgText.end());
+
+                broadcast(message);
             }
         }
     }
-}
-
-void rtype::NetworkServer::stop()
-{
-    _running = false;
-    _ioContext.stop();
-
-    std::lock_guard<std::mutex> lock(_clientsMutex);
-    _clients.clear();
-
-    for (auto& slot : _playerSlots) {
-        if (slot.isUsed) {
-            destroyPlayerEntity(slot.playerId);
-        }
-        slot.isUsed = false;
-    }
-
-    std::cout << "Server stopped." << std::endl;
 }
 
 void rtype::NetworkServer::doReceive()
@@ -419,7 +245,7 @@ void rtype::NetworkServer::sendPlayerIdAssignment(
     _socket.send_to(asio::buffer(packet), clientEndpoint);
 
     std::cout << "[SERVER] Sent PLAYER_ID_ASSIGNMENT(" << int(playerId)
-              << ") to " << clientEndpoint << std::endl;
+            << ") to " << clientEndpoint << std::endl;
 }
 
 int rtype::NetworkServer::countActivePlayers() const
@@ -435,9 +261,8 @@ int rtype::NetworkServer::countActivePlayers() const
 void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
 {
     std::lock_guard<std::mutex> lock(_clientsMutex);
-    for (auto& [id, endpoint] : _clients) {
+    for (auto& [id, endpoint] : _clients)
         _socket.send_to(asio::buffer(message), endpoint);
-    }
 }
 
 std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
@@ -451,8 +276,8 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 
     auto now = std::chrono::steady_clock::now();
     uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             now.time_since_epoch())
-                             .count();
+                            now.time_since_epoch())
+                            .count();
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 
@@ -487,19 +312,11 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
     return snapshot;
 }
 
-void rtype::NetworkServer::sendSnapshot(
-    const asio::ip::udp::endpoint& clientEndpoint)
-{
-    auto snapshot = serializeSnapshot();
-    _socket.send_to(asio::buffer(snapshot), clientEndpoint);
-}
-
 void rtype::NetworkServer::broadcastSnapshot()
 {
     auto snapshot = serializeSnapshot();
 
     std::lock_guard<std::mutex> lock(_clientsMutex);
-    for (auto& [id, endpoint] : _clients) {
+    for (auto& [id, endpoint] : _clients)
         _socket.send_to(asio::buffer(snapshot), endpoint);
-    }
 }

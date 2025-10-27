@@ -14,7 +14,7 @@
 static void display_help(void)
 {
     std::cout << "USAGE: ./r-type_server -p [port] -h [host] -g [game]\nGAMES: "
-                 "| RType\n       | flappyByte\n";
+                "| RType\n       | flappyByte\n";
 }
 
 static int check_args(
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
     if (check_args(argc, argv, port, hostname, game) == 84)
         return 84;
-    rtype::NetworkServer server(port, hostname, game);
+    rtype::NetworkServer server(port, game);
     server.run();
     return 0;
 }
