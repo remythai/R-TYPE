@@ -507,7 +507,10 @@ void CLIENT::Core::graphicsLoop()
     window.setKeybindComponents(_keybindManager.get(), _keybindMenu.get());
 
     sf::RenderTexture renderTexture;
-    renderTexture.resize(sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT));
+    if (!renderTexture.resize(sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT))) {
+        std::cerr << "Failed to resize render texture\n";
+        return;
+    }
 
     while (window.isOpen() && _running) {
         float deltaTime = window.getDeltaTime();

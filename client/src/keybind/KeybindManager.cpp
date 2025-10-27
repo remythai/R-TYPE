@@ -160,7 +160,8 @@ void CLIENT::KeybindManager::loadFromFile(const std::string& filename)
         return;
     }
 
-    int actionInt, keyInt;
+    int actionInt;
+    int keyInt;
     while (file >> actionInt >> keyInt) {
         GameAction action = static_cast<GameAction>(actionInt);
         sf::Keyboard::Key key = static_cast<sf::Keyboard::Key>(keyInt);
