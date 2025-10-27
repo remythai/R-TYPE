@@ -1,17 +1,17 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-set(COMPONENT_NAME domain)
+set(COMPONENT_NAME gravity)
 project(component_${COMPONENT_NAME} VERSION 1.0.0)
 
 set(PLUGIN_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${COMPONENT_NAME}.cpp")
 
 file(WRITE ${PLUGIN_SOURCE}
-"#include \"../src/Domain.hpp\"
+"#include \"../src/Gravity.hpp\"
 
 extern \"C\" {
     IComponent* createComponent() {
-        return new GameEngine::Domain();
+        return new GameEngine::Gravity();
     }
     
     void destroyComponent(IComponent* component) {
@@ -19,11 +19,11 @@ extern \"C\" {
     }
     
     const char* getComponentName() {
-        return GameEngine::Domain::Name;
+        return GameEngine::Gravity::Name;
     }
     
     const char* getComponentVersion() {
-        return GameEngine::Domain::Version;
+        return GameEngine::Gravity::Version;
     }
 }
 ")
@@ -54,7 +54,7 @@ install(TARGETS ${COMPONENT_NAME}
     RUNTIME DESTINATION bin/components
 )
 
-install(FILES src/Domain.hpp
+install(FILES src/Gravity.hpp
     DESTINATION include/components
 )
 
