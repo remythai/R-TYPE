@@ -62,11 +62,13 @@ void CLIENT::Window::pollEvents()
                     _window.close();
                 }
                 if (_keybindManager) {
-                    if (keyEvent->code == _keybindManager->getKeybind(GameAction::SHOOT)) {
+                    if (keyEvent->code ==
+                        _keybindManager->getKeybind(GameAction::SHOOT)) {
                         std::cout << "Shoot\n";
                         _pendingActions.push_back("SHOOT");
                     }
-                    if (keyEvent->code == _keybindManager->getKeybind(GameAction::OPEN_KEYBIND_MENU)) {
+                    if (keyEvent->code == _keybindManager->getKeybind(
+                                              GameAction::OPEN_KEYBIND_MENU)) {
                         if (_keybindMenu) {
                             _keybindMenu->open();
                         }
@@ -143,7 +145,8 @@ float CLIENT::Window::getDeltaTime() const
     return _deltaTime;
 }
 
-void CLIENT::Window::setKeybindComponents(KeybindManager* manager, KeybindMenu* menu)
+void CLIENT::Window::setKeybindComponents(
+    KeybindManager *manager, KeybindMenu *menu)
 {
     _keybindManager = manager;
     _keybindMenu = menu;

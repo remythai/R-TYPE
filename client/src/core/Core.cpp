@@ -44,7 +44,7 @@ CLIENT::Core::Core(char** argv)
 
     _keybindManager = std::make_unique<KeybindManager>();
     _keybindManager->loadFromFile("keybinds.cfg");
-    
+
     initializeNetwork();
     loadResources();
 }
@@ -513,9 +513,9 @@ void CLIENT::Core::graphicsLoop()
         processIncomingMessages(window);
 
         window.pollEvents();
-        
+
         _keybindMenu->update(deltaTime);
-        
+
         processInputs(window, keyStates);
         _entityManager->update(deltaTime);
 
@@ -527,9 +527,9 @@ void CLIENT::Core::graphicsLoop()
         window.clear();
         _entityManager->render(window.getWindow());
         _parallaxSystem->update(deltaTime);
-        
+
         _keybindMenu->render(window.getWindow());
-        
+
         window.display();
     }
 

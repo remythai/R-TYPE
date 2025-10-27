@@ -6,6 +6,7 @@
 */
 
 #include "KeybindMenu.hpp"
+
 #include <cmath>
 #include <iostream>
 
@@ -40,7 +41,8 @@ void CLIENT::KeybindMenu::initializeUI()
     _titleText.setFillColor(sf::Color::White);
     _titleText.setPosition(sf::Vector2f(480, 160));
 
-    _instructionText.setString("Click on a key to rebind it, or press ESC to cancel");
+    _instructionText.setString(
+        "Click on a key to rebind it, or press ESC to cancel");
     _instructionText.setCharacterSize(18);
     _instructionText.setFillColor(sf::Color(200, 200, 200));
     _instructionText.setPosition(sf::Vector2f(320, 210));
@@ -93,7 +95,7 @@ void CLIENT::KeybindMenu::updateUI()
 
     for (size_t i = 0; i < actions.size(); ++i) {
         GameAction action = actions[i];
-        
+
         sf::Text actionText(*_font);
         actionText.setString(_keybindManager.getActionName(action));
         actionText.setCharacterSize(24);
@@ -145,13 +147,14 @@ void CLIENT::KeybindMenu::handleEvent(const sf::Event& event)
 
     if (event.is<sf::Event::KeyPressed>()) {
         const auto* keyEvent = event.getIf<sf::Event::KeyPressed>();
-        
+
         if (_waitingForKey.has_value()) {
             if (keyEvent->code == sf::Keyboard::Key::Escape) {
                 _waitingForKey.reset();
                 updateUI();
             } else {
-                _keybindManager.setKeybind(_waitingForKey.value(), keyEvent->code);
+                _keybindManager.setKeybind(
+                    _waitingForKey.value(), keyEvent->code);
                 _waitingForKey.reset();
                 updateUI();
             }
@@ -194,10 +197,12 @@ void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
     }
 }
 
-bool CLIENT::KeybindMenu::isPointInRect(const sf::Vector2i& point, const sf::RectangleShape& rect) const
+bool CLIENT::KeybindMenu::isPointInRect(
+    const sf::Vector2i& point, const sf::RectangleShape& rect) const
 {
     sf::FloatRect bounds = rect.getGlobalBounds();
-    return bounds.contains(sf::Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
+    return bounds.contains(
+        sf::Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
 }
 
 void CLIENT::KeybindMenu::update(float deltaTime)
@@ -219,18 +224,19 @@ void CLIENT::KeybindMenu::render(sf::RenderWindow& window)
 
     for (size_t i = 0; i < _buttons.size(); ++i) {
         sf::RectangleShape button = _buttons[i];
-        
+
         if (_waitingForKey.has_value()) {
             auto actions = _keybindManager.getAllActions();
             if (i < actions.size() && actions[i] == _waitingForKey.value()) {
-                int alpha = static_cast<int>(std::abs(std::sin(_blinkTimer * 5.0f)) * 100 + 155);
+                int alpha = static_cast<int>(
+                    std::abs(std::sin(_blinkTimer * 5.0f)) * 100 + 155);
                 button.setFillColor(sf::Color(100, 150, 255, alpha));
             }
         }
-        
+
         window.draw(button);
         window.draw(_actionTexts[i]);
-        
+
         if (_waitingForKey.has_value()) {
             auto actions = _keybindManager.getAllActions();
             if (i < actions.size() && actions[i] == _waitingForKey.value()) {
