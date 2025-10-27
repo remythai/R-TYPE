@@ -500,10 +500,10 @@ void CLIENT::Core::graphicsLoop()
     const float CLEANUP_INTERVAL = 5.0f;
 
     _keybindMenu = std::make_unique<KeybindMenu>(*_keybindManager);
-    
+
     _colorBlindFilter = std::make_unique<ColorBlindFilter>();
     _keybindMenu->setColorBlindFilter(_colorBlindFilter.get());
-    
+
     window.setKeybindComponents(_keybindManager.get(), _keybindMenu.get());
 
     sf::RenderTexture renderTexture;
@@ -538,9 +538,10 @@ void CLIENT::Core::graphicsLoop()
 
         window.clear();
         sf::Sprite screenSprite(renderTexture.getTexture());
-        
+
         if (_colorBlindFilter->isActive()) {
-            const sf::RenderStates* states = _colorBlindFilter->getRenderStates();
+            const sf::RenderStates* states =
+                _colorBlindFilter->getRenderStates();
             if (states) {
                 window.getWindow().draw(screenSprite, *states);
             } else {

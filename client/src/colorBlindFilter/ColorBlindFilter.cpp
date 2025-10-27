@@ -6,6 +6,7 @@
 */
 
 #include "ColorBlindFilter.hpp"
+
 #include <iostream>
 
 const std::string COLORBLIND_SHADER = R"(
@@ -59,7 +60,8 @@ CLIENT::ColorBlindFilter::ColorBlindFilter()
     : _currentMode(ColorBlindMode::NONE), _shaderLoaded(false)
 {
     if (sf::Shader::isAvailable()) {
-        if (_shader.loadFromMemory(COLORBLIND_SHADER, sf::Shader::Type::Fragment)) {
+        if (_shader.loadFromMemory(
+                COLORBLIND_SHADER, sf::Shader::Type::Fragment)) {
             _shaderLoaded = true;
             _shader.setUniform("mode", 0);
             std::cout << "[ColorBlindFilter] Shader loaded successfully\n";
@@ -67,7 +69,8 @@ CLIENT::ColorBlindFilter::ColorBlindFilter()
             std::cerr << "[ColorBlindFilter] Failed to load shader\n";
         }
     } else {
-        std::cerr << "[ColorBlindFilter] Shaders not supported on this system\n";
+        std::cerr
+            << "[ColorBlindFilter] Shaders not supported on this system\n";
     }
 }
 
@@ -75,7 +78,8 @@ void CLIENT::ColorBlindFilter::setMode(ColorBlindMode mode)
 {
     _currentMode = mode;
     updateShader();
-    std::cout << "[ColorBlindFilter] Mode changed to: " << getModeName(mode) << " (mode=" << static_cast<int>(mode) << ")\n";
+    std::cout << "[ColorBlindFilter] Mode changed to: " << getModeName(mode)
+              << " (mode=" << static_cast<int>(mode) << ")\n";
 }
 
 void CLIENT::ColorBlindFilter::updateShader()
@@ -90,7 +94,7 @@ const sf::RenderStates* CLIENT::ColorBlindFilter::getRenderStates() const
     if (!_shaderLoaded || _currentMode == ColorBlindMode::NONE) {
         return nullptr;
     }
-    
+
     static sf::RenderStates states;
     states.shader = &_shader;
     return &states;
