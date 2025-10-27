@@ -10,12 +10,18 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <vector>
+#include "../keybind/KeybindManager.hpp"
+#include "../keybind/KeybindMenu.hpp"
+
+namespace CLIENT {
+    class KeybindManager;
+    class KeybindMenu;
+} // namespace CLIENT
 
 namespace CLIENT {
 
-class Window
-{
-   public:
+class Window {
+public:
     Window(const std::string &title, unsigned int width, unsigned int height);
     ~Window();
 
@@ -27,12 +33,17 @@ class Window
     sf::RenderWindow &getWindow();
     const std::vector<std::string> &getPendingActions() const;
     float getDeltaTime() const;
+    
+    void setKeybindComponents(KeybindManager* manager, KeybindMenu* menu);
 
-   private:
+private:
     sf::RenderWindow _window;
-    std::vector<std::string> _pendingActions;
     sf::Clock _clock;
     float _deltaTime;
+    std::vector<std::string> _pendingActions;
+    
+    KeybindManager* _keybindManager;
+    KeybindMenu* _keybindMenu;
 };
 
-}  // namespace CLIENT
+} // namespace CLIENT
