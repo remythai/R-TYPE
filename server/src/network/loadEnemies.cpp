@@ -5,11 +5,10 @@
 ** loadEnemies.cpp
 */
 
-#include <algorithm>
+#include "NetworkServer.hpp"
 #include <fstream>
 #include <sstream>
-
-#include "NetworkServer.hpp"
+#include <algorithm>
 
 static std::string trim(const std::string& str)
 {
@@ -21,8 +20,8 @@ static std::string trim(const std::string& str)
 }
 
 static std::string extractJSONValue(
-    const std::string& content, const std::string& key, size_t start,
-    size_t end)
+    const std::string& content, const std::string& key,
+    size_t start, size_t end)
 {
     size_t keyPos = content.find("\"" + key + "\"", start);
     if (keyPos >= end)
@@ -34,15 +33,14 @@ static std::string extractJSONValue(
 
     size_t commaPos = content.find(',', colonPos);
     size_t bracePos = content.find('}', colonPos);
-    size_t valueEnd =
-        (commaPos < bracePos && commaPos < end) ? commaPos : bracePos;
+    size_t valueEnd = (commaPos < bracePos && commaPos < end) ? commaPos : bracePos;
 
     return trim(content.substr(colonPos + 1, valueEnd - colonPos - 1));
 }
 
 static std::string parseJSONString(
-    const std::string& content, const std::string& key, size_t start,
-    size_t end)
+    const std::string& content, const std::string& key,
+    size_t start, size_t end)
 {
     size_t keyPos = content.find("\"" + key + "\"", start);
     if (keyPos >= end)
@@ -53,13 +51,13 @@ static std::string parseJSONString(
     size_t quoteEnd = content.find('"', quoteStart + 1);
 
     return (quoteStart < end && quoteEnd < end)
-               ? content.substr(quoteStart + 1, quoteEnd - quoteStart - 1)
-               : "";
+        ? content.substr(quoteStart + 1, quoteEnd - quoteStart - 1)
+        : "";
 }
 
 static std::array<float, 4> parseJSONArray(
-    const std::string& content, const std::string& key, size_t start,
-    size_t end)
+    const std::string& content, const std::string& key,
+    size_t start, size_t end)
 {
     std::array<float, 4> result = {0.0f, 0.0f, 33.0f, 36.0f};
 
@@ -72,8 +70,7 @@ static std::array<float, 4> parseJSONArray(
     if (bracketStart >= end || bracketEnd >= end)
         return result;
 
-    std::string arrayStr =
-        content.substr(bracketStart + 1, bracketEnd - bracketStart - 1);
+    std::string arrayStr = content.substr(bracketStart + 1, bracketEnd - bracketStart - 1);
     std::stringstream ss(arrayStr);
     std::string item;
     int index = 0;
@@ -89,8 +86,7 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 {
     std::ifstream file(filepath);
     if (!file.is_open()) {
-        std::cerr << "[SERVER] ERROR: Could not open enemy file: " << filepath
-                  << std::endl;
+        std::cerr << "[SERVER] ERROR: Could not open enemy file: " << filepath << std::endl;
         return;
     }
 
@@ -125,51 +121,44 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
             break;
 
         EnemySpawnData enemy;
-        enemy.type =
-            std::stoi(extractJSONValue(content, "type", objStart, objEnd));
+        enemy.type = std::stoi(extractJSONValue(content, "type", objStart, objEnd));
         enemy.x = std::stof(extractJSONValue(content, "x", objStart, objEnd));
         enemy.y = std::stof(extractJSONValue(content, "y", objStart, objEnd));
-        enemy.spawnTime =
-            std::stof(extractJSONValue(content, "spawnTime", objStart, objEnd));
-        enemy.spritePath =
-            parseJSONString(content, "spritePath", objStart, objEnd);
-        enemy.textureRect =
-            parseJSONArray(content, "textureRect", objStart, objEnd);
+        enemy.spawnTime = std::stof(extractJSONValue(content, "spawnTime", objStart, objEnd));
+        enemy.spritePath = parseJSONString(content, "spritePath", objStart, objEnd);
+        enemy.textureRect = parseJSONArray(content, "textureRect", objStart, objEnd);
 
         _enemySpawnList.push_back(enemy);
 
         pos = objEnd + 1;
     }
 
-    std::sort(
-        _enemySpawnList.begin(), _enemySpawnList.end(),
+    std::sort(_enemySpawnList.begin(), _enemySpawnList.end(),
         [](const EnemySpawnData& a, const EnemySpawnData& b) {
             return a.spawnTime < b.spawnTime;
         });
 
-    std::cout << "[SERVER] ✓ Loaded " << _enemySpawnList.size()
-              << " enemies from " << filepath << std::endl;
+    std::cout << "[SERVER] Loaded " << _enemySpawnList.size()
+            << " enemies from " << filepath << std::endl;
 }
 
 void rtype::NetworkServer::checkAndSpawnEnemies()
 {
     while (_nextEnemyToSpawn < _enemySpawnList.size()) {
-        const auto& enemyData = _enemySpawnList[_nextEnemyToSpawn];
+        const EnemySpawnData& enemyData = _enemySpawnList[_nextEnemyToSpawn];
 
         if (_gameTime >= enemyData.spawnTime) {
             createEnemyFromData(enemyData);
             _nextEnemyToSpawn++;
-        } else {
+        } else
             break;
-        }
     }
 }
 
-EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
-    const EnemySpawnData& data)
+EntityManager::Entity rtype::NetworkServer::createEnemyFromData(const EnemySpawnData& data)
 {
     std::lock_guard<std::mutex> lock(_registryMutex);
-    auto entity = _registry->create();
+    Registry::Entity entity = _registry->create();
 
     float velocity = 3.0f;
     float acceleration = -3.0f;
@@ -203,8 +192,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
             animSpeed = 600;
             break;
         default:
-            std::cout << "[SERVER] Warning: Unknown enemy type: " << data.type
-                      << std::endl;
+            std::cout << "[SERVER] Warning: Unknown enemy type: " << data.type << std::endl;
             break;
     }
 
@@ -218,27 +206,34 @@ EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
     float frameWidth = data.textureRect[2];
 
     for (int i = 0; i < frameCount; i++) {
-        rectPos.push_back(
-            vec2{data.textureRect[0] + i * frameWidth, data.textureRect[1]});
+        rectPos.push_back(vec2{
+            data.textureRect[0] + i * frameWidth,
+            data.textureRect[1]
+        });
     }
 
     _registry->emplace<GameEngine::Renderable>(
-        entity, 1920.0f, 1080.0f, data.spritePath, rectPos,
-        vec2{data.textureRect[2], data.textureRect[3]}, animSpeed, true);
+        entity, 1920.0f, 1080.0f, 
+        data.spritePath,
+        rectPos, 
+        vec2{data.textureRect[2], data.textureRect[3]},
+        animSpeed, true);
 
     _registry->emplace<GameEngine::Collider>(
-        entity, vec2(0.0, 0.0), std::bitset<8>("10100000"),
+        entity, vec2(0.0, 0.0), 
+        std::bitset<8>("10100000"),
         std::bitset<8>("01000000"),
         vec2(data.textureRect[2], data.textureRect[3]));
 
-    _registry->emplace<GameEngine::Domain>(entity, 5.0f, 0.0f, 1920.0f, 1080.0);
+    _registry->emplace<GameEngine::Domain>(
+        entity, 5.0f, 0.0f, 1920.0f, 1080.0);
 
     _registry->emplace<GameEngine::Health>(entity, health, health);
     _registry->emplace<GameEngine::Damage>(entity, damage);
 
-    std::cout << "[SERVER] ✓ Spawned enemy type " << data.type << " at ("
-              << data.x << ", " << data.y << ")" << " | time=" << data.spawnTime
-              << "s" << std::endl;
+    std::cout << "[SERVER] Spawned enemy type " << data.type 
+            << " at (" << data.x << ", " << data.y << ")" 
+            << " | time=" << data.spawnTime << "s" << std::endl;
 
     return entity;
 }
