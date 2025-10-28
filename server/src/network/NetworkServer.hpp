@@ -52,7 +52,8 @@ struct PlayerSlot
     EntityManager::Entity entity;
 };
 
-struct EnemySpawnData {
+struct EnemySpawnData
+{
     int type;
     float x;
     float y;
