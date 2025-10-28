@@ -68,7 +68,8 @@ class Core
     static void launchMapEditor();
 
    private:
-    enum class GameState {
+    enum class GameState
+    {
         PLAYING,
         DEFEATED,
         DISCONNECTED
@@ -83,7 +84,6 @@ class Core
     sf::Texture _defeatTexture;
     std::optional<sf::Sprite> _defeatSprite;
     bool _defeatTextureLoaded;
-    
 
     std::unique_ptr<MapEditor> _mapEditor;
 

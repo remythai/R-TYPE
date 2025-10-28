@@ -29,8 +29,12 @@ static const std::vector<struct InputMapping> INPUT_MAPPINGS = {
     {"SHOOT", CLIENT::KeyCode::SHOOT}};
 
 CLIENT::Core::Core(char** argv)
-    : _port(0), _running(false), _myPlayerId(255), _hasNewSnapshot(false),
-      _gameState(GameState::PLAYING), _defeatTextureLoaded(false)
+    : _port(0),
+      _running(false),
+      _myPlayerId(255),
+      _hasNewSnapshot(false),
+      _gameState(GameState::PLAYING),
+      _defeatTextureLoaded(false)
 {
     parseCommandLineArgs(argv);
 
@@ -101,13 +105,12 @@ void CLIENT::Core::setupNetworkCallbacks()
         std::lock_guard<std::mutex> lock(_incomingMutex);
         _incomingMessages.push("TIMEOUT:" + std::to_string(playerId));
     });
-    
+
     _networkClient->setOnKilled([this](uint8_t playerId) {
         std::lock_guard<std::mutex> lock(_incomingMutex);
         _incomingMessages.push("KILLED:" + std::to_string(playerId));
     });
 }
-
 
 void CLIENT::Core::handlePlayerIdReceived(uint8_t playerId)
 {
@@ -448,7 +451,6 @@ void CLIENT::Core::handleIncomingMessage(const std::string& msg, Window& window)
     }
 }
 
-
 void CLIENT::Core::handlePlayerLeave(const std::string& msg, Window& window)
 {
     int playerId = std::stoi(msg.substr(13));
@@ -511,7 +513,7 @@ void CLIENT::Core::processInputs(
 void CLIENT::Core::handleTimeoutEvent(uint8_t playerId)
 {
     std::cout << "[CLIENT] Player " << int(playerId) << " timed out\n";
-    
+
     if (playerId == _myPlayerId) {
         std::cout << "[CLIENT] You have been disconnected due to timeout\n";
         _gameState = GameState::DISCONNECTED;
@@ -522,7 +524,7 @@ void CLIENT::Core::handleTimeoutEvent(uint8_t playerId)
 void CLIENT::Core::handleKilledEvent(uint8_t playerId)
 {
     std::cout << "[CLIENT] Player " << int(playerId) << " was eliminated\n";
-    
+
     if (playerId == _myPlayerId) {
         std::cout << "[CLIENT] You have been defeated!\n";
         _gameState = GameState::DEFEATED;
@@ -534,25 +536,23 @@ void CLIENT::Core::loadDefeatScreen()
 {
     if (_defeatTextureLoaded)
         return;
-    
+
     auto& rm = ResourceManager::getInstance();
-    
+
     rm.loadTexture("assets/sprites/defeat.png", "assets/sprites/defeat.png");
     sf::Texture* texture = rm.getTexture("assets/sprites/defeat.png");
-    
+
     if (texture) {
         _defeatSprite = sf::Sprite(*texture);
-        
+
         sf::Vector2u textureSize = texture->getSize();
         _defeatSprite->setOrigin(sf::Vector2f(
             static_cast<float>(textureSize.x) / 2.0f,
-            static_cast<float>(textureSize.y) / 2.0f
-        ));
+            static_cast<float>(textureSize.y) / 2.0f));
         _defeatSprite->setPosition(sf::Vector2f(
             static_cast<float>(WINDOW_WIDTH) / 2.0f,
-            static_cast<float>(WINDOW_HEIGHT) / 2.0f
-        ));
-        
+            static_cast<float>(WINDOW_HEIGHT) / 2.0f));
+
         _defeatTextureLoaded = true;
         std::cout << "[CLIENT] Defeat screen loaded\n";
     } else {
@@ -616,7 +616,7 @@ void CLIENT::Core::graphicsLoop()
         }
 
         renderTexture.clear();
-        
+
         if (_gameState == GameState::PLAYING) {
             _entityManager->render(renderTexture);
             _parallaxSystem->update(deltaTime);
@@ -626,14 +626,15 @@ void CLIENT::Core::graphicsLoop()
             _parallaxSystem->update(deltaTime);
             renderDefeatScreen(renderTexture);
         }
-        
+
         renderTexture.display();
 
         window.clear();
         sf::Sprite screenSprite(renderTexture.getTexture());
 
         if (_colorBlindFilter->isActive()) {
-            const sf::RenderStates* states = _colorBlindFilter->getRenderStates();
+            const sf::RenderStates* states =
+                _colorBlindFilter->getRenderStates();
             if (states) {
                 window.getWindow().draw(screenSprite, *states);
             } else {
@@ -644,13 +645,14 @@ void CLIENT::Core::graphicsLoop()
         }
 
         window.display();
-        
+
         if (_gameState == GameState::DEFEATED) {
             static auto defeatTime = std::chrono::steady_clock::now();
             auto now = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
-                now - defeatTime).count();
-            
+                               now - defeatTime)
+                               .count();
+
             // if (elapsed >= 5) {
             //     _running = false; if we wanna leave the player watch the game
             // }
