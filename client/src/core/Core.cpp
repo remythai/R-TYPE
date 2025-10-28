@@ -29,7 +29,8 @@ static const std::vector<struct InputMapping> INPUT_MAPPINGS = {
     {"SHOOT", CLIENT::KeyCode::SHOOT}};
 
 CLIENT::Core::Core(char** argv)
-    : _port(0), _running(false), _myPlayerId(255), _hasNewSnapshot(false)
+    : _port(0), _running(false), _myPlayerId(255), _hasNewSnapshot(false),
+      _gameState(GameState::PLAYING), _defeatTextureLoaded(false)
 {
     parseCommandLineArgs(argv);
 
@@ -96,7 +97,17 @@ void CLIENT::Core::setupNetworkCallbacks()
     _networkClient->setOnSnapshot([this](const std::vector<uint8_t>& payload) {
         handleSnapshotReceived(payload);
     });
+    _networkClient->setOnTimeout([this](uint8_t playerId) {
+        std::lock_guard<std::mutex> lock(_incomingMutex);
+        _incomingMessages.push("TIMEOUT:" + std::to_string(playerId));
+    });
+    
+    _networkClient->setOnKilled([this](uint8_t playerId) {
+        std::lock_guard<std::mutex> lock(_incomingMutex);
+        _incomingMessages.push("KILLED:" + std::to_string(playerId));
+    });
 }
+
 
 void CLIENT::Core::handlePlayerIdReceived(uint8_t playerId)
 {
@@ -425,8 +436,18 @@ void CLIENT::Core::handleIncomingMessage(const std::string& msg, Window& window)
         std::cout << "Player " << playerId << " joined\n";
     } else if (msg.find("PLAYER_LEAVE:") == 0) {
         handlePlayerLeave(msg, window);
+    } else if (msg.find("TIMEOUT:") == 0) {
+        uint8_t playerId = std::stoi(msg.substr(8));
+        handleTimeoutEvent(playerId);
+        if (playerId == _myPlayerId) {
+            window.getWindow().close();
+        }
+    } else if (msg.find("KILLED:") == 0) {
+        uint8_t playerId = std::stoi(msg.substr(7));
+        handleKilledEvent(playerId);
     }
 }
+
 
 void CLIENT::Core::handlePlayerLeave(const std::string& msg, Window& window)
 {
@@ -487,6 +508,69 @@ void CLIENT::Core::processInputs(
     }
 }
 
+void CLIENT::Core::handleTimeoutEvent(uint8_t playerId)
+{
+    std::cout << "[CLIENT] Player " << int(playerId) << " timed out\n";
+    
+    if (playerId == _myPlayerId) {
+        std::cout << "[CLIENT] You have been disconnected due to timeout\n";
+        _gameState = GameState::DISCONNECTED;
+        _running = false;
+    }
+}
+
+void CLIENT::Core::handleKilledEvent(uint8_t playerId)
+{
+    std::cout << "[CLIENT] Player " << int(playerId) << " was eliminated\n";
+    
+    if (playerId == _myPlayerId) {
+        std::cout << "[CLIENT] You have been defeated!\n";
+        _gameState = GameState::DEFEATED;
+        loadDefeatScreen();
+    }
+}
+
+void CLIENT::Core::loadDefeatScreen()
+{
+    if (_defeatTextureLoaded)
+        return;
+    
+    auto& rm = ResourceManager::getInstance();
+    
+    rm.loadTexture("assets/sprites/defeat.png", "assets/sprites/defeat.png");
+    sf::Texture* texture = rm.getTexture("assets/sprites/defeat.png");
+    
+    if (texture) {
+        _defeatSprite = sf::Sprite(*texture);
+        
+        sf::Vector2u textureSize = texture->getSize();
+        _defeatSprite->setOrigin(sf::Vector2f(
+            static_cast<float>(textureSize.x) / 2.0f,
+            static_cast<float>(textureSize.y) / 2.0f
+        ));
+        _defeatSprite->setPosition(sf::Vector2f(
+            static_cast<float>(WINDOW_WIDTH) / 2.0f,
+            static_cast<float>(WINDOW_HEIGHT) / 2.0f
+        ));
+        
+        _defeatTextureLoaded = true;
+        std::cout << "[CLIENT] Defeat screen loaded\n";
+    } else {
+        std::cerr << "[CLIENT] Failed to load defeat.png\n";
+    }
+}
+
+void CLIENT::Core::renderDefeatScreen(sf::RenderTarget& target)
+{
+    if (_defeatTextureLoaded && _defeatSprite.has_value()) {
+        target.draw(_defeatSprite.value());
+    } else {
+        sf::RectangleShape overlay(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+        overlay.setFillColor(sf::Color(0, 0, 0, 200));
+        target.draw(overlay);
+    }
+}
+
 void CLIENT::Core::graphicsLoop()
 {
     Window window("R-Type Client", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -503,10 +587,8 @@ void CLIENT::Core::graphicsLoop()
     const float CLEANUP_INTERVAL = 5.0f;
 
     _keybindMenu = std::make_unique<KeybindMenu>(*_keybindManager);
-
     _colorBlindFilter = std::make_unique<ColorBlindFilter>();
     _keybindMenu->setColorBlindFilter(_colorBlindFilter.get());
-
     window.setKeybindComponents(_keybindManager.get(), _keybindMenu.get());
 
     sf::RenderTexture renderTexture;
@@ -520,31 +602,38 @@ void CLIENT::Core::graphicsLoop()
 
         updateFromSnapshot();
         processIncomingMessages(window);
-
         window.pollEvents();
 
-        _keybindMenu->update(deltaTime);
+        if (_gameState == GameState::PLAYING) {
+            _keybindMenu->update(deltaTime);
+            processInputs(window, keyStates);
+            _entityManager->update(deltaTime);
 
-        processInputs(window, keyStates);
-        _entityManager->update(deltaTime);
-
-        if (shouldCleanupEntities(lastCleanup, CLEANUP_INTERVAL)) {
-            _entityManager->cleanupInactiveEntities();
-            lastCleanup = std::chrono::steady_clock::now();
+            if (shouldCleanupEntities(lastCleanup, CLEANUP_INTERVAL)) {
+                _entityManager->cleanupInactiveEntities();
+                lastCleanup = std::chrono::steady_clock::now();
+            }
         }
 
         renderTexture.clear();
-        _entityManager->render(renderTexture);
-        _parallaxSystem->update(deltaTime);
-        _keybindMenu->render(renderTexture);
+        
+        if (_gameState == GameState::PLAYING) {
+            _entityManager->render(renderTexture);
+            _parallaxSystem->update(deltaTime);
+            _keybindMenu->render(renderTexture);
+        } else if (_gameState == GameState::DEFEATED) {
+            _entityManager->render(renderTexture);
+            _parallaxSystem->update(deltaTime);
+            renderDefeatScreen(renderTexture);
+        }
+        
         renderTexture.display();
 
         window.clear();
         sf::Sprite screenSprite(renderTexture.getTexture());
 
         if (_colorBlindFilter->isActive()) {
-            const sf::RenderStates* states =
-                _colorBlindFilter->getRenderStates();
+            const sf::RenderStates* states = _colorBlindFilter->getRenderStates();
             if (states) {
                 window.getWindow().draw(screenSprite, *states);
             } else {
@@ -555,6 +644,17 @@ void CLIENT::Core::graphicsLoop()
         }
 
         window.display();
+        
+        if (_gameState == GameState::DEFEATED) {
+            static auto defeatTime = std::chrono::steady_clock::now();
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+                now - defeatTime).count();
+            
+            // if (elapsed >= 5) {
+            //     _running = false; if we wanna leave the player watch the game
+            // }
+        }
     }
 
     _running = false;

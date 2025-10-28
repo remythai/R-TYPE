@@ -32,6 +32,9 @@ class NetworkClient
     void setOnSnapshot(
         std::function<void(const std::vector<uint8_t>&)> callback);
 
+    void setOnTimeout(std::function<void(uint8_t)> callback);
+    void setOnKilled(std::function<void(uint8_t)> callback);
+
    private:
     void doReceive();
     void handlePacket(
@@ -46,4 +49,7 @@ class NetworkClient
     std::function<void(uint8_t)> _onPlayerIdReceived;
     std::function<void(uint8_t, uint8_t)> _onPlayerEvent;
     std::function<void(const std::vector<uint8_t>&)> _onSnapshot;
+
+    std::function<void(uint8_t)> _onTimeout;
+    std::function<void(uint8_t)> _onKilled;
 };

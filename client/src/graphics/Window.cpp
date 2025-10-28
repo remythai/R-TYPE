@@ -38,12 +38,21 @@ bool CLIENT::Window::isOpen() const
 
 void CLIENT::Window::pollEvents()
 {
+    if (!_window.isOpen()) {
+        return;
+    }
+
     _deltaTime = _clock.restart().asSeconds();
 
     _pendingActions.clear();
 
     while (auto eventOpt = _window.pollEvent()) {
         const auto &event = *eventOpt;
+
+        if (event.is<sf::Event::Closed>()) {
+            _window.close();
+            return;
+        }
 
         if (_keybindMenu && _keybindMenu->isOpen()) {
             _keybindMenu->handleEvent(event);
@@ -53,19 +62,17 @@ void CLIENT::Window::pollEvents()
 
         ImGui::SFML::ProcessEvent(_window, event);
 
-        if (event.is<sf::Event::Closed>())
-            _window.close();
-
         if (event.is<sf::Event::KeyPressed>()) {
             if (const auto *keyEvent = event.getIf<sf::Event::KeyPressed>()) {
                 if (keyEvent->code == sf::Keyboard::Key::Q) {
                     _window.close();
+                    return;
                 }
                 if (_keybindManager) {
                     if (keyEvent->code ==
                         _keybindManager->getKeybind(GameAction::SHOOT)) {
                         std::cout << "Shoot\n";
-                        _pendingActions.push_back("SHOOT");
+                        _pendingActions.emplace_back("SHOOT");
                     }
                     if (keyEvent->code == _keybindManager->getKeybind(
                                               GameAction::OPEN_KEYBIND_MENU)) {
@@ -76,6 +83,10 @@ void CLIENT::Window::pollEvents()
                 }
             }
         }
+    }
+
+    if (!_window.isOpen()) {
+        return;
     }
 
     if (!_keybindMenu || !_keybindMenu->isOpen()) {
@@ -116,18 +127,24 @@ void CLIENT::Window::pollEvents()
         }
     }
 
-    ImGui::SFML::Update(_window, sf::seconds(_deltaTime));
+    if (_window.isOpen()) {
+        ImGui::SFML::Update(_window, sf::seconds(_deltaTime));
+    }
 }
 
 void CLIENT::Window::clear()
 {
-    _window.clear(sf::Color::Black);
+    if (_window.isOpen()) {
+        _window.clear(sf::Color::Black);
+    }
 }
 
 void CLIENT::Window::display()
 {
-    ImGui::SFML::Render(_window);
-    _window.display();
+    if (_window.isOpen()) {
+        ImGui::SFML::Render(_window);
+        _window.display();
+    }
 }
 
 sf::RenderWindow &CLIENT::Window::getWindow()
