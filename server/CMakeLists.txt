@@ -32,6 +32,7 @@ set(SOURCES
     src/network/NetworkServer.cpp
     src/network/handleClient.cpp
     src/network/manageEntities.cpp
+    src/network/loadEnemies.cpp
 )
 
 # Exécutable principal
@@ -74,6 +75,7 @@ if(ENABLE_TESTS)
             src/network/NetworkServer.cpp
             src/network/handleClient.cpp
             src/network/manageEntities.cpp
+            src/network/loadEnemies.cpp
         )
 
         target_include_directories(r-type_tests PRIVATE

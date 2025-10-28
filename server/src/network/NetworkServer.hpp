@@ -52,6 +52,15 @@ struct PlayerSlot
     EntityManager::Entity entity;
 };
 
+struct EnemySpawnData {
+    int type;
+    float x;
+    float y;
+    float spawnTime;
+    std::string spritePath;
+    std::array<float, 4> textureRect;
+};
+
 class NetworkServer
 {
    public:
@@ -146,5 +155,13 @@ class NetworkServer
     static constexpr float SNAPSHOT_RATE = 1.0f / 20.0f;
 
     std::mutex _registryMutex;
+
+    std::vector<EnemySpawnData> _enemySpawnList;
+    float _gameTime = 0.0f;
+    size_t _nextEnemyToSpawn = 0;
+
+    void loadEnemiesFromJson(const std::string& filepath);
+    void checkAndSpawnEnemies();
+    EntityManager::Entity createEnemyFromData(const EnemySpawnData& data);
 };
 }  // namespace rtype
