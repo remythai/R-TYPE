@@ -20,11 +20,11 @@
 
 #include "../colorBlindFilter/ColorBlindFilter.hpp"
 #include "../entityManager/EntityManager.hpp"
-#include "../parallax/ParallaxSystem.hpp"
 #include "../keybind/KeybindManager.hpp"
 #include "../keybind/KeybindMenu.hpp"
 #include "../mapEditor/MapEditor.hpp"
 #include "../network/NetworkClient.hpp"
+#include "../parallax/ParallaxSystem.hpp"
 
 namespace CLIENT {
 
