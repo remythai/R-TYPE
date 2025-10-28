@@ -64,8 +64,9 @@ set(SOURCES
 
     src/graphics/Window.cpp
     src/graphics/ResourceManager.cpp
-    src/graphics/EntityManager.cpp
-    src/graphics/ParallaxSystem.cpp
+
+    src/entityManager/EntityManager.cpp
+    src/parallax/ParallaxSystem.cpp
 
     src/keybind/KeybindManager.cpp
     src/keybind/KeybindMenu.cpp

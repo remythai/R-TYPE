@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "EntityManager.hpp"
-#include "ResourceManager.hpp"
+#include "../entityManager/EntityManager.hpp"
+#include "../graphics/ResourceManager.hpp"
 
 namespace CLIENT {
 

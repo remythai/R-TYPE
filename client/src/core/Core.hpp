@@ -19,8 +19,8 @@
 #include <thread>
 
 #include "../colorBlindFilter/ColorBlindFilter.hpp"
-#include "../graphics/EntityManager.hpp"
-#include "../graphics/ParallaxSystem.hpp"
+#include "../entityManager/EntityManager.hpp"
+#include "../parallax/ParallaxSystem.hpp"
 #include "../keybind/KeybindManager.hpp"
 #include "../keybind/KeybindMenu.hpp"
 #include "../mapEditor/MapEditor.hpp"
