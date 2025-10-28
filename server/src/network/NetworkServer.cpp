@@ -86,7 +86,7 @@ void rtype::NetworkServer::run()
 {
     _running = true;
     _lastSnapshot = std::chrono::steady_clock::now();
-    
+
     if (_game == "RType" || _game == std::string("RType")) {
         loadEnemiesFromJson("../client/map_level1.json");
     }
@@ -137,7 +137,8 @@ void rtype::NetworkServer::run()
             if (_game == std::string("flappyByte")) {
                 auto clock2 = std::chrono::steady_clock::now();
                 auto deltaTime = clock2 - clock1;
-                if (std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime)
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(
+                        deltaTime)
                         .count() > 5000) {
                     this->createEnemyEntity();
                     clock1 = std::chrono::steady_clock::now();
