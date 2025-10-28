@@ -86,7 +86,7 @@ void rtype::NetworkServer::run()
 {
     _running = true;
     _lastSnapshot = std::chrono::steady_clock::now();
-    
+
     if (_game == "RType")
         loadEnemiesFromJson("../client/map_level1.json");
 
