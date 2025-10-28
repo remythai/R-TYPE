@@ -205,8 +205,8 @@ void NetworkClient::handlePacket(
                               << ") timed out. Entity: " << int(entityId)
                               << std::endl;
 
-                    if (_onPlayerEvent) {
-                        _onPlayerEvent(playerId, 0);
+                    if (_onTimeout) {
+                        _onTimeout(playerId);
                     }
                 }
             }
@@ -227,8 +227,8 @@ void NetworkClient::handlePacket(
                               << " (" << username
                               << ") was eliminated. Entity: " << int(entityId)
                               << std::endl;
-                    if (_onPlayerEvent) {
-                        _onPlayerEvent(playerId, 1);
+                    if (_onKilled) {
+                        _onKilled(playerId);
                     }
                 }
             }
@@ -245,4 +245,14 @@ void NetworkClient::setOnSnapshot(
     std::function<void(const std::vector<uint8_t>&)> callback)
 {
     _onSnapshot = callback;
+}
+
+void NetworkClient::setOnTimeout(std::function<void(uint8_t)> callback)
+{
+    _onTimeout = callback;
+}
+
+void NetworkClient::setOnKilled(std::function<void(uint8_t)> callback)
+{
+    _onKilled = callback;
 }
