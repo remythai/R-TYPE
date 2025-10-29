@@ -44,7 +44,6 @@ class Collision : public System<Collision>
             e1HitboxPos.x + e1Collider.size.x > e2HitboxPos.x &&
             e1HitboxPos.y < e2HitboxPos.y + e2Collider.size.y &&
             e1HitboxPos.y + e1Collider.size.y > e2HitboxPos.y) {
-            std::cout << "collided e" << e1 << " & " << e2 << ";\n";
             e1Health.currentHp =
                 e1Health.currentHp > 0
                     ? std::max(e1Health.currentHp - e2Damage.dmg, 0)
