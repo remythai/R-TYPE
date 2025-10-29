@@ -70,10 +70,15 @@ void rtype::NetworkServer::initECS()
         _registry->addSystem<GameEngine::InputHandler>(0);
         _registry->addSystem<GameEngine::Motion>(1);
     }
+
     _registry->addSystem<GameEngine::Collision>(2);
-    _registry->addSystem<GameEngine::Death>(3);
+    GameEngine::Death& deathSystem = _registry->addSystem<GameEngine::Death>(3);
     _registry->addSystem<GameEngine::DomainHandler>(4);
     _registry->addSystem<GameEngine::Animation>(5);
+
+    deathSystem.onPlayerDeath = [this](EntityManager::Entity e) {
+        this->handlePlayerDeath(e);
+    };
 }
 
 void rtype::NetworkServer::updateECS(float dt)
@@ -356,4 +361,41 @@ void rtype::NetworkServer::broadcastSnapshot()
     std::lock_guard<std::mutex> lock(_clientsMutex);
     for (auto& [id, endpoint] : _clients)
         _socket.send_to(asio::buffer(snapshot), endpoint);
+}
+
+void rtype::NetworkServer::handlePlayerDeath(EntityManager::Entity entity)
+{
+    std::lock_guard<std::mutex> lock(_playerSlotsMutex);
+
+    for (auto& slot : _playerSlots) {
+        if (slot.isUsed && slot.entity == entity) {
+            uint8_t playerId = slot.playerId;
+            std::string username = slot.username;
+
+            slot.isUsed = false;
+            slot.entity = EntityManager::INVALID_ENTITY;
+
+            std::vector<uint8_t> message;
+            message.push_back(static_cast<uint8_t>(rtype::PacketType::KILLED));
+
+            auto idBytes = toBytes<uint16_t>(0);
+            message.insert(message.end(), idBytes.begin(), idBytes.end());
+
+            uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                    std::chrono::steady_clock::now().time_since_epoch())
+                                    .count();
+            auto tsBytes = toBytes<uint32_t>(timestamp);
+            message.insert(message.end(), tsBytes.begin(), tsBytes.end());
+
+            message.push_back(static_cast<uint8_t>(entity));
+            message.push_back(playerId);
+
+            uint8_t usernameLen = static_cast<uint8_t>(username.size());
+            message.push_back(usernameLen);
+            message.insert(message.end(), username.begin(), username.end());
+
+            broadcast(message);
+            break;
+        }
+    }
 }
