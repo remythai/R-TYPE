@@ -1,12 +1,12 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 
 #include "../../../components/health/src/Health.hpp"
 #include "../../../components/inputControlled/src/InputControlled.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
-#include <functional>
 
 namespace GameEngine {
 /**
@@ -96,13 +96,14 @@ class Death : public System<Death>
     {
         updateCount++;
 
-        registry.each<Health, InputControlled>([this, &registry](auto e, Health& health, InputControlled&) {
-            if (health.currentHp == 0) {
-                if (onPlayerDeath)
-                    onPlayerDeath(e);
-                registry.destroy(e);
-            }
-        });
+        registry.each<Health, InputControlled>(
+            [this, &registry](auto e, Health& health, InputControlled&) {
+                if (health.currentHp == 0) {
+                    if (onPlayerDeath)
+                        onPlayerDeath(e);
+                    registry.destroy(e);
+                }
+            });
 
         registry.each<Health>([dt, &registry](auto e, Health& health) {
             if (health.currentHp == 0) {
