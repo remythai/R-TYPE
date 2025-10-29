@@ -539,8 +539,8 @@ void CLIENT::Core::loadDefeatScreen()
 
     auto& rm = ResourceManager::getInstance();
 
-    rm.loadTexture("assets/sprites/defeat.png", "assets/sprites/defeat.png");
-    sf::Texture* texture = rm.getTexture("assets/sprites/defeat.png");
+    rm.loadTexture("assets/sprites/defeat.jpg", "assets/sprites/defeat.jpg");
+    sf::Texture* texture = rm.getTexture("assets/sprites/defeat.jpg");
 
     if (texture) {
         _defeatSprite = sf::Sprite(*texture);

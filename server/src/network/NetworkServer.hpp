@@ -164,5 +164,6 @@ class NetworkServer
     void loadEnemiesFromJson(const std::string& filepath);
     void checkAndSpawnEnemies();
     EntityManager::Entity createEnemyFromData(const EnemySpawnData& data);
+    void handlePlayerDeath(EntityManager::Entity entity);
 };
 }  // namespace rtype
