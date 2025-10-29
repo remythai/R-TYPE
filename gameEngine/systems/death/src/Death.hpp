@@ -3,8 +3,10 @@
 #include <algorithm>
 
 #include "../../../components/health/src/Health.hpp"
+#include "../../../components/inputControlled/src/InputControlled.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
+#include <functional>
 
 namespace GameEngine {
 /**
@@ -54,7 +56,7 @@ class Death : public System<Death>
      */
     Death()
     {
-        requireComponents<GameEngine::Health>();
+        requireComponents<GameEngine::Health, InputControlled>();
     }
 
     /**
@@ -94,6 +96,14 @@ class Death : public System<Death>
     {
         updateCount++;
 
+        registry.each<Health, InputControlled>([this, &registry](auto e, Health& health, InputControlled&) {
+            if (health.currentHp == 0) {
+                if (onPlayerDeath)
+                    onPlayerDeath(e);
+                registry.destroy(e);
+            }
+        });
+
         registry.each<Health>([dt, &registry](auto e, Health& health) {
             if (health.currentHp == 0) {
                 registry.destroy(e);
@@ -113,5 +123,6 @@ class Death : public System<Death>
      *          Manually reset if needed for test isolation.
      */
     int updateCount = 0;
+    std::function<void(EntityManager::Entity)> onPlayerDeath;
 };
 }  // namespace GameEngine
