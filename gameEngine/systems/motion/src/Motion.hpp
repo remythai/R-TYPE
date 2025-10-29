@@ -6,6 +6,7 @@
 #include "../../../components/position/src/Position.hpp"
 #include "../../../components/renderable/src/Renderable.hpp"
 #include "../../../components/velocity/src/Velocity.hpp"
+#include "../../../components/collider/src/Collider.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -82,7 +83,7 @@ class Motion : public System<Motion>
     {
         requireComponents<
             GameEngine::Position, GameEngine::Velocity,
-            GameEngine::Acceleration, GameEngine::Renderable>();
+            GameEngine::Acceleration, GameEngine::Renderable, GameEngine::Collider>();
     }
 
     /**
@@ -162,10 +163,10 @@ class Motion : public System<Motion>
     {
         updateCount++;
 
-        registry.each<Position, Velocity, Acceleration, Renderable>(
+        registry.each<Position, Velocity, Acceleration, Renderable, Collider>(
             [dt](
                 auto e, Position& pos, Velocity& vel, Acceleration& acc,
-                Renderable& render) {
+                Renderable& render, Collider& collider) {
                 // Phase 1: Deceleration (75% reduction)
                 vel.x = vel.x > 0
                             ? std::max(float(vel.x - (vel.x * 0.25)), float(0))
@@ -181,9 +182,9 @@ class Motion : public System<Motion>
                 // Phase 3: Position update (translate and constrain to screen
                 // bounds)
                 pos.pos.x =
-                    std::clamp(pos.pos.x + vel.x, float(0), render.screenSizeX);
+                    std::clamp(pos.pos.x + vel.x, float(0), render.screenSizeX - collider.size.x);
                 pos.pos.y =
-                    std::clamp(pos.pos.y + vel.y, float(0), render.screenSizeY);
+                    std::clamp(pos.pos.y + vel.y, float(0), render.screenSizeY - collider.size.y);
             });
     }
 

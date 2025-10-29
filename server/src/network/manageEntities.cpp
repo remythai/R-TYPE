@@ -47,7 +47,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
             rectPos, vec2{33.2f, 17.2f}, 500, false);
         _registry->emplace<GameEngine::Collider>(
             entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
-            std::bitset<8>("10000000"), vec2(33.2, 17.2));
+            std::bitset<8>("10000000"), vec2(66.4, 34.4));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 0);
         _registry->emplace<GameEngine::Gravity>(entity, 400.0f);
@@ -79,7 +79,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
             rectPos, vec2{33.2f, 17.2f}, 500, false);
         _registry->emplace<GameEngine::Collider>(
             entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
-            std::bitset<8>("10000000"), vec2(33.2, 17.2));
+            std::bitset<8>("10000000"), vec2(66.4, 34.4));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 1);
     }
@@ -94,17 +94,17 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(3, 27);
-
-    int randomNum = distrib(gen);
 
     if (this->_game == std::string("flappyByte")) {
+        std::uniform_int_distribution<> distrib(2, 12);
+        int randomNum = distrib(gen);
+
         for (size_t i = 0; i < randomNum; i++) {
             std::lock_guard<std::mutex> lock(_registryMutex);
             auto entity = _registry->create();
             _registry->emplace<GameEngine::AIControlled>(entity);
             _registry->emplace<GameEngine::Acceleration>(entity, -200.0f, 0.0f);
-            _registry->emplace<GameEngine::Position>(entity, 1900, i * 34);
+            _registry->emplace<GameEngine::Position>(entity, 1900, i * 68);
             _registry->emplace<GameEngine::Velocity>(entity, 200.0f);
             std::vector<vec2> rectPos;
             rectPos.push_back(vec2{0.0f, 0.0f});
@@ -114,20 +114,20 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet30a.png",
                 rectPos, vec2{34.0f, 34.0f}, 500, true);
             _registry->emplace<GameEngine::Collider>(
-                entity, vec2(0.0, 0.0), std::bitset<8>("10000000"),
-                std::bitset<8>("01000000"), vec2(34.0, 34.0));
+                entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
+                std::bitset<8>("01000000"), vec2(48.0, 48.0));
             _registry->emplace<GameEngine::Domain>(
                 entity, 5.0f, 0.0f, 1920.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
             _registry->emplace<GameEngine::Damage>(entity, 1);
         }
-        for (size_t i = 1; i < 29 - randomNum; i++) {
+        for (size_t i = 1; i < 15 - randomNum; i++) {
             std::lock_guard<std::mutex> lock(_registryMutex);
             auto entity = _registry->create();
             _registry->emplace<GameEngine::AIControlled>(entity);
             _registry->emplace<GameEngine::Acceleration>(entity, -200.0f, 0.0f);
             _registry->emplace<GameEngine::Position>(
-                entity, 1900, 1080 - i * 34);
+                entity, 1900, 1080 - i * 68);
             _registry->emplace<GameEngine::Velocity>(entity, 200.0f);
             std::vector<vec2> rectPos;
             rectPos.push_back(vec2{0.0f, 0.0f});
@@ -137,14 +137,17 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet30a.png",
                 rectPos, vec2{34.0f, 34.0f}, 500, true);
             _registry->emplace<GameEngine::Collider>(
-                entity, vec2(0.0, 0.0), std::bitset<8>("10000000"),
-                std::bitset<8>("01000000"), vec2(34.0, 34.0));
+                entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
+                std::bitset<8>("01000000"), vec2(48.0, 48.0));
             _registry->emplace<GameEngine::Domain>(
                 entity, 5.0f, 0.0f, 1920.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
             _registry->emplace<GameEngine::Damage>(entity, 1);
         }
     } else {
+        std::uniform_int_distribution<> distrib(0, 976);
+        int randomNum = distrib(gen);
+
         std::lock_guard<std::mutex> lock(_registryMutex);
         auto entity = _registry->create();
         _registry->emplace<GameEngine::AIControlled>(entity);
@@ -165,7 +168,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             rectPos, vec2{33.3f, 36.0f}, 1000, true);
         _registry->emplace<GameEngine::Collider>(
             entity, vec2(0.0, 0.0), std::bitset<8>("10100000"),
-            std::bitset<8>("01000000"), vec2(33.3, 33.3));
+            std::bitset<8>("01000000"), vec2(66.6, 72.0));
         _registry->emplace<GameEngine::Domain>(
             entity, 5.0f, 0.0f, 1920.0f, 1080.0);
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
