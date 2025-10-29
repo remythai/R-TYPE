@@ -3,10 +3,10 @@
 #include <algorithm>
 
 #include "../../../components/acceleration/src/Acceleration.hpp"
+#include "../../../components/collider/src/Collider.hpp"
 #include "../../../components/position/src/Position.hpp"
 #include "../../../components/renderable/src/Renderable.hpp"
 #include "../../../components/velocity/src/Velocity.hpp"
-#include "../../../components/collider/src/Collider.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -83,7 +83,8 @@ class Motion : public System<Motion>
     {
         requireComponents<
             GameEngine::Position, GameEngine::Velocity,
-            GameEngine::Acceleration, GameEngine::Renderable, GameEngine::Collider>();
+            GameEngine::Acceleration, GameEngine::Renderable,
+            GameEngine::Collider>();
     }
 
     /**
@@ -181,10 +182,12 @@ class Motion : public System<Motion>
 
                 // Phase 3: Position update (translate and constrain to screen
                 // bounds)
-                pos.pos.x =
-                    std::clamp(pos.pos.x + vel.x, float(0), render.screenSizeX - collider.size.x);
-                pos.pos.y =
-                    std::clamp(pos.pos.y + vel.y, float(0), render.screenSizeY - collider.size.y);
+                pos.pos.x = std::clamp(
+                    pos.pos.x + vel.x, float(0),
+                    render.screenSizeX - collider.size.x);
+                pos.pos.y = std::clamp(
+                    pos.pos.y + vel.y, float(0),
+                    render.screenSizeY - collider.size.y);
             });
     }
 
