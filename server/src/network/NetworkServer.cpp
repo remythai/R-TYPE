@@ -381,9 +381,10 @@ void rtype::NetworkServer::handlePlayerDeath(EntityManager::Entity entity)
             auto idBytes = toBytes<uint16_t>(0);
             message.insert(message.end(), idBytes.begin(), idBytes.end());
 
-            uint32_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                    std::chrono::steady_clock::now().time_since_epoch())
-                                    .count();
+            uint32_t timestamp =
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now().time_since_epoch())
+                    .count();
             auto tsBytes = toBytes<uint32_t>(timestamp);
             message.insert(message.end(), tsBytes.begin(), tsBytes.end());
 
