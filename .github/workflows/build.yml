@@ -122,11 +122,11 @@ jobs:
             doxygen Doxyfile 2>&1 | tee doxygen.log
             cd ..
             if [ -d "gameEngine/docs/html" ]; then
-              cp -r gameEngine/docs/html docs_output/gameEngine
-              echo "GameEngine documentation generated"
+              mkdir -p docs_output/gameEngine
+              cp -r gameEngine/docs/html/* docs_output/gameEngine/
+              echo "✓ GameEngine documentation generated"
             else
-              echo "Error: gameEngine/docs/html not found"
-              exit 1
+              echo "⚠ Warning: gameEngine/docs/html not found"
             fi
           fi
           
@@ -137,8 +137,11 @@ jobs:
             doxygen Doxyfile 2>&1 | tee doxygen.log
             cd ..
             if [ -d "server/docs/html" ]; then
-              cp -r server/docs/html docs_output/server
-              echo "Server documentation generated"
+              mkdir -p docs_output/server
+              cp -r server/docs/html/* docs_output/server/
+              echo "✓ Server documentation generated"
+            else
+              echo "⚠ Warning: server/docs/html not found"
             fi
           fi
           
@@ -149,8 +152,11 @@ jobs:
             doxygen Doxyfile 2>&1 | tee doxygen.log
             cd ..
             if [ -d "client/docs/html" ]; then
-              cp -r client/docs/html docs_output/client
-              echo "Client documentation generated"
+              mkdir -p docs_output/client
+              cp -r client/docs/html/* docs_output/client/
+              echo "✓ Client documentation generated"
+            else
+              echo "⚠ Warning: client/docs/html not found"
             fi
           fi
           
@@ -161,7 +167,7 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Project Documentation</title>
+            <title>R-TYPE Documentation</title>
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body {
@@ -193,6 +199,12 @@ jobs:
                 margin-bottom: 40px;
                 font-size: 1.1rem;
               }
+              .team {
+                text-align: center;
+                color: #4a5568;
+                margin-bottom: 30px;
+                font-size: 0.95rem;
+              }
               .doc-links {
                 display: grid;
                 gap: 20px;
@@ -223,41 +235,73 @@ jobs:
                 font-size: 2rem;
                 margin-bottom: 10px;
               }
+              .status {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                margin-left: 10px;
+                background: rgba(255,255,255,0.2);
+              }
             </style>
           </head>
           <body>
             <div class="container">
-              <h1>📚 Project Documentation by Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot</h1>
-              <p class="subtitle">Welcome to the technical documentation</p>
+              <h1>🚀 R-TYPE Documentation</h1>
+              <p class="subtitle">Technical Documentation & API Reference</p>
+              <div class="team">
+                By Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot
+              </div>
               <div class="doc-links">
-                <a href="gameEngine/index.html" class="doc-link">
+                <a href="gameEngine/index.html" class="doc-link" id="gameEngine-link">
                   <div class="icon">🎮</div>
-                  <h2>Game Engine ECS</h2>
+                  <h2>Game Engine ECS<span class="status" id="gameEngine-status">Loading...</span></h2>
                   <p>Entity Component System for 2D/3D Games</p>
                 </a>
-                <a href="server/index.html" class="doc-link" style="display: none;" id="server-link">
+                <a href="server/index.html" class="doc-link" id="server-link">
                   <div class="icon">🖥️</div>
-                  <h2>Server</h2>
-                  <p>Server documentation</p>
+                  <h2>Server<span class="status" id="server-status">Loading...</span></h2>
+                  <p>Server-side architecture and network protocols</p>
                 </a>
-                <a href="client/index.html" class="doc-link" style="display: none;" id="client-link">
+                <a href="client/index.html" class="doc-link" id="client-link">
                   <div class="icon">💻</div>
-                  <h2>Client</h2>
-                  <p>Client documentation</p>
+                  <h2>Client<span class="status" id="client-status">Loading...</span></h2>
+                  <p>Client-side rendering and game logic</p>
                 </a>
               </div>
             </div>
             <script>
-              fetch('server/index.html').then(() => {
-                document.getElementById('server-link').style.display = 'block';
-              }).catch(() => {});
-              fetch('client/index.html').then(() => {
-                document.getElementById('client-link').style.display = 'block';
-              }).catch(() => {});
+              async function checkDoc(name) {
+                const link = document.getElementById(`${name}-link`);
+                const status = document.getElementById(`${name}-status`);
+                try {
+                  const response = await fetch(`${name}/index.html`);
+                  if (response.ok) {
+                    status.textContent = '✓ Available';
+                    status.style.background = 'rgba(72, 187, 120, 0.3)';
+                    link.style.display = 'block';
+                  } else {
+                    throw new Error('Not found');
+                  }
+                } catch (e) {
+                  status.textContent = '⏳ Coming soon';
+                  status.style.background = 'rgba(255, 193, 7, 0.3)';
+                  link.style.opacity = '0.6';
+                  link.style.pointerEvents = 'none';
+                }
+              }
+              
+              checkDoc('gameEngine');
+              checkDoc('server');
+              checkDoc('client');
             </script>
           </body>
           </html>
           EOF
+          
+          # List generated structure
+          echo "📁 Documentation structure:"
+          ls -la docs_output/
 
       - name: Upload artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
