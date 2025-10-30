@@ -1,0 +1,5 @@
+<map id="rtype::NetworkServer::checkAndSpawnEnemies" name="rtype::NetworkServer::checkAndSpawnEnemies">
+<area shape="rect" id="Node000001" title="Checks game time and spawns enemies when their spawn time is reached." alt="" coords="5,5,197,50"/>
+<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#aa43fc0754b58048eabf6c97fd6800287" title="Creates an enemy entity from spawn data." alt="" coords="245,5,424,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,25,229,25,229,30,197,30"/>
+</map>

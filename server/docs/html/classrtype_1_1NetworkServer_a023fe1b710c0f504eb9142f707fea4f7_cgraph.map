@@ -1,0 +1,5 @@
+<map id="rtype::NetworkServer::sendPlayerIdAssignment" name="rtype::NetworkServer::sendPlayerIdAssignment">
+<area shape="rect" id="Node000001" title="Sends a PLAYER_ID_ASSIGNMENT packet to a client." alt="" coords="5,5,196,50"/>
+<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a0b8fd52383e5b2fd3a529162fd2ea46a" title="Converts a value of type T to a vector of bytes." alt="" coords="244,5,404,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,25,228,25,228,30,196,30"/>
+</map>

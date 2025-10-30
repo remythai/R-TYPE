@@ -1,0 +1,104 @@
+/**
+ * @mainpage R-Type Server - Documentation
+ *
+ * @version 1.0
+ * @author Simon Maigrot
+ *
+ * @section intro_sec Introduction
+ *
+ * The **R-Type Server** is the dedicated backend of the R-Type multiplayer game.
+ * It is responsible for managing connected clients, synchronizing entities between
+ * players, and maintaining the overall state of the game world.
+ *
+ * The server is built in modern C++ and uses a custom **Entity-Component-System (ECS)**
+ * internally to manage game logic efficiently while ensuring real-time synchronization
+ * across the network.
+ *
+ * Repository layout:
+ *
+ * ```
+ * /server/        → core server logic (networking, game loop, snapshot system)
+ * /ecs/           → entity-component system (used internally for game state)
+ * /components/    → shared component definitions (Position, Velocity, Renderable, etc.)
+ * /systems/       → server-side systems (MovementSystem, CollisionSystem, HealthSystem, ...)
+ * /network/       → UDP/TCP communication (asynchronous I/O using ASIO)
+ * /tools/         → helper utilities and serialization tools
+ * /tests/         → server unit and integration tests
+ * /docs/          → documentation and architecture diagrams
+ * CMakeLists.txt
+ * Doxyfile
+ * ```
+ *
+ * ---
+ *
+ * @section goals_sec Goals & Design
+ *
+ * - **Real-time multiplayer**: Handle multiple clients simultaneously with
+ *   low-latency state updates via UDP.
+ * - **Deterministic ECS logic**: Every simulation step on the server updates
+ *   all entities consistently before sending snapshots to clients.
+ * - **Scalable architecture**: Designed to support multiple rooms/sessions
+ *   and easily integrate new systems or game mechanics.
+ * - **Thread-safe state management**: All critical sections use mutexes
+ *   to ensure data integrity between the network and ECS threads.
+ *
+ * ---
+ *
+ * @section features_sec Key Features
+ *
+ * - Asynchronous networking using **ASIO**
+ * - Binary **snapshot serialization** for fast client synchronization
+ * - Dynamic **entity creation/destruction** (players, enemies, projectiles)
+ * - Thread-safe ECS core with component-based logic
+ * - Configurable server parameters (port, IP, tickrate)
+ * - Integration-ready architecture for future gameplay logic
+ *
+ * ---
+ *
+ * @section usage_sec Quick example
+ *
+ * Example: starting the server
+ *
+ * \code{.cpp}
+ *   #include "Server.hpp"
+ *
+ *   int main() {
+ *       try {
+ *           Server server(8080, "127.0.0.1");
+ *           server.run(); // starts main game loop and network handling
+ *       } catch (const std::exception &e) {
+ *           std::cerr << "Server error: " << e.what() << std::endl;
+ *       }
+ *       return 0;
+ *   }
+ * \endcode
+ *
+ * ---
+ *
+ * @section arch_sec Architecture overview
+ *
+ * - **Server**: entry point; initializes networking, game loop, and ECS registry.
+ * - **NetworkManager**: handles incoming/outgoing UDP packets using ASIO.
+ * - **Registry (ECS)**: manages entities, components, and systems safely across threads.
+ * - **System**: applies specific logic each frame (movement, collision, shooting...).
+ * - **SnapshotSerializer**: builds serialized game-state packets sent to clients.
+ * - **PlayerManager**: manages connected clients, player slots, and entity ownership.
+ *
+ * ---
+ *
+ * @section docs_sec Additional documentation & guides
+ *
+ * - Browse generated module pages for API details on networking and ECS components.
+ * - See `/docs/architecture.md` for a high-level design overview.
+ * - Explore `/tests/` for concrete server behavior examples.
+ *
+ * ---
+ *
+ * @section author_sec Author & contact
+ *
+ * Developed by **Simon Maigrot**
+ * Epitech Technology — 2nd year student
+ * Contact: simon.maigrot@epitech.eu
+ * License: MIT
+ *
+ */
