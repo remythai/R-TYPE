@@ -99,7 +99,7 @@ class NetworkServer
 
     /**
      * @brief Sets a player slot at the specified index
-     * 
+     *
      * @param index The index of the player slot (0-3)
      * @param slot The PlayerSlot data to set
      */
@@ -117,7 +117,7 @@ class NetworkServer
    private:
     /**
      * @brief Converts a value of type T to a vector of bytes
-     * 
+     *
      * @tparam T The type of the value to convert
      * @param value The value to convert
      * @return std::vector<uint8_t> The byte representation of the value
@@ -133,7 +133,7 @@ class NetworkServer
 
     /**
      * @brief Converts a byte array to a value of type T
-     * 
+     *
      * @tparam T The type of the value to convert to
      * @param data Pointer to the byte array
      * @return T The converted value
