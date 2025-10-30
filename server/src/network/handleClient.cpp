@@ -9,6 +9,12 @@
 
 #include "NetworkServer.hpp"
 
+/**
+ * @brief Finds the player ID associated with a given endpoint
+ * 
+ * @param endpoint The UDP endpoint to search for
+ * @return uint8_t The player ID if found, 255 otherwise
+ */
 uint8_t rtype::NetworkServer::findPlayerIdByEndpoint(
     const asio::ip::udp::endpoint& endpoint)
 {
@@ -19,6 +25,15 @@ uint8_t rtype::NetworkServer::findPlayerIdByEndpoint(
     return 255;
 }
 
+/**
+ * @brief Handles a JOIN packet from a client
+ * 
+ * Processes client connection requests, assigns player IDs, and creates player entities.
+ * Rejects connections if the server is full (4 players maximum).
+ * 
+ * @param clientEndpoint The endpoint of the client attempting to join
+ * @param payload The packet payload containing the username
+ */
 void rtype::NetworkServer::handleJoinPacket(
     const asio::ip::udp::endpoint& clientEndpoint,
     const std::vector<uint8_t>& payload)
@@ -78,6 +93,15 @@ void rtype::NetworkServer::handleJoinPacket(
     sendPlayerIdAssignment(clientEndpoint, assignedPlayerId);
 }
 
+/**
+ * @brief Handles an INPUT packet from a client
+ * 
+ * Processes player input (keyboard/action) and applies it to the corresponding entity.
+ * Validates that the player ID matches the expected endpoint.
+ * 
+ * @param clientEndpoint The endpoint of the client sending input
+ * @param payload The packet payload containing player ID, key code, and action
+ */
 void rtype::NetworkServer::handleInputPacket(
     const asio::ip::udp::endpoint& clientEndpoint,
     const std::vector<uint8_t>& payload)
@@ -102,6 +126,18 @@ void rtype::NetworkServer::handleInputPacket(
     }
 }
 
+/**
+ * @brief Dispatches incoming client packets to appropriate handlers
+ * 
+ * Main packet processing function that routes packets based on their type
+ * and updates player activity timestamps.
+ * 
+ * @param clientEndpoint The endpoint of the client sending the packet
+ * @param type The type of packet received
+ * @param packetId The unique identifier of the packet
+ * @param timestamp The timestamp of when the packet was sent
+ * @param payload The packet payload data
+ */
 void rtype::NetworkServer::handleClientPacket(
     const asio::ip::udp::endpoint& clientEndpoint, PacketType type,
     uint16_t packetId, uint32_t timestamp, const std::vector<uint8_t>& payload)

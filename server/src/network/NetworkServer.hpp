@@ -42,6 +42,9 @@ enum class PacketType : uint8_t
     KILLED = 0x40
 };
 
+/**
+ * @brief Structure to hold player slot information
+ */
 struct PlayerSlot
 {
     bool isUsed;
@@ -52,6 +55,9 @@ struct PlayerSlot
     EntityManager::Entity entity;
 };
 
+/**
+ * @brief Structure to hold enemy spawn data
+ */
 struct EnemySpawnData
 {
     int type;
@@ -79,6 +85,12 @@ class NetworkServer
     void destroyPlayerEntity(uint8_t playerId);
     EntityManager::Entity createEnemyEntity();
 
+    /**
+     * @brief Sets a player slot at the specified index
+     * 
+     * @param index The index of the player slot (0-3)
+     * @param slot The PlayerSlot data to set
+     */
     void setPlayerSlot(size_t index, const PlayerSlot& slot)
     {
         if (index >= _playerSlots.size())
@@ -91,6 +103,13 @@ class NetworkServer
     static std::string packetTypeToString(PacketType type);
 
    private:
+    /**
+     * @brief Converts a value of type T to a vector of bytes
+     * 
+     * @tparam T The type of the value to convert
+     * @param value The value to convert
+     * @return std::vector<uint8_t> The byte representation of the value
+     */
     template <typename T>
     std::vector<uint8_t> toBytes(T value)
     {
@@ -100,6 +119,13 @@ class NetworkServer
         return bytes;
     }
 
+    /**
+     * @brief Converts a byte array to a value of type T
+     * 
+     * @tparam T The type of the value to convert to
+     * @param data Pointer to the byte array
+     * @return T The converted value
+     */
     template <typename T>
     T fromBytes(const uint8_t* data)
     {
