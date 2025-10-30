@@ -115,6 +115,8 @@ jobs:
         run: |
           mkdir -p docs_output
           
+          echo "=== Starting documentation generation ==="
+          
           # GameEngine documentation
           if [ -f "gameEngine/Doxyfile" ]; then
             echo "Generating GameEngine documentation..."
@@ -128,6 +130,8 @@ jobs:
             else
               echo "⚠ Warning: gameEngine/docs/html not found"
             fi
+          else
+            echo "⚠ Warning: gameEngine/Doxyfile not found"
           fi
           
           # Server documentation
@@ -143,6 +147,8 @@ jobs:
             else
               echo "⚠ Warning: server/docs/html not found"
             fi
+          else
+            echo "⚠ Warning: server/Doxyfile not found"
           fi
           
           # Client documentation
@@ -158,7 +164,12 @@ jobs:
             else
               echo "⚠ Warning: client/docs/html not found"
             fi
+          else
+            echo "⚠ Warning: client/Doxyfile not found"
           fi
+          
+          # Create .nojekyll to disable Jekyll processing
+          touch docs_output/.nojekyll
           
           # Create index page
           cat > docs_output/index.html << 'EOF'
@@ -223,6 +234,10 @@ jobs:
                 transform: translateY(-5px);
                 box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
               }
+              .doc-link.disabled {
+                opacity: 0.6;
+                pointer-events: none;
+              }
               .doc-link h2 {
                 margin: 0 0 10px 0;
                 font-size: 1.5rem;
@@ -275,19 +290,17 @@ jobs:
                 const link = document.getElementById(`${name}-link`);
                 const status = document.getElementById(`${name}-status`);
                 try {
-                  const response = await fetch(`${name}/index.html`);
+                  const response = await fetch(`${name}/index.html`, { method: 'HEAD' });
                   if (response.ok) {
                     status.textContent = '✓ Available';
                     status.style.background = 'rgba(72, 187, 120, 0.3)';
-                    link.style.display = 'block';
                   } else {
                     throw new Error('Not found');
                   }
                 } catch (e) {
                   status.textContent = '⏳ Coming soon';
                   status.style.background = 'rgba(255, 193, 7, 0.3)';
-                  link.style.opacity = '0.6';
-                  link.style.pointerEvents = 'none';
+                  link.classList.add('disabled');
                 }
               }
               
@@ -299,9 +312,10 @@ jobs:
           </html>
           EOF
           
-          # List generated structure
-          echo "📁 Documentation structure:"
-          ls -la docs_output/
+          echo "=== Documentation structure ==="
+          find docs_output -type f -name "index.html" | head -20
+          echo "=== Total files ==="
+          find docs_output -type f | wc -l
 
       - name: Upload artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
