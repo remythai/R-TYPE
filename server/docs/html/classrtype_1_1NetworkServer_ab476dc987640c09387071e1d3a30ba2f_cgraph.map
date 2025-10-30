@@ -1,0 +1,27 @@
+<map id="rtype::NetworkServer::doReceive" name="rtype::NetworkServer::doReceive">
+<area shape="rect" id="Node000001" title="Asynchronously receives incoming UDP packets." alt="" coords="5,75,166,119"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="45,74,44,65,51,56,65,50,86,48,108,51,122,57,119,62,107,56,85,53,66,55,54,60,49,66,51,74"/>
+<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a5d5a2e16ab81f96da8ec2d795ff77070" title="Converts a byte array to a value of type T." alt="" coords="214,40,374,85"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="165,81,198,76,198,81,166,86"/>
+<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a05ad82c757407236bb242cdad5a741ba" title="Dispatches incoming client packets to appropriate handlers." alt="" coords="214,109,374,154"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="166,108,198,113,198,118,165,113"/>
+<area shape="rect" id="Node000004" href="$classrtype_1_1NetworkServer.html#a112083bc3f0a7ea93435653fcd59b086" title="Finds the player ID associated with a given endpoint." alt="" coords="635,5,816,50"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="350,106,373,95,396,76,406,68,421,60,470,44,522,34,619,24,620,29,522,39,472,49,423,65,409,72,399,80,375,99,353,111"/>
+<area shape="rect" id="Node000005" href="$classrtype_1_1NetworkServer.html#a60a048fa593944bfd90a6727d8909c6a" title="Handles an INPUT packet from a client." alt="" coords="422,75,582,119"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="374,116,406,110,407,116,375,121"/>
+<area shape="rect" id="Node000007" href="$classrtype_1_1NetworkServer.html#a612253ba0d3caeeac99f4fe52a5a2b4a" title="Handles a JOIN packet from a client." alt="" coords="422,144,582,189"/>
+<area shape="poly" id="edge8_Node000003_Node000007" title=" " alt="" coords="375,142,407,148,406,153,374,148"/>
+<area shape="rect" id="Node000012" href="$classrtype_1_1NetworkServer.html#a022c5d221a022804160b187fbb8fe036" title="Converts a PacketType enum to its string representation." alt="" coords="422,213,582,258"/>
+<area shape="poly" id="edge13_Node000003_Node000012" title=" " alt="" coords="336,152,423,199,434,204,432,209,421,203,333,157"/>
+<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="576,72,636,53,637,58,577,77"/>
+<area shape="rect" id="Node000006" href="$classrtype_1_1NetworkServer.html#a6624176a236d4b97711c1ebb90a86918" title="Applies input actions to a player&#39;s entity." alt="" coords="645,75,806,119"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="583,94,630,94,630,100,583,100"/>
+<area shape="rect" id="Node000008" href="$classrtype_1_1NetworkServer.html#ad358010634e573e4e1d553570b10f2b8" title="Counts the number of active players connected to the server." alt="" coords="645,144,806,189"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="583,164,630,164,630,169,583,169"/>
+<area shape="rect" id="Node000009" href="$classrtype_1_1NetworkServer.html#a6ebc16823bcf312a4e57cdd862cfebc2" title="Creates a player entity in the ECS with appropriate components." alt="" coords="645,213,806,258"/>
+<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="577,187,637,206,636,211,576,192"/>
+<area shape="rect" id="Node000010" href="$classrtype_1_1NetworkServer.html#a023fe1b710c0f504eb9142f707fea4f7" title="Sends a PLAYER_ID_ASSIGNMENT packet to a client." alt="" coords="630,283,821,327"/>
+<area shape="poly" id="edge11_Node000007_Node000010" title=" " alt="" coords="566,187,584,199,600,217,608,235,617,252,632,268,638,273,635,277,629,272,612,255,604,237,596,220,581,203,563,191"/>
+<area shape="rect" id="Node000011" href="$classrtype_1_1NetworkServer.html#a0b8fd52383e5b2fd3a529162fd2ea46a" title="Converts a value of type T to a vector of bytes." alt="" coords="869,283,1029,327"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="821,302,853,302,853,308,821,308"/>
+</map>

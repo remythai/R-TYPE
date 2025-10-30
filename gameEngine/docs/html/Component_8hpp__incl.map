@@ -1,0 +1,13 @@
+<map id="ecs/Component.hpp" name="ecs/Component.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="56,5,194,32"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,80,74,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="112,35,67,72,64,68,108,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="98,80,152,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="128,33,128,64,122,64,122,33"/>
+<area shape="rect" id="Node000004" href="$Types_8hpp.html" title="Core type definitions used throughout the ECS (Entity Component System)." alt="" coords="176,80,258,107"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="143,30,191,68,188,73,139,35"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="149,155,202,181"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="212,109,192,143,188,140,207,106"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="227,155,287,181"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="226,106,245,140,240,142,221,109"/>
+</map>

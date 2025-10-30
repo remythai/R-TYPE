@@ -25,6 +25,7 @@
 #include "../../../gameEngine/systems/FPInputHandler/src/FPInputHandler.hpp"
 #include "../../../gameEngine/systems/FPMotion/src/FPMotion.hpp"
 #include "../../../gameEngine/systems/animation/src/Animation.hpp"
+#include "../../../gameEngine/systems/applyScore/src/ApplyScore.hpp"
 #include "../../../gameEngine/systems/collision/src/Collision.hpp"
 #include "../../../gameEngine/systems/death/src/Death.hpp"
 #include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
@@ -72,7 +73,21 @@ struct EnemySpawnData
 class NetworkServer
 {
    public:
-    NetworkServer(unsigned short port, std::string const& game);
+    class NetworkServerError : public std::exception
+    {
+       private:
+        std::string _msg;
+
+       public:
+        explicit NetworkServerError(const std::string& msg) : _msg(msg) {}
+        const char* what() const noexcept override
+        {
+            return _msg.c_str();
+        }
+    };
+    NetworkServer(
+        unsigned short port, std::string const& game,
+        std::string const& mapPath);
     ~NetworkServer();
 
     void run();
@@ -88,7 +103,7 @@ class NetworkServer
 
     /**
      * @brief Sets a player slot at the specified index
-     * 
+     *
      * @param index The index of the player slot (0-3)
      * @param slot The PlayerSlot data to set
      */
@@ -106,7 +121,7 @@ class NetworkServer
    private:
     /**
      * @brief Converts a value of type T to a vector of bytes
-     * 
+     *
      * @tparam T The type of the value to convert
      * @param value The value to convert
      * @return std::vector<uint8_t> The byte representation of the value
@@ -122,7 +137,7 @@ class NetworkServer
 
     /**
      * @brief Converts a byte array to a value of type T
-     * 
+     *
      * @tparam T The type of the value to convert to
      * @param data Pointer to the byte array
      * @return T The converted value
@@ -172,6 +187,7 @@ class NetworkServer
     std::mutex _clientsMutex;
     int _nextClientId = 1;
     std::string _game;
+    std::string _mapPath;
 
     std::array<PlayerSlot, 4> _playerSlots;
     std::mutex _playerSlotsMutex;
@@ -188,7 +204,7 @@ class NetworkServer
     float _gameTime = 0.0f;
     size_t _nextEnemyToSpawn = 0;
 
-    void loadEnemiesFromJson(const std::string& filepath);
+    int loadEnemiesFromJson(const std::string& filepath);
     void checkAndSpawnEnemies();
     EntityManager::Entity createEnemyFromData(const EnemySpawnData& data);
     void handlePlayerDeath(EntityManager::Entity entity);

@@ -13,7 +13,7 @@
 
 /**
  * @brief Trims whitespace from the beginning and end of a string
- * 
+ *
  * @param str The string to trim
  * @return std::string The trimmed string
  */
@@ -28,7 +28,7 @@ static std::string trim(const std::string& str)
 
 /**
  * @brief Extracts a JSON value for a given key within a specified range
- * 
+ *
  * @param content The JSON content as a string
  * @param key The key to search for
  * @param start The starting position in the content
@@ -57,7 +57,7 @@ static std::string extractJSONValue(
 
 /**
  * @brief Parses a JSON string value for a given key
- * 
+ *
  * @param content The JSON content as a string
  * @param key The key to search for
  * @param start The starting position in the content
@@ -83,12 +83,13 @@ static std::string parseJSONString(
 
 /**
  * @brief Parses a JSON array of floats for a given key
- * 
+ *
  * @param content The JSON content as a string
  * @param key The key to search for
  * @param start The starting position in the content
  * @param end The ending position in the content
- * @return std::array<float, 4> Array containing the parsed float values (x, y, width, height)
+ * @return std::array<float, 4> Array containing the parsed float values (x, y,
+ * width, height)
  */
 static std::array<float, 4> parseJSONArray(
     const std::string& content, const std::string& key, size_t start,
@@ -120,19 +121,18 @@ static std::array<float, 4> parseJSONArray(
 
 /**
  * @brief Loads enemy spawn data from a JSON file
- * 
+ *
  * Parses a JSON file containing enemy entities and populates the spawn list.
  * Enemies are sorted by spawn time after loading.
- * 
+ *
  * @param filepath Path to the JSON file containing enemy data
  */
-void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
+int rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 {
     std::ifstream file(filepath);
     if (!file.is_open()) {
-        std::cerr << "[SERVER] ERROR: Could not open enemy file: " << filepath
-                  << std::endl;
-        return;
+        throw NetworkServerError("Could not open enemy file : " + filepath);
+        return 84;
     }
 
     std::string content(
@@ -144,15 +144,15 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 
     size_t entitiesPos = content.find("\"entities\"");
     if (entitiesPos == std::string::npos) {
-        std::cerr << "[SERVER] No 'entities' array found in JSON" << std::endl;
-        return;
+        throw NetworkServerError("No 'entities' array found in JSON");
+        return 84;
     }
 
     size_t arrayStart = content.find('[', entitiesPos);
     size_t arrayEnd = content.rfind(']');
     if (arrayStart == std::string::npos || arrayEnd == std::string::npos) {
-        std::cerr << "[SERVER] Invalid JSON format" << std::endl;
-        return;
+        throw NetworkServerError("Invalid JSON format");
+        return 84;
     }
 
     size_t pos = arrayStart + 1;
@@ -190,11 +190,12 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 
     std::cout << "[SERVER] Loaded " << _enemySpawnList.size()
               << " enemies from " << filepath << std::endl;
+    return 0;
 }
 
 /**
  * @brief Checks game time and spawns enemies when their spawn time is reached
- * 
+ *
  * Iterates through the spawn list and creates enemies whose spawn time
  * is less than or equal to the current game time.
  */
@@ -213,11 +214,13 @@ void rtype::NetworkServer::checkAndSpawnEnemies()
 
 /**
  * @brief Creates an enemy entity from spawn data
- * 
+ *
  * Instantiates an enemy entity with components based on its type.
- * Different enemy types have different velocities, health, and animation speeds.
- * 
- * @param data The enemy spawn data containing position, type, and visual properties
+ * Different enemy types have different velocities, health, and animation
+ * speeds.
+ *
+ * @param data The enemy spawn data containing position, type, and visual
+ * properties
  * @return EntityManager::Entity The created enemy entity
  */
 EntityManager::Entity rtype::NetworkServer::createEnemyFromData(

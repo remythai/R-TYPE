@@ -8,7 +8,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 include(FetchContent)
 
-# ASIO
+option(ENABLE_TESTS "Enable unit tests" OFF)
+
 FetchContent_Declare(
     asio
     GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
@@ -16,17 +17,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(asio)
 
-# GOOGLE TEST
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/heads/main.zip
-)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
-enable_testing()
-
-# Sources du serveur
 set(SOURCES
     src/main.cpp
     src/network/NetworkServer.cpp
@@ -35,7 +25,6 @@ set(SOURCES
     src/network/loadEnemies.cpp
 )
 
-# Exécutable principal
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -54,7 +43,6 @@ elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} Threads::Threads)
 endif()
 
-# Tests unitaires (seulement si ENABLE_TESTS=ON)
 if(ENABLE_TESTS)
     message(STATUS "Tests are enabled")
 
@@ -90,12 +78,13 @@ if(ENABLE_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(r-type_tests)
+    else()
+        message(WARNING "Aucun fichier de test trouvé dans le dossier tests/")
     endif()
 else()
     message(STATUS "Tests are disabled (use -DENABLE_TESTS=ON to enable)")
 endif()
 
-# Lancer les test unitaire :
 # cmake -B build -DENABLE_TESTS=ON .
 # cmake --build build
 # ctest --test-dir build

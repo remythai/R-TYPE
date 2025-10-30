@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['_5fclients_0',['_clients',['../classrtype_1_1NetworkServer.html#a93dcbbc2c14fac165dbab1475d5a79c9',1,'rtype::NetworkServer']]],
+  ['_5fclientsmutex_1',['_clientsMutex',['../classrtype_1_1NetworkServer.html#a7db20e7e903aac96e1a3b8c09dce1598',1,'rtype::NetworkServer']]],
+  ['_5fenemyspawnlist_2',['_enemySpawnList',['../classrtype_1_1NetworkServer.html#a6c2d19e6003540cdc01149478e7c7f3c',1,'rtype::NetworkServer']]],
+  ['_5fgame_3',['_game',['../classrtype_1_1NetworkServer.html#a2c3405695053c6fd29136708755bbde7',1,'rtype::NetworkServer']]],
+  ['_5fgametime_4',['_gameTime',['../classrtype_1_1NetworkServer.html#a46bb980670e96dac6428d6cecfcf9496',1,'rtype::NetworkServer']]],
+  ['_5fhostname_5',['_hostname',['../classrtype_1_1NetworkServer.html#a6faf4d1b6845d5fd40577faa8bc12f9a',1,'rtype::NetworkServer']]],
+  ['_5fiocontext_6',['_ioContext',['../classrtype_1_1NetworkServer.html#abdab7ccd8f4bef62f251c2e57505ff1d',1,'rtype::NetworkServer']]],
+  ['_5flastsnapshot_7',['_lastSnapshot',['../classrtype_1_1NetworkServer.html#aa5e22e0de50b38dca2ed3f731b88de9f',1,'rtype::NetworkServer']]],
+  ['_5flastupdate_8',['_lastUpdate',['../classrtype_1_1NetworkServer.html#a880799b19a66ca67f6b2c549f5a45b52',1,'rtype::NetworkServer']]],
+  ['_5fmappath_9',['_mapPath',['../classrtype_1_1NetworkServer.html#a44a1d80d5844957b8a37a8861e4462d6',1,'rtype::NetworkServer']]],
+  ['_5fmsg_10',['_msg',['../classrtype_1_1NetworkServer_1_1NetworkServerError.html#a41bdc3b334c977500a6d5a42cca4ecca',1,'rtype::NetworkServer::NetworkServerError']]],
+  ['_5fnextclientid_11',['_nextClientId',['../classrtype_1_1NetworkServer.html#ad6bbf78d15cc7cea0bd77330969c72a7',1,'rtype::NetworkServer']]],
+  ['_5fnextenemytospawn_12',['_nextEnemyToSpawn',['../classrtype_1_1NetworkServer.html#a92f9cff44273fb66c8c50806a4a775e9',1,'rtype::NetworkServer']]],
+  ['_5fplayerslots_13',['_playerSlots',['../classrtype_1_1NetworkServer.html#afe12e9d7b266fd9bf1635646623ff5c0',1,'rtype::NetworkServer']]],
+  ['_5fplayerslotsmutex_14',['_playerSlotsMutex',['../classrtype_1_1NetworkServer.html#ac4ed363906395f60cf85ff8ec5d47d0e',1,'rtype::NetworkServer']]],
+  ['_5fregistry_15',['_registry',['../classrtype_1_1NetworkServer.html#a5febaddd7a139594cac4326f3506c44c',1,'rtype::NetworkServer']]],
+  ['_5fregistrymutex_16',['_registryMutex',['../classrtype_1_1NetworkServer.html#ae2833aeef966748485a0cabb932407b7',1,'rtype::NetworkServer']]],
+  ['_5frunning_17',['_running',['../classrtype_1_1NetworkServer.html#a597897adea6b61145303c65af828fac4',1,'rtype::NetworkServer']]],
+  ['_5fsocket_18',['_socket',['../classrtype_1_1NetworkServer.html#ac193d7d357db9c4deac90d45ba22738a',1,'rtype::NetworkServer']]]
+];

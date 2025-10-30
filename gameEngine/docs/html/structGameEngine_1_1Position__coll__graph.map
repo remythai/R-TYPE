@@ -1,5 +1,9 @@
 <map id="GameEngine::Position" name="GameEngine::Position">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,104,157,131"/>
-<area shape="rect" id="Node000002" href="$structvec2.html" title=" " alt="" coords="56,5,106,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,48,84,104,78,104,78,48"/>
+<area shape="rect" id="Node000001" title="Component representing an entity&#39;s 2D location in world space." alt="" coords="105,180,257,207"/>
+<area shape="rect" id="Node000002" href="$classComponent.html" title=" " alt="" coords="5,81,165,108"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="110,117,171,178,167,182,106,121"/>
+<area shape="rect" id="Node000003" href="$classIComponent.html" title="Interface de base pour tous les composants ECS." alt="" coords="39,5,131,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="88,47,88,81,82,81,82,47"/>
+<area shape="rect" id="Node000004" href="$structvec2.html" title="2D vector structure for position, velocity, and directional calculations." alt="" coords="188,81,238,108"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="207,123,188,181,183,179,202,122"/>
 </map>

@@ -1,0 +1,19 @@
+<map id="rtype::NetworkServer::broadcast" name="rtype::NetworkServer::broadcast">
+<area shape="rect" id="Node000001" title="Broadcasts a message to all connected clients." alt="" coords="663,75,824,119"/>
+<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#afaf4a49cd03af637e4516c6db4b25884" title="Cleans up inactive players who have timed out." alt="" coords="451,5,615,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="659,72,603,53,604,48,660,67"/>
+<area shape="rect" id="Node000005" href="$classrtype_1_1NetworkServer.html#a60adcbb519d14188291f412cfe1fc3ad" title="Destroys a player entity and broadcasts the death event." alt="" coords="453,75,613,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="648,100,614,100,614,94,648,94"/>
+<area shape="rect" id="Node000007" href="$classrtype_1_1NetworkServer.html#a67e01372a7b84c0c252394916329f700" title=" " alt="" coords="453,144,613,189"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="660,127,604,146,603,141,659,122"/>
+<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a707e4bd01554bc358fa8315c6552e468" title="Runs the network server." alt="" coords="214,14,403,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="435,30,404,30,404,25,435,25"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="58,14,113,42"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="199,30,113,30,113,25,199,25"/>
+<area shape="rect" id="Node000006" href="$classrtype_1_1NetworkServer.html#a98b2eb4af22d02f26e1711db1722d14c" title="Destructor for NetworkServer." alt="" coords="228,75,388,119"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="438,100,389,100,389,94,438,94"/>
+<area shape="rect" id="Node000008" href="$classrtype_1_1NetworkServer.html#a78ebccaf1d807b0af1347128966fdc15" title="Initializes the ECS with appropriate systems." alt="" coords="228,144,388,189"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="438,169,389,169,389,164,438,164"/>
+<area shape="rect" id="Node000009" href="$classrtype_1_1NetworkServer.html#ad9cd895e5b840765222850a48ac7d564" title="Creates a player entity in the ECS with appropriate components." alt="" coords="5,144,166,189"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="212,169,166,169,166,164,212,164"/>
+</map>

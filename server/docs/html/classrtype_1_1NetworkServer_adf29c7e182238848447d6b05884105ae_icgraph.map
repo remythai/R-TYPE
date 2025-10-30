@@ -1,0 +1,9 @@
+<map id="rtype::NetworkServer::serializeSnapshot" name="rtype::NetworkServer::serializeSnapshot">
+<area shape="rect" id="Node000001" title="Serializes the current ECS state into a snapshot packet." alt="" coords="553,5,714,50"/>
+<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a7c2e4bf84b33f7dc8849831ddff8e089" title="Broadcasts the current ECS snapshot to all connected clients." alt="" coords="345,5,505,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="538,30,506,30,506,25,538,25"/>
+<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a707e4bd01554bc358fa8315c6552e468" title="Runs the network server." alt="" coords="108,14,297,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="329,30,298,30,298,25,329,25"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,14,60,42"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="92,30,60,30,60,25,92,25"/>
+</map>

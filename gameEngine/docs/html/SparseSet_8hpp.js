@@ -1,4 +1,4 @@
 var SparseSet_8hpp =
 [
-    [ "SparseSet< Entity, Component >", "classSparseSet.html", "classSparseSet" ]
+    [ "SparseSet&lt; Entity, Component &gt;", "classSparseSet.html", "classSparseSet" ]
 ];

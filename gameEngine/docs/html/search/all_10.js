@@ -1,11 +1,16 @@
 var searchData=
 [
-  ['text_0',['Text',['../structGameEngine_1_1Text.html',1,'GameEngine::Text'],['../structGameEngine_1_1Text.html#ab629ca402f6450d6eff802299a402bf6',1,'GameEngine::Text::Text()']]],
-  ['text_2ehpp_1',['Text.hpp',['../Text_8hpp.html',1,'']]],
-  ['time_2',['time',['../structGameEngine_1_1Lifetime.html#a8e0bd2d36188db12d834d647d4f1cae7',1,'GameEngine::Lifetime']]],
-  ['timescale_3',['timeScale',['../structGameEngine_1_1GameClock.html#aa1c0fcbbd7dd784ee5228990ed7d4062',1,'GameEngine::GameClock']]],
-  ['totaltime_4',['totalTime',['../structGameEngine_1_1GameClock.html#aa4233750c04e1ae61ee302624d06636d',1,'GameEngine::GameClock']]],
-  ['type_5',['type',['../structGameEngine_1_1Weapon.html#ace5d046894c5a13f8043cba6ef616f84',1,'GameEngine::Weapon']]],
-  ['types_2ehpp_6',['Types.hpp',['../Types_8hpp.html',1,'']]],
-  ['typetoid_7',['typeToID',['../classComponentRegistry.html#a5fbc366c8bb01e0940d626c915f7c85a',1,'ComponentRegistry']]]
+  ['rectpos_0',['rectPos',['../structGameEngine_1_1Renderable.html#ad4645e8b6fb20d88311e70e609258028',1,'GameEngine::Renderable']]],
+  ['rectsize_1',['rectSize',['../structGameEngine_1_1Renderable.html#ae253f9911710fa840e58975e9b6fe96e',1,'GameEngine::Renderable']]],
+  ['registry_2',['Registry',['../classRegistry.html',1,'Registry'],['../classSystem.html#ac7b716e6d41ff508ad2d8e5dad655d72',1,'System::Registry()'],['../classRegistry.html#acb15d8aa051bf36ea92a86ee6c00bc3c',1,'Registry::Registry()']]],
+  ['registry_2ehpp_3',['Registry.hpp',['../Registry_8hpp.html',1,'']]],
+  ['remove_4',['remove',['../classRegistry.html#a629e3280396e2e8cc06434895e746639',1,'Registry::remove()'],['../structRegistry_1_1IComponentPool.html#ae6dbef7abac408ca4f6147d3a286e797',1,'Registry::IComponentPool::remove()'],['../structRegistry_1_1ComponentPool.html#aa45d58b442d6755fb8880d0208a8894c',1,'Registry::ComponentPool::remove()']]],
+  ['removesystem_5',['removeSystem',['../classRegistry.html#a3a01b62248fbffb19e4b1d082380f58c',1,'Registry']]],
+  ['renderable_6',['Renderable',['../structGameEngine_1_1Renderable.html',1,'GameEngine::Renderable'],['../structGameEngine_1_1Renderable.html#af7d51cdcfbd7450f1f7d60c59266ec01',1,'GameEngine::Renderable::Renderable()'],['../structGameEngine_1_1Renderable.html#a7e3819a412f9a1873a8734ab8dcb56c0',1,'GameEngine::Renderable::Renderable(float val_screenSizeX, float val_screenSizeY, std::string val_spriteSheetPath, std::vector&lt; vec2 &gt; val_rectPos, vec2 val_rectSize, int val_frameDuration, bool val_autoAnimate)']]],
+  ['renderable_2ehpp_7',['Renderable.hpp',['../Renderable_8hpp.html',1,'']]],
+  ['requirecomponents_8',['requireComponents',['../classSystem.html#ab96f7a0f109eac8621f869efcf40a916',1,'System']]],
+  ['requirecomponentsbyname_9',['requireComponentsByName',['../classSystem.html#a3debf9a0bb97844f19da1c818d4dd3e3',1,'System']]],
+  ['reserve_10',['reserve',['../classEntityManager.html#aef5fa25c7c6ceaea8ec310851b93c6bd',1,'EntityManager::reserve()'],['../classRegistry.html#ab63d23c0219cae5a0d68844179e11e67',1,'Registry::reserve()'],['../classSparseSet.html#a88aa03eb4e7fb9bf947f0c8746fc4047',1,'SparseSet::reserve()']]],
+  ['rifle_11',['Rifle',['../structGameEngine_1_1Weapon.html#a4335ae98ffe12b04ceecb5bbfcbf9d0aa6fe1a54664b1d4283b3b028fdc0f77a3',1,'GameEngine::Weapon']]],
+  ['rocket_12',['Rocket',['../structGameEngine_1_1Weapon.html#a4335ae98ffe12b04ceecb5bbfcbf9d0aa15e8bfff2c10ca22da244d85b2bf7d94',1,'GameEngine::Weapon']]]
 ];

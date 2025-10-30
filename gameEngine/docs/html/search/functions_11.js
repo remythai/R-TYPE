@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['_7eicomponentpool_0',['~IComponentPool',['../structRegistry_1_1IComponentPool.html#a0d7b333d40353bfcd8a4a09cf785a0fa',1,'Registry::IComponentPool']]],
-  ['_7eisystem_1',['~ISystem',['../classISystem.html#a42d100a53483da2de2d3f7b0e6c61b3a',1,'ISystem']]]
+  ['vec2_0',['vec2',['../structvec2.html#ae12a1a221eca3561809600a11b58eaa3',1,'vec2::vec2()'],['../structvec2.html#a9486933da4d4d819a8b99bae91066cb3',1,'vec2::vec2(float x, float y)']]],
+  ['velocity_1',['Velocity',['../structGameEngine_1_1Velocity.html#aeccfd516420218c30a82490dd838ac36',1,'GameEngine::Velocity']]],
+  ['view_2',['view',['../classRegistry.html#a864a9feb3c9cffc43296ae8bb1aa2e3a',1,'Registry']]]
 ];

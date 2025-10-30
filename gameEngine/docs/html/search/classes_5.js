@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['health_0',['Health',['../structGameEngine_1_1Health.html',1,'GameEngine']]],
-  ['hitbox_1',['HitBox',['../structGameEngine_1_1HitBox.html',1,'GameEngine']]]
+  ['gameclock_0',['GameClock',['../structGameEngine_1_1GameClock.html',1,'GameEngine']]],
+  ['gravity_1',['Gravity',['../structGameEngine_1_1Gravity.html',1,'GameEngine']]]
 ];
