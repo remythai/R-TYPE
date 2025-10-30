@@ -84,7 +84,7 @@ class NetworkServer
             return _msg.c_str();
         }
     };
-    NetworkServer(unsigned short port, std::string const& game);
+    NetworkServer(unsigned short port, std::string const& game, std::string const& mapPath);
     ~NetworkServer();
 
     void run();
@@ -184,6 +184,7 @@ class NetworkServer
     std::mutex _clientsMutex;
     int _nextClientId = 1;
     std::string _game;
+    std::string _mapPath;
 
     std::array<PlayerSlot, 4> _playerSlots;
     std::mutex _playerSlotsMutex;
@@ -200,7 +201,7 @@ class NetworkServer
     float _gameTime = 0.0f;
     size_t _nextEnemyToSpawn = 0;
 
-    void loadEnemiesFromJson(const std::string& filepath);
+    int loadEnemiesFromJson(const std::string& filepath);
     void checkAndSpawnEnemies();
     EntityManager::Entity createEnemyFromData(const EnemySpawnData& data);
     void handlePlayerDeath(EntityManager::Entity entity);
