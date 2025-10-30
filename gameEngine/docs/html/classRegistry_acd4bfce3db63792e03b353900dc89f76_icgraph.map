@@ -1,20 +1,28 @@
 <map id="Registry::assurePool" name="Registry::assurePool">
-<area shape="rect" id="Node000001" title="Ensures that a component pool exists for the given component ID. Creates it if necessary." alt="" coords="423,259,566,285"/>
-<area shape="rect" id="Node000002" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="258,167,364,193"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="451,254,339,196,341,191,454,249"/>
-<area shape="rect" id="Node000008" href="$classRegistry.html#ab12b0e856e109cd94af4aeb5e969de24" title="Adds a new component of type Component to entity e." alt="" coords="248,259,375,285"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="407,275,375,275,375,269,407,269"/>
-<area shape="rect" id="Node000009" href="$classRegistry.html#a864a9feb3c9cffc43296ae8bb1aa2e3a" title="Returns a reference to the SparseSet storing all components of type Component." alt="" coords="259,309,364,336"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="429,293,363,311,362,306,428,288"/>
-<area shape="rect" id="Node000003" href="$classGameEngine_1_1Collision.html#a49f26a6547e81a9cebf7ad5436fb7101" title=" " alt="" coords="25,5,180,48"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="290,155,251,108,226,84,198,62,178,51,180,46,201,58,229,80,255,104,294,152"/>
-<area shape="rect" id="Node000004" href="$classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7" title=" " alt="" coords="29,72,176,115"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="269,162,199,129,169,118,171,113,201,124,271,157"/>
-<area shape="rect" id="Node000005" href="$classGameEngine_1_1DomainHandler.html#a2e491047939e77c803075c6c490d54ee" title="Updates the system, checking entity positions against their domain boundaries." alt="" coords="5,139,200,181"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="243,176,200,172,200,167,243,171"/>
-<area shape="rect" id="Node000006" href="$classGameEngine_1_1InputHandler.html#acb0d11bd1241dad8925f26b86f6d9007" title=" " alt="" coords="13,272,192,315"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="284,205,246,234,201,262,176,274,173,269,198,258,243,230,281,201"/>
-<area shape="rect" id="Node000007" href="$classGameEngine_1_1Motion.html#a015b898244098b869ceb6001884ae9fe" title=" " alt="" coords="31,205,174,248"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="244,198,175,213,174,208,243,193"/>
-<area shape="poly" id="edge8_Node000008_Node000006" title=" " alt="" coords="232,283,193,287,192,282,232,277"/>
+<area shape="rect" id="Node000001" title="Ensures that a component pool exists for the given component ID. Creates it if necessary." alt="" coords="424,439,567,465"/>
+<area shape="rect" id="Node000002" href="$classRegistry.html#a31cfb49fd633086383bf646b39a8daa2" title="Iterates through all entities that have all the specified components." alt="" coords="259,313,366,340"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="460,432,332,343,335,338,463,427"/>
+<area shape="rect" id="Node000012" href="$classRegistry.html#ab12b0e856e109cd94af4aeb5e969de24" title="Adds a new component of type Component to entity e." alt="" coords="249,439,376,465"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="408,455,376,455,376,449,408,449"/>
+<area shape="rect" id="Node000013" href="$classRegistry.html#a864a9feb3c9cffc43296ae8bb1aa2e3a" title="Returns a reference to the SparseSet storing all components of type Component." alt="" coords="260,489,365,516"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="430,473,364,491,363,486,429,468"/>
+<area shape="rect" id="Node000003" href="$classGameEngine_1_1Animation.html#a92efc46a052b2627ed60ac8a2c81b3e2" title=" " alt="" coords="22,5,184,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="304,298,294,248,274,184,243,119,223,89,199,62,183,50,186,46,202,58,227,85,248,116,279,182,299,247,310,297"/>
+<area shape="rect" id="Node000004" href="$classGameEngine_1_1Collision.html#a49f26a6547e81a9cebf7ad5436fb7101" title=" " alt="" coords="26,72,180,115"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="300,299,286,261,265,215,236,169,199,129,179,116,182,111,202,125,240,165,270,213,291,259,305,297"/>
+<area shape="rect" id="Node000005" href="$classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7" title=" " alt="" coords="29,139,177,181"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="293,302,254,248,228,220,199,196,176,183,178,178,202,191,232,216,259,245,298,299"/>
+<area shape="rect" id="Node000006" href="$classGameEngine_1_1DomainHandler.html#a2e491047939e77c803075c6c490d54ee" title="Updates the system, checking entity positions against their domain boundaries." alt="" coords="6,205,200,248"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="277,307,199,262,172,251,174,246,202,258,280,302"/>
+<area shape="rect" id="Node000007" href="$classGameEngine_1_1FPApplyGravity.html#a4fc5342f686d0c3bc6acd4f8c85cb720" title=" " alt="" coords="5,272,201,315"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="243,318,201,312,202,306,244,313"/>
+<area shape="rect" id="Node000008" href="$classGameEngine_1_1FPInputHandler.html#adc119a8b423c28985d8a8e87baad6421" title=" " alt="" coords="5,339,201,381"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="244,340,202,347,201,342,243,335"/>
+<area shape="rect" id="Node000009" href="$classGameEngine_1_1FPMotion.html#adeee4196198d928de33feb2182396c85" title=" " alt="" coords="23,405,183,448"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="280,351,202,396,174,407,172,402,199,391,277,346"/>
+<area shape="rect" id="Node000010" href="$classGameEngine_1_1InputHandler.html#acb0d11bd1241dad8925f26b86f6d9007" title=" " alt="" coords="14,539,192,581"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="296,354,251,428,239,457,232,481,223,505,202,529,186,540,183,536,199,525,218,502,227,480,234,455,246,425,291,352"/>
+<area shape="rect" id="Node000011" href="$classGameEngine_1_1Motion.html#a015b898244098b869ceb6001884ae9fe" title=" " alt="" coords="31,472,175,515"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="298,355,259,409,232,437,202,462,176,476,174,472,199,458,228,433,254,405,293,352"/>
+<area shape="poly" id="edge12_Node000012_Node000010" title=" " alt="" coords="258,475,250,479,236,492,227,504,217,516,202,529,180,540,178,536,199,524,214,513,223,501,232,488,247,475,255,470"/>
 </map>

@@ -1,5 +1,16 @@
 <map id="components/audio/src/Audio.hpp" name="components/audio/src/Audio.hpp">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,5,155,48"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="53,96,107,123"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,49,83,80,77,80,77,49"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="11,171,64,197"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="69,50,56,72,47,97,41,126,39,155,34,155,36,126,41,95,52,70,64,47"/>
+<area shape="rect" id="Node000003" href="$Component_8hpp.html" title=" " alt="" coords="56,96,230,123"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="98,47,126,82,121,85,94,50"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="126,125,70,164,67,159,123,121"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="98,171,166,197"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="143,124,139,156,133,155,138,123"/>
+<area shape="rect" id="Node000005" href="$Types_8hpp.html" title="Core type definitions used throughout the ECS (Entity Component System)." alt="" coords="190,171,271,197"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="160,121,206,159,202,163,156,125"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="163,245,216,272"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="226,199,206,233,202,231,221,197"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="240,245,301,272"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="240,197,259,230,254,233,235,199"/>
 </map>
