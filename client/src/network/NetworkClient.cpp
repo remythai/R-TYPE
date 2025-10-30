@@ -12,6 +12,13 @@
 #include <iomanip>
 #include <thread>
 
+/**
+ * @brief Converts any arithmetic type to a vector of bytes (big-endian).
+ *
+ * @tparam T Type of the value (e.g., uint16_t, uint32_t, float, etc.)
+ * @param value The value to convert.
+ * @return std::vector<uint8_t> containing the bytes of the value.
+ */
 template <typename T>
 std::vector<uint8_t> toBytes(T value)
 {
@@ -21,6 +28,12 @@ std::vector<uint8_t> toBytes(T value)
     return bytes;
 }
 
+/**
+ * @brief Constructs a UDP network client for the specified host and port.
+ *
+ * @param host Server hostname or IP address.
+ * @param port Server port number.
+ */
 NetworkClient::NetworkClient(const std::string& host, unsigned short port)
     : _socket(_ioContext, asio::ip::udp::v4()), _recvBuffer(65535)
 {
@@ -30,6 +43,14 @@ NetworkClient::NetworkClient(const std::string& host, unsigned short port)
     _serverEndpoint = *endpoints.begin();
 }
 
+/**
+ * @brief Sends a raw packet to the server.
+ *
+ * @param type Packet type.
+ * @param packetId Packet identifier.
+ * @param timestamp Packet timestamp.
+ * @param payload Payload bytes to send.
+ */
 void NetworkClient::sendPacket(
     rtype::PacketType type, uint16_t packetId, uint32_t timestamp,
     const std::vector<uint8_t>& payload)
@@ -48,11 +69,23 @@ void NetworkClient::sendPacket(
     _socket.send_to(asio::buffer(packet), _serverEndpoint);
 }
 
+/**
+ * @brief Sends a player input packet.
+ *
+ * @param playerId Player identifier.
+ * @param keyCode Key code pressed.
+ * @param action Action type (press/release).
+ */
 void NetworkClient::sendInput(uint8_t playerId, uint8_t keyCode, uint8_t action)
 {
     sendPacket(rtype::PacketType::INPUT, 0, 0, {playerId, keyCode, action});
 }
 
+/**
+ * @brief Sends a join request to the server with a username.
+ *
+ * @param username Player username (up to 32 characters).
+ */
 void NetworkClient::sendJoin(const std::string& username)
 {
     std::vector<uint8_t> payload(32, 0);
@@ -62,23 +95,39 @@ void NetworkClient::sendJoin(const std::string& username)
     sendPacket(rtype::PacketType::JOIN, 0, 0, payload);
 }
 
+/**
+ * @brief Starts asynchronous receiving of packets from the server.
+ */
 void NetworkClient::startReceiving()
 {
     doReceive();
     std::thread([this]() { _ioContext.run(); }).detach();
 }
 
+/**
+ * @brief Sets callback for receiving assigned player ID.
+ *
+ * @param callback Function to call with player ID.
+ */
 void NetworkClient::setOnPlayerIdReceived(std::function<void(uint8_t)> callback)
 {
     _onPlayerIdReceived = callback;
 }
 
+/**
+ * @brief Sets callback for receiving player events (input/action).
+ *
+ * @param callback Function taking playerId and action code.
+ */
 void NetworkClient::setOnPlayerEvent(
     std::function<void(uint8_t, uint8_t)> callback)
 {
     _onPlayerEvent = callback;
 }
 
+/**
+ * @brief Initiates asynchronous receive operation.
+ */
 void NetworkClient::doReceive()
 {
     auto sender = std::make_shared<asio::ip::udp::endpoint>();
@@ -93,6 +142,13 @@ void NetworkClient::doReceive()
         });
 }
 
+/**
+ * @brief Handles an incoming packet from the server.
+ *
+ * @param buffer Received data buffer.
+ * @param bytesReceived Number of bytes received.
+ * @param sender Endpoint of the sender.
+ */
 void NetworkClient::handlePacket(
     const std::vector<uint8_t>& buffer, size_t bytesReceived,
     const asio::ip::udp::endpoint& sender)
@@ -241,17 +297,32 @@ void NetworkClient::handlePacket(
     }
 }
 
+/**
+ * @brief Sets callback to handle snapshot packets.
+ *
+ * @param callback Function taking the raw payload of the snapshot.
+ */
 void NetworkClient::setOnSnapshot(
     std::function<void(const std::vector<uint8_t>&)> callback)
 {
     _onSnapshot = callback;
 }
 
+/**
+ * @brief Sets callback to handle player timeout events.
+ *
+ * @param callback Function called with playerId on timeout.
+ */
 void NetworkClient::setOnTimeout(std::function<void(uint8_t)> callback)
 {
     _onTimeout = callback;
 }
 
+/**
+ * @brief Sets callback to handle player killed events.
+ *
+ * @param callback Function called with playerId when killed.
+ */
 void NetworkClient::setOnKilled(std::function<void(uint8_t)> callback)
 {
     _onKilled = callback;
