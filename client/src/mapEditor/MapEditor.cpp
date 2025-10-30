@@ -12,6 +12,11 @@
 #include <iostream>
 #include <sstream>
 
+/**
+ * @brief Constructs a new MapEditor instance.
+ *
+ * Initializes editor state, selected entity, camera view, and UI settings.
+ */
 CLIENT::MapEditor::MapEditor()
     : _enabled(false),
       _selectedEntity(EntityTemplate::ENEMY_TYPE1),
@@ -28,12 +33,28 @@ CLIENT::MapEditor::MapEditor()
     _editorView.setCenter(sf::Vector2f(960.0f, 540.0f));
 }
 
+/**
+ * @brief Updates the editor state.
+ *
+ * @param deltaTime Time elapsed since last update.
+ *
+ * @details
+ * Updates spawn timer for entities if the editor is enabled.
+ */
 void CLIENT::MapEditor::update(float deltaTime)
 {
     if (_enabled)
         _currentSpawnTime += deltaTime;
 }
 
+/**
+ * @brief Renders the map editor view.
+ *
+ * @param window Render target (SFML window).
+ *
+ * @details
+ * Draws the grid, entities, and preview using the editor camera view.
+ */
 void CLIENT::MapEditor::render(sf::RenderWindow& window)
 {
     if (!_enabled)
@@ -49,6 +70,14 @@ void CLIENT::MapEditor::render(sf::RenderWindow& window)
     window.setView(originalView);
 }
 
+/**
+ * @brief Renders the grid for the editor.
+ *
+ * @param window Render target.
+ *
+ * @details
+ * Dynamically calculates visible grid lines based on the camera view and grid size.
+ */
 void CLIENT::MapEditor::renderGrid(sf::RenderWindow& window)
 {
     sf::View view = window.getView();
@@ -88,6 +117,11 @@ void CLIENT::MapEditor::renderGrid(sf::RenderWindow& window)
     window.draw(lines.data(), lines.size(), sf::PrimitiveType::Lines);
 }
 
+/**
+ * @brief Renders all entities in the map editor.
+ *
+ * @param window Render target.
+ */
 void CLIENT::MapEditor::renderEntities(sf::RenderWindow& window)
 {
     for (size_t i = 0; i < _entities.size(); ++i) {
@@ -96,6 +130,16 @@ void CLIENT::MapEditor::renderEntities(sf::RenderWindow& window)
     }
 }
 
+/**
+ * @brief Renders a single entity.
+ *
+ * @param window Render target.
+ * @param entity Entity data.
+ * @param selected Whether the entity is currently selected.
+ *
+ * @details
+ * Loads the texture if available, otherwise renders a fallback shape.
+ */
 void CLIENT::MapEditor::renderEntity(
     sf::RenderWindow& window, const MapEntity& entity, bool selected)
 {
@@ -109,6 +153,14 @@ void CLIENT::MapEditor::renderEntity(
     }
 }
 
+/**
+ * @brief Renders an entity using its sprite texture.
+ *
+ * @param window Render target.
+ * @param entity Entity data.
+ * @param texture Loaded texture.
+ * @param selected Whether the entity is selected (draws a highlight box).
+ */
 void CLIENT::MapEditor::renderEntitySprite(
     sf::RenderWindow& window, const MapEntity& entity, sf::Texture* texture,
     bool selected)
@@ -135,6 +187,13 @@ void CLIENT::MapEditor::renderEntitySprite(
     }
 }
 
+/**
+ * @brief Renders a fallback shape for an entity when no texture is loaded.
+ *
+ * @param window Render target.
+ * @param entity Entity data.
+ * @param selected Whether the entity is selected.
+ */
 void CLIENT::MapEditor::renderEntityFallback(
     sf::RenderWindow& window, const MapEntity& entity, bool selected)
 {
@@ -150,6 +209,11 @@ void CLIENT::MapEditor::renderEntityFallback(
     window.draw(shape);
 }
 
+/**
+ * @brief Renders a preview of the currently selected entity at the mouse position.
+ *
+ * @param window Render target.
+ */
 void CLIENT::MapEditor::renderPreview(sf::RenderWindow& window)
 {
     auto& rm = ResourceManager::getInstance();
@@ -179,6 +243,9 @@ void CLIENT::MapEditor::renderPreview(sf::RenderWindow& window)
     }
 }
 
+/**
+ * @brief Renders the editor UI using ImGui.
+ */
 void CLIENT::MapEditor::renderUI()
 {
     if (!_enabled)
@@ -200,12 +267,18 @@ void CLIENT::MapEditor::renderUI()
     ImGui::End();
 }
 
+/**
+ * @brief Renders the header of the UI window.
+ */
 void CLIENT::MapEditor::renderUIHeader()
 {
     ImGui::Text("R-Type Level Editor");
     ImGui::Separator();
 }
 
+/**
+ * @brief Renders the entity selection dropdown.
+ */
 void CLIENT::MapEditor::renderUIEntitySelector()
 {
     ImGui::Text("Entity Type:");
@@ -225,6 +298,9 @@ void CLIENT::MapEditor::renderUIEntitySelector()
     ImGui::Separator();
 }
 
+/**
+ * @brief Renders grid-related UI controls.
+ */
 void CLIENT::MapEditor::renderUIGridSettings()
 {
     ImGui::Checkbox("Snap to Grid", &_snapToGrid);
@@ -232,6 +308,9 @@ void CLIENT::MapEditor::renderUIGridSettings()
     ImGui::Separator();
 }
 
+/**
+ * @brief Renders camera controls in the UI.
+ */
 void CLIENT::MapEditor::renderUICameraControls()
 {
     ImGui::Text("Camera:");
@@ -243,6 +322,9 @@ void CLIENT::MapEditor::renderUICameraControls()
     ImGui::Separator();
 }
 
+/**
+ * @brief Renders a list of entities currently on the map.
+ */
 void CLIENT::MapEditor::renderUIEntityList()
 {
     ImGui::Text("Entities (%zu):", _entities.size());
@@ -264,6 +346,9 @@ void CLIENT::MapEditor::renderUIEntityList()
     }
 }
 
+/**
+ * @brief Renders UI for the currently selected entity.
+ */
 void CLIENT::MapEditor::renderUISelectedEntity()
 {
     if (_selectedEntityIndex >= 0 &&
@@ -282,6 +367,9 @@ void CLIENT::MapEditor::renderUISelectedEntity()
     }
 }
 
+/**
+ * @brief Renders file controls (save/load/clear) in the UI.
+ */
 void CLIENT::MapEditor::renderUIFileControls()
 {
     ImGui::Separator();
@@ -298,6 +386,9 @@ void CLIENT::MapEditor::renderUIFileControls()
         clearMap();
 }
 
+/**
+ * @brief Renders help text for editor controls.
+ */
 void CLIENT::MapEditor::renderUIHelp()
 {
     ImGui::Separator();
@@ -306,6 +397,14 @@ void CLIENT::MapEditor::renderUIHelp()
     ImGui::BulletText("Right Click: Delete entity");
 }
 
+/**
+ * @brief Handles mouse input for the editor.
+ *
+ * @param window Render target (for mouse position calculations)
+ *
+ * @details
+ * Updates mouse position and handles left/right click actions.
+ */
 void CLIENT::MapEditor::handleMouseInput(sf::RenderWindow& window)
 {
     if (!_enabled)
@@ -316,6 +415,13 @@ void CLIENT::MapEditor::handleMouseInput(sf::RenderWindow& window)
     handleRightClick();
 }
 
+/**
+ * @brief Updates the mouse position in world coordinates.
+ *
+ * @param window SFML window to map pixel coordinates to world coordinates.
+ *
+ * @details If snap-to-grid is enabled, the mouse position is rounded to the nearest grid point.
+ */
 void CLIENT::MapEditor::updateMousePosition(sf::RenderWindow& window)
 {
     sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
@@ -327,6 +433,11 @@ void CLIENT::MapEditor::updateMousePosition(sf::RenderWindow& window)
     }
 }
 
+/**
+ * @brief Handles left mouse click for placing entities.
+ *
+ * @details Ensures a single placement per click using a static previous-state flag.
+ */
 void CLIENT::MapEditor::handleLeftClick()
 {
     static bool leftMouseWasPressed = false;
@@ -340,6 +451,11 @@ void CLIENT::MapEditor::handleLeftClick()
     leftMouseWasPressed = leftMouseIsPressed;
 }
 
+/**
+ * @brief Handles right mouse click for deleting entities.
+ *
+ * @details Ensures a single deletion per click using a static previous-state flag.
+ */
 void CLIENT::MapEditor::handleRightClick()
 {
     static bool rightMouseWasPressed = false;
@@ -353,6 +469,9 @@ void CLIENT::MapEditor::handleRightClick()
     rightMouseWasPressed = rightMouseIsPressed;
 }
 
+/**
+ * @brief Places a new entity at the current mouse position.
+ */
 void CLIENT::MapEditor::placeEntity()
 {
     MapEntity entity;
@@ -368,6 +487,11 @@ void CLIENT::MapEditor::placeEntity()
     _entities.push_back(entity);
 }
 
+/**
+ * @brief Deletes the entity closest to the current mouse position.
+ *
+ * @details Only deletes an entity if it is within a threshold distance.
+ */
 void CLIENT::MapEditor::deleteEntityAtMouse()
 {
     float closestDist = 30.0f;
@@ -392,6 +516,13 @@ void CLIENT::MapEditor::deleteEntityAtMouse()
     }
 }
 
+/**
+ * @brief Retrieves the sprite path and texture rectangle for a given entity template.
+ *
+ * @param type The entity template.
+ * @param spritePath Output string for the sprite path.
+ * @return sf::IntRect Texture rectangle for the entity.
+ */
 sf::IntRect CLIENT::MapEditor::getEntityTemplateData(
     EntityTemplate type, std::string& spritePath) const
 {
@@ -414,6 +545,13 @@ sf::IntRect CLIENT::MapEditor::getEntityTemplateData(
     }
 }
 
+/**
+ * @brief Loads a texture from the ResourceManager.
+ *
+ * @param rm Reference to the resource manager.
+ * @param path Path of the texture to load.
+ * @return Pointer to the loaded texture or nullptr if not found.
+ */
 sf::Texture* CLIENT::MapEditor::loadTexture(
     ResourceManager& rm, const std::string& path) const
 {
@@ -424,6 +562,9 @@ sf::Texture* CLIENT::MapEditor::loadTexture(
     return texture;
 }
 
+/**
+ * @brief Gets the display name of an entity template.
+ */
 std::string CLIENT::MapEditor::getEntityName(EntityTemplate type) const
 {
     switch (type) {
@@ -446,6 +587,9 @@ std::string CLIENT::MapEditor::getEntityName(EntityTemplate type) const
     }
 }
 
+/**
+ * @brief Gets the color used to render an entity in fallback mode.
+ */
 sf::Color CLIENT::MapEditor::getEntityColor(EntityTemplate type) const
 {
     switch (type) {
@@ -468,6 +612,11 @@ sf::Color CLIENT::MapEditor::getEntityColor(EntityTemplate type) const
     }
 }
 
+/**
+ * @brief Saves the current map to a JSON file.
+ *
+ * @param filename Output filename.
+ */
 void CLIENT::MapEditor::saveMap(const std::string& filename)
 {
     std::ofstream file(filename);
@@ -498,6 +647,13 @@ void CLIENT::MapEditor::saveMap(const std::string& filename)
               << " entities)\n";
 }
 
+/**
+ * @brief Loads a map from a JSON file.
+ *
+ * @param filename Input filename.
+ *
+ * @details Clears existing entities and parses new entities from the file content.
+ */
 void CLIENT::MapEditor::loadMap(const std::string& filename)
 {
     std::ifstream file(filename);
@@ -529,6 +685,11 @@ void CLIENT::MapEditor::loadMap(const std::string& filename)
               << " entities)\n";
 }
 
+/**
+ * @brief Parses the "entities" array from JSON content.
+ *
+ * @param content JSON string.
+ */
 void CLIENT::MapEditor::parseJSONEntities(const std::string& content)
 {
     size_t entitiesPos = content.find("\"entities\"");
@@ -557,6 +718,9 @@ void CLIENT::MapEditor::parseJSONEntities(const std::string& content)
     }
 }
 
+/**
+ * @brief Parses a single entity object from JSON content.
+ */
 CLIENT::MapEntity CLIENT::MapEditor::parseJSONEntity(
     const std::string& content, size_t start, size_t end)
 {
@@ -573,6 +737,15 @@ CLIENT::MapEntity CLIENT::MapEditor::parseJSONEntity(
     return entity;
 }
 
+/**
+ * @brief Parses an integer value from JSON content.
+ *
+ * @param content JSON string content.
+ * @param key Key to search for.
+ * @param start Start position to search from.
+ * @param end End position for the search.
+ * @return Parsed integer, or 0 if not found.
+ */
 int CLIENT::MapEditor::parseJSONInt(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -581,6 +754,15 @@ int CLIENT::MapEditor::parseJSONInt(
     return value.empty() ? 0 : std::stoi(value);
 }
 
+/**
+ * @brief Parses a float value from JSON content.
+ *
+ * @param content JSON string content.
+ * @param key Key to search for.
+ * @param start Start position to search from.
+ * @param end End position for the search.
+ * @return Parsed float, or 0.0f if not found.
+ */
 float CLIENT::MapEditor::parseJSONFloat(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -589,6 +771,15 @@ float CLIENT::MapEditor::parseJSONFloat(
     return value.empty() ? 0.0f : std::stof(value);
 }
 
+/**
+ * @brief Parses a string value from JSON content.
+ *
+ * @param content JSON string content.
+ * @param key Key to search for.
+ * @param start Start position to search from.
+ * @param end End position for the search.
+ * @return Extracted string value, or empty string if not found.
+ */
 std::string CLIENT::MapEditor::parseJSONString(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -606,6 +797,14 @@ std::string CLIENT::MapEditor::parseJSONString(
                : "";
 }
 
+/**
+ * @brief Parses a texture rectangle from JSON content.
+ *
+ * @param content JSON string content.
+ * @param start Start position to search from.
+ * @param end End position for the search.
+ * @return sf::IntRect representing the rectangle, or default (32x32) if not found.
+ */
 sf::IntRect CLIENT::MapEditor::parseJSONTextureRect(
     const std::string& content, size_t start, size_t end)
 {
@@ -635,6 +834,15 @@ sf::IntRect CLIENT::MapEditor::parseJSONTextureRect(
                : sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(32, 32));
 }
 
+/**
+ * @brief Extracts a raw JSON value string given a key.
+ *
+ * @param content JSON string content.
+ * @param key Key to search for.
+ * @param start Start position to search from.
+ * @param end End position for the search.
+ * @return Raw string of the value, trimmed, or empty if not found.
+ */
 std::string CLIENT::MapEditor::extractJSONValue(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -655,6 +863,12 @@ std::string CLIENT::MapEditor::extractJSONValue(
     return trim(content.substr(colonPos + 1, valueEnd - colonPos - 1));
 }
 
+/**
+ * @brief Trims whitespace from the beginning and end of a string.
+ *
+ * @param str Input string.
+ * @return Trimmed string.
+ */
 std::string CLIENT::MapEditor::trim(const std::string& str)
 {
     size_t first = str.find_first_not_of(" \t\n\r");
@@ -664,6 +878,12 @@ std::string CLIENT::MapEditor::trim(const std::string& str)
     return str.substr(first, last - first + 1);
 }
 
+/**
+ * @brief Clears all entities from the map editor.
+ *
+ * @details
+ * Resets the selected entity index and spawn timer, and prints a message.
+ */
 void CLIENT::MapEditor::clearMap()
 {
     _entities.clear();
