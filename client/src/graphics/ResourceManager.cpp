@@ -92,4 +92,3 @@ void CLIENT::ResourceManager::clear()
 {
     _textures.clear();
 }
-

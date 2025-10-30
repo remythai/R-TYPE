@@ -117,7 +117,8 @@ void CLIENT::Core::parseCommandLineArgs(char** argv)
  *
  * @details
  * - Creates a NetworkClient instance with the hostname and port.
- * - Registers callbacks to handle incoming player IDs, events, snapshots, timeouts, and kills.
+ * - Registers callbacks to handle incoming player IDs, events, snapshots,
+ * timeouts, and kills.
  * - Sends a join request to the server with the current username.
  * - Starts receiving data from the server.
  */
@@ -138,9 +139,11 @@ void CLIENT::Core::initializeNetwork()
  *
  * @details
  * The following callbacks are registered:
- * - `setOnPlayerIdReceived`: Calls `handlePlayerIdReceived` when the server assigns a player ID.
+ * - `setOnPlayerIdReceived`: Calls `handlePlayerIdReceived` when the server
+ * assigns a player ID.
  * - `setOnPlayerEvent`: Calls `handlePlayerEvent` on player events.
- * - `setOnSnapshot`: Calls `handleSnapshotReceived` when receiving game state snapshots.
+ * - `setOnSnapshot`: Calls `handleSnapshotReceived` when receiving game state
+ * snapshots.
  * - `setOnTimeout`: Pushes a timeout message to `_incomingMessages`.
  * - `setOnKilled`: Pushes a killed message to `_incomingMessages`.
  *
@@ -176,7 +179,7 @@ void CLIENT::Core::setupNetworkCallbacks()
  * @param playerId The player ID assigned by the server.
  *
  * @details
- * Updates the internal `_myPlayerId` variable, prints a log message, 
+ * Updates the internal `_myPlayerId` variable, prints a log message,
  * and pushes a "PLAYER_ID" message into the incoming message queue.
  *
  * @note Uses `_incomingMutex` to safely push messages to the queue.
@@ -198,7 +201,7 @@ void CLIENT::Core::handlePlayerIdReceived(uint8_t playerId)
  * @param eventType 0 for join, 1 for leave.
  *
  * @details
- * Pushes either a "PLAYER_JOIN" or "PLAYER_LEAVE" message into the 
+ * Pushes either a "PLAYER_JOIN" or "PLAYER_LEAVE" message into the
  * incoming message queue based on the event type.
  *
  * @note Thread-safe via `_incomingMutex`.
@@ -219,7 +222,7 @@ void CLIENT::Core::handlePlayerEvent(uint8_t playerId, uint8_t eventType)
  * @param payload A vector of bytes representing the serialized snapshot.
  *
  * @details
- * Stores the snapshot in `_pendingSnapshot` and sets `_hasNewSnapshot` 
+ * Stores the snapshot in `_pendingSnapshot` and sets `_hasNewSnapshot`
  * to true. Thread-safe via `_snapshotMutex`.
  */
 void CLIENT::Core::handleSnapshotReceived(const std::vector<uint8_t>& payload)
@@ -253,13 +256,22 @@ void CLIENT::Core::loadGameTextures()
 {
     auto& rm = ResourceManager::getInstance();
 
-    rm.loadTexture("assets/sprites/r-typesheet42.png", "assets/sprites/r-typesheet42.png");
-    rm.loadTexture("assets/sprites/playerProjectiles.png", "assets/sprites/playerProjectiles.png");
-    rm.loadTexture("assets/sprites/r-typesheet5.png", "assets/sprites/r-typesheet5.png");
-    rm.loadTexture("assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
-    rm.loadTexture("assets/sprites/r-typesheet10.png", "assets/sprites/r-typesheet10.png");
-    rm.loadTexture("assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
-    rm.loadTexture("assets/sprites/r-typesheet30a.png", "assets/sprites/r-typesheet30a.png");
+    rm.loadTexture(
+        "assets/sprites/r-typesheet42.png", "assets/sprites/r-typesheet42.png");
+    rm.loadTexture(
+        "assets/sprites/playerProjectiles.png",
+        "assets/sprites/playerProjectiles.png");
+    rm.loadTexture(
+        "assets/sprites/r-typesheet5.png", "assets/sprites/r-typesheet5.png");
+    rm.loadTexture(
+        "assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
+    rm.loadTexture(
+        "assets/sprites/r-typesheet10.png", "assets/sprites/r-typesheet10.png");
+    rm.loadTexture(
+        "assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
+    rm.loadTexture(
+        "assets/sprites/r-typesheet30a.png",
+        "assets/sprites/r-typesheet30a.png");
 }
 
 /**
@@ -269,10 +281,14 @@ void CLIENT::Core::loadParallaxTextures()
 {
     auto& rm = ResourceManager::getInstance();
 
-    rm.loadTexture("assets/sprites/parallax/1.png", "assets/sprites/parallax/1.png");
-    rm.loadTexture("assets/sprites/parallax/2.png", "assets/sprites/parallax/2.png");
-    rm.loadTexture("assets/sprites/parallax/3.png", "assets/sprites/parallax/3.png");
-    rm.loadTexture("assets/sprites/parallax/4.png", "assets/sprites/parallax/4.png");
+    rm.loadTexture(
+        "assets/sprites/parallax/1.png", "assets/sprites/parallax/1.png");
+    rm.loadTexture(
+        "assets/sprites/parallax/2.png", "assets/sprites/parallax/2.png");
+    rm.loadTexture(
+        "assets/sprites/parallax/3.png", "assets/sprites/parallax/3.png");
+    rm.loadTexture(
+        "assets/sprites/parallax/4.png", "assets/sprites/parallax/4.png");
 }
 
 /**
@@ -703,26 +719,21 @@ void CLIENT::Core::handlePlayerLeave(const std::string& msg, Window& window)
 void CLIENT::Core::sendInput(KeyCode keyCode, InputAction action)
 
 {
-
     std::string inputMsg =
 
         "INPUT:" + std::to_string(static_cast<uint8_t>(keyCode)) + ":" +
 
         std::to_string(static_cast<uint8_t>(action));
 
-
-
     std::lock_guard<std::mutex> lock(_outgoingMutex);
 
     _outgoingMessages.push(inputMsg);
-
 }
-
-
 
 /**
 
- * @brief Handles the change in key state and sends input to the server if necessary.
+ * @brief Handles the change in key state and sends input to the server if
+ necessary.
 
  *
 
@@ -741,21 +752,14 @@ void CLIENT::Core::handleKeyStateChange(
     std::map<std::string, bool>& keyStates)
 
 {
-
     if (keyStates[action] == isPressed)
 
         return;
 
-
-
     keyStates[action] = isPressed;
 
-
-
     for (const auto& mapping : INPUT_MAPPINGS) {
-
         if (mapping.action == action) {
-
             InputAction inputAction =
 
                 isPressed ? InputAction::PRESSED : InputAction::RELEASED;
@@ -763,14 +767,9 @@ void CLIENT::Core::handleKeyStateChange(
             sendInput(mapping.keyCode, inputAction);
 
             break;
-
         }
-
     }
-
 }
-
-
 
 /**
 
@@ -797,21 +796,13 @@ void CLIENT::Core::processInputs(
     Window& window, std::map<std::string, bool>& keyStates)
 
 {
-
     const auto& actions = window.getPendingActions();
 
-
-
     for (const auto& action : actions) {
-
         handleKeyStateChange(action, true, keyStates);
-
     }
 
-
-
     for (const auto& mapping : INPUT_MAPPINGS) {
-
         bool isPressed =
 
             std::find(actions.begin(), actions.end(), mapping.action) !=
@@ -819,16 +810,10 @@ void CLIENT::Core::processInputs(
             actions.end();
 
         if (!isPressed) {
-
             handleKeyStateChange(mapping.action, false, keyStates);
-
         }
-
     }
-
 }
-
-
 
 /**
 
@@ -849,24 +834,16 @@ void CLIENT::Core::processInputs(
 void CLIENT::Core::handleTimeoutEvent(uint8_t playerId)
 
 {
-
     std::cout << "[CLIENT] Player " << int(playerId) << " timed out\n";
 
-
-
     if (playerId == _myPlayerId) {
-
         std::cout << "[CLIENT] You have been disconnected due to timeout\n";
 
         _gameState = GameState::DISCONNECTED;
 
         _running = false;
-
     }
-
 }
-
-
 
 /**
 
@@ -889,24 +866,16 @@ void CLIENT::Core::handleTimeoutEvent(uint8_t playerId)
 void CLIENT::Core::handleKilledEvent(uint8_t playerId)
 
 {
-
     std::cout << "[CLIENT] Player " << int(playerId) << " was eliminated\n";
 
-
-
     if (playerId == _myPlayerId) {
-
         std::cout << "[CLIENT] You have been defeated!\n";
 
         _gameState = GameState::DEFEATED;
 
         loadDefeatScreen();
-
     }
-
 }
-
-
 
 /**
 
@@ -923,28 +892,18 @@ void CLIENT::Core::handleKilledEvent(uint8_t playerId)
 void CLIENT::Core::loadDefeatScreen()
 
 {
-
     if (_defeatTextureLoaded)
 
         return;
 
-
-
     auto& rm = ResourceManager::getInstance();
-
-
 
     rm.loadTexture("assets/sprites/defeat.jpg", "assets/sprites/defeat.jpg");
 
     sf::Texture* texture = rm.getTexture("assets/sprites/defeat.jpg");
 
-
-
     if (texture) {
-
         _defeatSprite = sf::Sprite(*texture);
-
-
 
         sf::Vector2u textureSize = texture->getSize();
 
@@ -960,21 +919,14 @@ void CLIENT::Core::loadDefeatScreen()
 
             static_cast<float>(WINDOW_HEIGHT) / 2.0f));
 
-
-
         _defeatTextureLoaded = true;
 
         std::cout << "[CLIENT] Defeat screen loaded\n";
 
     } else {
-
         std::cerr << "[CLIENT] Failed to load defeat.png\n";
-
     }
-
 }
-
-
 
 /**
 
@@ -989,21 +941,16 @@ void CLIENT::Core::loadDefeatScreen()
 void CLIENT::Core::renderDefeatScreen(sf::RenderTarget& target)
 
 {
-
     if (_defeatTextureLoaded && _defeatSprite.has_value()) {
-
         target.draw(_defeatSprite.value());
 
     } else {
-
         sf::RectangleShape overlay(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
 
         overlay.setFillColor(sf::Color(0, 0, 0, 200));
 
         target.draw(overlay);
-
     }
-
 }
 
 /**
@@ -1016,7 +963,8 @@ void CLIENT::Core::renderDefeatScreen(sf::RenderTarget& target)
 
  * Handles input processing, snapshot updates, entity updates, parallax,
 
- * keybind menu, colorblind filter, and rendering of the game and defeat screens.
+ * keybind menu, colorblind filter, and rendering of the game and defeat
+ screens.
 
  */
 void CLIENT::Core::graphicsLoop()
@@ -1111,7 +1059,8 @@ void CLIENT::Core::graphicsLoop()
 }
 
 /**
- * @brief Initializes graphics components including entity manager and parallax system.
+ * @brief Initializes graphics components including entity manager and parallax
+ * system.
  */
 void CLIENT::Core::initializeGraphicsComponents()
 {

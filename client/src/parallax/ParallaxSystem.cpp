@@ -12,8 +12,10 @@
 /**
  * @brief Constructs a ParallaxSystem.
  *
- * @param entityManager Pointer to the EntityManager, used to create and manage parallax entities.
- * @param resourceManager Pointer to the ResourceManager, used to load textures for layers.
+ * @param entityManager Pointer to the EntityManager, used to create and manage
+ * parallax entities.
+ * @param resourceManager Pointer to the ResourceManager, used to load textures
+ * for layers.
  */
 CLIENT::ParallaxSystem::ParallaxSystem(
     EntityManager* entityManager, ResourceManager* resourceManager)
@@ -39,7 +41,8 @@ void CLIENT::ParallaxSystem::addLayer(
 }
 
 /**
- * @brief Instantiates all layers by creating the necessary parallax entities and sprites.
+ * @brief Instantiates all layers by creating the necessary parallax entities
+ * and sprites.
  */
 void CLIENT::ParallaxSystem::createLayers()
 {
@@ -49,7 +52,8 @@ void CLIENT::ParallaxSystem::createLayers()
 }
 
 /**
- * @brief Creates the individual tiles (sprites/entities) for a given parallax layer.
+ * @brief Creates the individual tiles (sprites/entities) for a given parallax
+ * layer.
  *
  * @param layer Reference to the ParallaxLayer to populate.
  */
@@ -89,7 +93,8 @@ void CLIENT::ParallaxSystem::createTilesForLayer(ParallaxLayer& layer)
 }
 
 /**
- * @brief Updates all parallax layers by moving their tiles and looping them as necessary.
+ * @brief Updates all parallax layers by moving their tiles and looping them as
+ * necessary.
  *
  * @param deltaTime Time elapsed since the last frame (in seconds).
  */
@@ -135,4 +140,3 @@ void CLIENT::ParallaxSystem::clear()
 {
     _layers.clear();
 }
-

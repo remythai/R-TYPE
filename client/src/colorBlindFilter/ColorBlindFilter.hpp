@@ -28,10 +28,10 @@ namespace CLIENT {
  */
 enum class ColorBlindMode
 {
-    NONE,         ///< Normal vision, no color correction.
-    PROTANOPIA,   ///< Red color blindness simulation.
-    DEUTERANOPIA, ///< Green color blindness simulation.
-    TRITANOPIA    ///< Blue color blindness simulation.
+    NONE,          ///< Normal vision, no color correction.
+    PROTANOPIA,    ///< Red color blindness simulation.
+    DEUTERANOPIA,  ///< Green color blindness simulation.
+    TRITANOPIA     ///< Blue color blindness simulation.
 };
 
 /**
@@ -97,7 +97,10 @@ class ColorBlindFilter
      * @brief Returns the current color blindness mode.
      * @return The active mode (NONE if inactive).
      */
-    ColorBlindMode getMode() const { return _currentMode; }
+    ColorBlindMode getMode() const
+    {
+        return _currentMode;
+    }
 
     /**
      * @brief Returns the render states associated with the shader.
@@ -135,7 +138,7 @@ class ColorBlindFilter
 
     ColorBlindMode _currentMode;  ///< Currently active color blindness mode.
     sf::Shader _shader;           ///< Underlying SFML shader object.
-    bool _shaderLoaded;           ///< Indicates if the shader was successfully loaded.
+    bool _shaderLoaded;  ///< Indicates if the shader was successfully loaded.
 };
 
 }  // namespace CLIENT
