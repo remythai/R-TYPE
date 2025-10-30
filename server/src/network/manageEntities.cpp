@@ -104,8 +104,8 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
  * @brief Creates enemy entities with random positioning
  *
  * Creates different enemy configurations based on the current game mode.
- * For flappyByte, creates obstacle patterns with gaps.
- * For RType, creates a single enemy at a random vertical position.
+ * For flappyByte, creates obstacle patterns with gaps (no sinusoidal movement).
+ * For RType, creates a single enemy at a random vertical position WITH sinusoidal movement.
  *
  * @return EntityManager::Entity Returns 1 after enemy creation
  */
@@ -192,6 +192,11 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             entity, 5.0f, 0.0f, 1920.0f, 1080.0);
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 1);
+
+        std::uniform_real_distribution<float> phaseDist(0.0f, 6.28318f);
+        float phaseOffset = phaseDist(gen);
+
+        _registry->emplace<GameEngine::SinusoidalPattern>(entity, 150.0f, 0.003f, phaseOffset);
     }
 
     return 1;

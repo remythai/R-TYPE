@@ -31,6 +31,7 @@
 #include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
 #include "../../../gameEngine/systems/inputHandler/src/InputHandler.hpp"
 #include "../../../gameEngine/systems/motion/src/Motion.hpp"
+#include "../../../gameEngine/systems/sinusoidalAI/src/SinusoidalAI.hpp"
 
 namespace rtype {
 enum class PacketType : uint8_t
