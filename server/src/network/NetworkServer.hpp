@@ -71,6 +71,18 @@ struct EnemySpawnData
 class NetworkServer
 {
    public:
+    class NetworkServerError : public std::exception
+    {
+       private:
+        std::string _msg;
+
+       public:
+        explicit NetworkServerError(const std::string& msg) : _msg(msg) {}
+        const char* what() const noexcept override
+        {
+            return _msg.c_str();
+        }
+    };
     NetworkServer(unsigned short port, std::string const& game);
     ~NetworkServer();
 
