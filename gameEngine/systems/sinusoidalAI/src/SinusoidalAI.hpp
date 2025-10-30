@@ -1,12 +1,13 @@
 #pragma once
 
 #include <cmath>
-#include "../../../components/acceleration/src/Acceleration.hpp"
+
 #include "../../../components/AIControlled/src/AIControlled.hpp"
-#include "../../../components/position/src/Position.hpp"
-#include "../../../components/velocity/src/Velocity.hpp"
-#include "../../../components/renderable/src/Renderable.hpp"
+#include "../../../components/acceleration/src/Acceleration.hpp"
 #include "../../../components/collider/src/Collider.hpp"
+#include "../../../components/position/src/Position.hpp"
+#include "../../../components/renderable/src/Renderable.hpp"
+#include "../../../components/velocity/src/Velocity.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -29,14 +30,15 @@ struct SinusoidalPattern : public Component<SinusoidalPattern>
      * @param freq Wave frequency in radians per pixel (higher = tighter waves)
      * @param phase Initial phase offset for wave variation between entities
      */
-    SinusoidalPattern(float amp = 100.0f, float freq = 0.005f, float phase = 0.0f)
+    SinusoidalPattern(
+        float amp = 100.0f, float freq = 0.005f, float phase = 0.0f)
         : amplitude(amp), frequency(freq), phaseOffset(phase)
     {
     }
 
-    float amplitude;     ///< Maximum vertical displacement
-    float frequency;     ///< Wave tightness (radians per pixel)
-    float phaseOffset;   ///< Phase shift for wave variation
+    float amplitude;    ///< Maximum vertical displacement
+    float frequency;    ///< Wave tightness (radians per pixel)
+    float phaseOffset;  ///< Phase shift for wave variation
 
     static constexpr const char* Name = "SinusoidalPattern";
     static constexpr const char* Version = "1.0.0";
@@ -44,7 +46,8 @@ struct SinusoidalPattern : public Component<SinusoidalPattern>
 
 /**
  * @class SinusoidalAI
- * @brief System that applies sinusoidal vertical movement to AI-controlled entities.
+ * @brief System that applies sinusoidal vertical movement to AI-controlled
+ * entities.
  *
  * This system creates wave-like movement patterns for enemies while maintaining
  * their horizontal velocity. The sinusoidal pattern is based on the entity's
@@ -83,8 +86,8 @@ class SinusoidalAI : public System<SinusoidalAI>
     {
         requireComponents<
             GameEngine::AIControlled, GameEngine::SinusoidalPattern,
-            GameEngine::Position, GameEngine::Velocity,
-            GameEngine::Renderable, GameEngine::Collider>();
+            GameEngine::Position, GameEngine::Velocity, GameEngine::Renderable,
+            GameEngine::Collider>();
     }
 
     /**
@@ -103,7 +106,8 @@ class SinusoidalAI : public System<SinusoidalAI>
      * **Wave Formula:**
      * ```
      * y_offset = amplitude * sin(x * frequency + phase)
-     * velocity_y = amplitude * frequency * cos(x * frequency + phase) * velocity_x
+     * velocity_y = amplitude * frequency * cos(x * frequency + phase) *
+     * velocity_x
      * ```
      *
      * **Derivative Explanation:**
@@ -120,47 +124,47 @@ class SinusoidalAI : public System<SinusoidalAI>
      * - Uses collider size for accurate boundary detection
      *
      * @note Wave is position-based, not time-based, so horizontal speed
-     *       affects wave traversal rate naturally. Faster enemies = faster waves.
+     *       affects wave traversal rate naturally. Faster enemies = faster
+     * waves.
      *
      * @attention This system should run BEFORE Motion system to ensure
-     *            the calculated velocity is applied before Motion's deceleration.
+     *            the calculated velocity is applied before Motion's
+     * deceleration.
      */
     void onUpdate(Registry& registry, float dt)
     {
         registry.each<
-            AIControlled, SinusoidalPattern, Position, Velocity, 
-            Renderable, Collider>(
-            [](auto e, AIControlled& ai, SinusoidalPattern& pattern,
-               Position& pos, Velocity& vel, Renderable& render, 
-               Collider& collider) {
-                
-                // Calculate safe amplitude to prevent screen overflow
-                float topMargin = pos.pos.y;
-                float bottomMargin = render.screenSizeY - pos.pos.y - collider.size.y;
-                float safeAmplitude = std::min({
-                    pattern.amplitude, 
-                    topMargin - 10.0f,      // Keep 10px safety margin
-                    bottomMargin - 10.0f
-                });
+            AIControlled, SinusoidalPattern, Position, Velocity, Renderable,
+            Collider>([](auto e, AIControlled& ai, SinusoidalPattern& pattern,
+                         Position& pos, Velocity& vel, Renderable& render,
+                         Collider& collider) {
+            // Calculate safe amplitude to prevent screen overflow
+            float topMargin = pos.pos.y;
+            float bottomMargin =
+                render.screenSizeY - pos.pos.y - collider.size.y;
+            float safeAmplitude = std::min(
+                {pattern.amplitude,
+                 topMargin - 10.0f,  // Keep 10px safety margin
+                 bottomMargin - 10.0f});
 
-                // Only apply sinusoidal if we have safe room to move
-                if (safeAmplitude > 0.0f) {
-                    // Calculate wave phase including offset for variation
-                    float wavePhase = pos.pos.x * pattern.frequency + pattern.phaseOffset;
-                    
-                    // Calculate vertical velocity using chain rule derivative
-                    // dy/dt = amplitude * frequency * cos(phase) * dx/dt
-                    float verticalVelocity = safeAmplitude * pattern.frequency 
-                                           * std::cos(wavePhase) 
-                                           * std::abs(vel.x);
+            // Only apply sinusoidal if we have safe room to move
+            if (safeAmplitude > 0.0f) {
+                // Calculate wave phase including offset for variation
+                float wavePhase =
+                    pos.pos.x * pattern.frequency + pattern.phaseOffset;
 
-                    // Apply vertical velocity (overrides any previous Y velocity)
-                    vel.y = verticalVelocity;
-                } else {
-                    // Too close to boundary, stop vertical movement
-                    vel.y = 0.0f;
-                }
-            });
+                // Calculate vertical velocity using chain rule derivative
+                // dy/dt = amplitude * frequency * cos(phase) * dx/dt
+                float verticalVelocity = safeAmplitude * pattern.frequency *
+                                         std::cos(wavePhase) * std::abs(vel.x);
+
+                // Apply vertical velocity (overrides any previous Y velocity)
+                vel.y = verticalVelocity;
+            } else {
+                // Too close to boundary, stop vertical movement
+                vel.y = 0.0f;
+            }
+        });
     }
 };
 }  // namespace GameEngine
