@@ -84,7 +84,9 @@ class NetworkServer
             return _msg.c_str();
         }
     };
-    NetworkServer(unsigned short port, std::string const& game, std::string const& mapPath);
+    NetworkServer(
+        unsigned short port, std::string const& game,
+        std::string const& mapPath);
     ~NetworkServer();
 
     void run();
