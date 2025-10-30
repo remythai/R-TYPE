@@ -11,6 +11,12 @@
 
 #include "NetworkServer.hpp"
 
+/**
+ * @brief Trims whitespace from the beginning and end of a string
+ * 
+ * @param str The string to trim
+ * @return std::string The trimmed string
+ */
 static std::string trim(const std::string& str)
 {
     size_t first = str.find_first_not_of(" \t\n\r");
@@ -20,6 +26,15 @@ static std::string trim(const std::string& str)
     return str.substr(first, last - first + 1);
 }
 
+/**
+ * @brief Extracts a JSON value for a given key within a specified range
+ * 
+ * @param content The JSON content as a string
+ * @param key The key to search for
+ * @param start The starting position in the content
+ * @param end The ending position in the content
+ * @return std::string The extracted and trimmed value
+ */
 static std::string extractJSONValue(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -40,6 +55,15 @@ static std::string extractJSONValue(
     return trim(content.substr(colonPos + 1, valueEnd - colonPos - 1));
 }
 
+/**
+ * @brief Parses a JSON string value for a given key
+ * 
+ * @param content The JSON content as a string
+ * @param key The key to search for
+ * @param start The starting position in the content
+ * @param end The ending position in the content
+ * @return std::string The extracted string value without quotes
+ */
 static std::string parseJSONString(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -57,6 +81,15 @@ static std::string parseJSONString(
                : "";
 }
 
+/**
+ * @brief Parses a JSON array of floats for a given key
+ * 
+ * @param content The JSON content as a string
+ * @param key The key to search for
+ * @param start The starting position in the content
+ * @param end The ending position in the content
+ * @return std::array<float, 4> Array containing the parsed float values (x, y, width, height)
+ */
 static std::array<float, 4> parseJSONArray(
     const std::string& content, const std::string& key, size_t start,
     size_t end)
@@ -85,6 +118,14 @@ static std::array<float, 4> parseJSONArray(
     return result;
 }
 
+/**
+ * @brief Loads enemy spawn data from a JSON file
+ * 
+ * Parses a JSON file containing enemy entities and populates the spawn list.
+ * Enemies are sorted by spawn time after loading.
+ * 
+ * @param filepath Path to the JSON file containing enemy data
+ */
 void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 {
     std::ifstream file(filepath);
@@ -151,6 +192,12 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
               << " enemies from " << filepath << std::endl;
 }
 
+/**
+ * @brief Checks game time and spawns enemies when their spawn time is reached
+ * 
+ * Iterates through the spawn list and creates enemies whose spawn time
+ * is less than or equal to the current game time.
+ */
 void rtype::NetworkServer::checkAndSpawnEnemies()
 {
     while (_nextEnemyToSpawn < _enemySpawnList.size()) {
@@ -164,6 +211,15 @@ void rtype::NetworkServer::checkAndSpawnEnemies()
     }
 }
 
+/**
+ * @brief Creates an enemy entity from spawn data
+ * 
+ * Instantiates an enemy entity with components based on its type.
+ * Different enemy types have different velocities, health, and animation speeds.
+ * 
+ * @param data The enemy spawn data containing position, type, and visual properties
+ * @return EntityManager::Entity The created enemy entity
+ */
 EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
     const EnemySpawnData& data)
 {
