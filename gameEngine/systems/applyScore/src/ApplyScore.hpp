@@ -34,7 +34,8 @@ namespace GameEngine {
  *
  * @requires
  * - **ScoreValue**: Defines how many points an entity is worth.
- * - **Health**: Used to determine when an entity should contribute to the score.
+ * - **Health**: Used to determine when an entity should contribute to the
+ * score.
  *
  * @see ScoreValue
  * @see Health
@@ -44,7 +45,8 @@ class ApplyScore : public System<ApplyScore>
 {
    public:
     /**
-     * @brief Constructs the ApplyScore system and declares its component requirements.
+     * @brief Constructs the ApplyScore system and declares its component
+     * requirements.
      *
      * Registers that this system requires:
      * - ScoreValue: The amount of score awarded when the entity dies.
@@ -60,9 +62,9 @@ class ApplyScore : public System<ApplyScore>
     /**
      * @brief Updates the global score based on destroyed entities.
      *
-     * Iterates through all entities containing both **ScoreValue** and **Health**.
-     * If an entity's `Health::currentHp` equals zero, its `ScoreValue::points`
-     * are added to `registry.score`.
+     * Iterates through all entities containing both **ScoreValue** and
+     * **Health**. If an entity's `Health::currentHp` equals zero, its
+     * `ScoreValue::points` are added to `registry.score`.
      *
      * @param registry Reference to the ECS Registry.
      * @param dt Delta time (unused).
@@ -102,4 +104,3 @@ class ApplyScore : public System<ApplyScore>
 };
 
 }  // namespace GameEngine
-
