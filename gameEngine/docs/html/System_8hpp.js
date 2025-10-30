@@ -1,5 +1,5 @@
 var System_8hpp =
 [
     [ "ISystem", "classISystem.html", "classISystem" ],
-    [ "System< Derived >", "classSystem.html", "classSystem" ]
+    [ "System&lt; Derived &gt;", "classSystem.html", "classSystem" ]
 ];

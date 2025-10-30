@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['name_0',['name',['../classSystem.html#a837ff45ac00cb1767b35a8b1f0f9df0d',1,'System']]],
-  ['nametoid_1',['nameToID',['../classComponentRegistry.html#a9d24c7cf736da3a726da80b7c78c0c3d',1,'ComponentRegistry']]],
-  ['nextentity_2',['nextEntity',['../classEntityManager.html#ab17b20b08a5d0ba3e99b968bbe13edac',1,'EntityManager']]],
-  ['nextid_3',['nextID',['../classComponentRegistry.html#a5049c9b0055865beb6ef064f4038589d',1,'ComponentRegistry']]],
-  ['nextsystemid_4',['nextSystemID',['../classRegistry.html#acd6025ec3b4829a10bebf22e8a174460',1,'Registry']]],
-  ['npos_5',['npos',['../classSparseSet.html#a2d8c147351298b144759fcac22f09284',1,'SparseSet']]]
+  ['name_0',['Name',['../structGameEngine_1_1Acceleration.html#a9dc433a667cb35d750b4440940605ee8',1,'GameEngine::Acceleration::Name'],['../structGameEngine_1_1AIControlled.html#a0abcab7c41c7a11e43fe799af146e0a0',1,'GameEngine::AIControlled::Name'],['../structGameEngine_1_1Audio.html#aec4db430f2348c56d8aa6abecb50798b',1,'GameEngine::Audio::Name'],['../structGameEngine_1_1Collider.html#aa9f0d443bb8416ed0a44fd081f618847',1,'GameEngine::Collider::Name'],['../structGameEngine_1_1Damage.html#a694402b0ee45797cd87631e22d0cc961',1,'GameEngine::Damage::Name'],['../structGameEngine_1_1Domain.html#a2c96cda783017c29481e2825f7cc05f3',1,'GameEngine::Domain::Name'],['../structGameEngine_1_1Gravity.html#a628fdb0ae0ed11a92ce02e6c5aa4d141',1,'GameEngine::Gravity::Name'],['../structGameEngine_1_1Health.html#a56517664dd263b91b27f4211cc8aeec1',1,'GameEngine::Health::Name'],['../structGameEngine_1_1Lifetime.html#adac4fe63a7c9442b93821445a4b2abab',1,'GameEngine::Lifetime::Name'],['../structGameEngine_1_1OnPickup.html#a4739402d841a6638e368f59417b7bd9e',1,'GameEngine::OnPickup::Name'],['../structGameEngine_1_1Position.html#afa7d89fd122e1653e49ff9009e2fac13',1,'GameEngine::Position::Name'],['../structGameEngine_1_1Renderable.html#a15d4d92ff3bc9a40879b7c726758e4db',1,'GameEngine::Renderable::Name'],['../structGameEngine_1_1ScoreValue.html#a0079fae5f6a9ac899808a806d916d12e',1,'GameEngine::ScoreValue::Name'],['../structGameEngine_1_1Text.html#a6960a7b30177b3eae72f38ce061146be',1,'GameEngine::Text::Name'],['../structGameEngine_1_1Velocity.html#ae2f72b60dd7a1d6428e6807a576ba9c5',1,'GameEngine::Velocity::Name'],['../structGameEngine_1_1Weapon.html#a0827b47c64c8a5053c4c9e6aea0675a1',1,'GameEngine::Weapon::Name']]],
+  ['name_1',['name',['../classSystem.html#a837ff45ac00cb1767b35a8b1f0f9df0d',1,'System']]],
+  ['nametoid_2',['nameToID',['../classComponentRegistry.html#a540fb96a493026cd1c24e5f36dfe2e79',1,'ComponentRegistry']]],
+  ['nextentity_3',['nextEntity',['../classEntityManager.html#ab17b20b08a5d0ba3e99b968bbe13edac',1,'EntityManager']]],
+  ['nextid_4',['nextID',['../classComponentRegistry.html#a5049c9b0055865beb6ef064f4038589d',1,'ComponentRegistry']]],
+  ['nextsystemid_5',['nextSystemID',['../classRegistry.html#acd6025ec3b4829a10bebf22e8a174460',1,'Registry']]],
+  ['npos_6',['npos',['../classSparseSet.html#a2d8c147351298b144759fcac22f09284',1,'SparseSet']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['lifetime_0',['Lifetime',['../structGameEngine_1_1Lifetime.html#a62fe851968f34bf0d33829cb733fc847',1,'GameEngine::Lifetime']]]
+  ['inputhandler_0',['InputHandler',['../classGameEngine_1_1InputHandler.html#a8cd3e233efd22862f9c395cf9715d953',1,'GameEngine::InputHandler']]],
+  ['instance_1',['instance',['../classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce',1,'ComponentRegistry']]]
 ];

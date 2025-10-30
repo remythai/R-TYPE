@@ -1,7 +1,7 @@
 var classRegistry =
 [
-    [ "ComponentPool", "structRegistry_1_1ComponentPool.html", "structRegistry_1_1ComponentPool" ],
     [ "IComponentPool", "structRegistry_1_1IComponentPool.html", "structRegistry_1_1IComponentPool" ],
+    [ "ComponentPool", "structRegistry_1_1ComponentPool.html", "structRegistry_1_1ComponentPool" ],
     [ "Entity", "classRegistry.html#a616cfe88be78aa1b1c710059bf42a2d5", null ],
     [ "Registry", "classRegistry.html#acb15d8aa051bf36ea92a86ee6c00bc3c", null ],
     [ "addSystem", "classRegistry.html#ae9d15b143aff79d01bc27d1bf89fa7f4", null ],

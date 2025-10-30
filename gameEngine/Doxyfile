@@ -1,13 +1,13 @@
 # Project Info
 PROJECT_NAME           = "GameEngine ECS"
-PROJECT_BRIEF          = "Entity Component System for 2D/3D Games"
+PROJECT_BRIEF          = "Entity Component System for 2D Games"
 PROJECT_NUMBER         = "1.0"
 OUTPUT_DIRECTORY       = docs
 CREATE_SUBDIRS         = NO
 
 # Input Files / Directories
 INPUT                  = .
-FILE_PATTERNS          = *.hpp *.h *.cpp *.c
+FILE_PATTERNS          = *.hpp *.h *.cpp *.c *.dox
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */build/* */tests/*
 

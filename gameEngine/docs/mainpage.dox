@@ -1,0 +1,114 @@
+/**
+ * @mainpage SparseSet Game Engine - Documentation
+ *
+ * @version 1.0
+ * @author Antton Ducos
+ *
+ * @section intro_sec Introduction
+ *
+ * The **SparseSet Game Engine** is a compact C++ game engine prototype
+ * built around an **Entity-Component-System (ECS)** architecture using a
+ * **SparseSet** (sparse array) for component storage.
+ *
+ * The repository layout used by this documentation:
+ *
+ * ```
+ * /ecs/           → core ECS implementation (Registry, SparseSet, EntityManager, ...)
+ * /components/    → component definitions (Transform, RigidBody, Sprite, ...)
+ * /systems/       → system implementations (render, physics, gameplay, ...)
+ * /tests/         → unit and integration tests
+ * /docs/          → hand-written docs (tutorials, diagrams)
+ * build_tests.sh
+ * CMakeLists.txt
+ * Doxyfile
+ * ecs_config.h.in
+ * ```
+ *
+ * ---
+ *
+ * @section goals_sec Goals & Design
+ *
+ * - **Performance first**: SparseSet layout keeps component memory contiguous
+ *   for cache-friendly iteration and O(1) lookups.
+ * - **Simple core**: Registry + SparseSet + System interface are intentionally
+ *   minimal to make experimentation and education straightforward.
+ * - **Extensible**: Add new components and systems easily through the
+ *   component registry and the Registry API.
+ *
+ * ---
+ *
+ * @section features_sec Key Features
+ *
+ * - SparseSet-based component pools (tight, contiguous storage)
+ * - Registry for entity lifecycle and system management
+ * - ComponentRegistry for stable component IDs
+ * - System enabling/disabling based on available component types
+ * - Basic game clock (fixed-step + real-time) and system update loop
+ *
+ * ---
+ *
+ * @section usage_sec Quick example
+ *
+ * The following snippet demonstrates a typical usage pattern with the
+ * provided API (Registry, EntityManager, SparseSet):
+ *
+ * \code{.cpp}
+ *   #include "Registry.hpp"
+ *   #include "components/Transform.hpp"
+ *
+ *   int main() {
+ *       Registry registry;
+ *       registry.reserve(1024); // preallocate if you expect many entities
+ *
+ *       // create entity
+ *       auto player = registry.create();
+ *
+ *       // emplace component (Transform is a POD-like struct)
+ *       registry.emplace<Transform>(player, /*position*/ Vec3{0,0,0},
+ *                                            /*rotation*/ Vec3{0,0,0},
+ *                                            /*scale*/    Vec3{1,1,1});
+ *
+ *       // query entities with Transform (and other components)
+ *       registry.each<Transform>([](Registry::Entity e, Transform &t) {
+ *           // update transform, physics, etc.
+ *       });
+ *
+ *       // main loop (simplified)
+ *       bool running = true;
+ *       while (running) {
+ *           registry.update(1.0f / 60.0f); // realDt in seconds
+ *       }
+ *   }
+ * \endcode
+ *
+ * ---
+ *
+ * @section arch_sec Architecture overview
+ *
+ * - **EntityManager**: issues unique integer entity IDs; reuses freed IDs.
+ * - **SparseSet<Entity, Component>**: stores components in dense arrays and
+ *   maps entity → index with the sparse array.
+ * - **ComponentPool<Component>**: wrapper around SparseSet used by Registry.
+ * - **Registry**: central facade for create/destroy entities, emplace/remove/get
+ *   components, add/remove systems, and run update loop.
+ * - **System**: implement `update(Registry&, float)` and declare required
+ *   component signature; Registry will track whether systems have required
+ *   components and toggle their active state.
+ *
+ * ---
+ *
+ * @section docs_sec Additional documentation & guides
+ *
+ * - Browse generated module pages (ECS, components, systems) for API details.
+ * - See `/docs/` for high-level design notes and diagrams.
+ * - Tests are available in `/tests/`—use them as small usage examples.
+ *
+ * ---
+ *
+ * @section author_sec Author & contact
+ *
+ * Developed by **Antton Ducos**  
+ * Contact: antton.ducos@epitech.eu  
+ * License: MIT
+ *
+ */

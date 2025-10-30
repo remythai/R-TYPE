@@ -1,0 +1,69 @@
+<map id="IComponent" name="IComponent">
+<area shape="rect" id="Node000001" title="Interface de base pour tous les composants ECS." alt="" coords="5,411,98,437"/>
+<area shape="rect" id="Node000002" href="$classComponent.html" title=" " alt="" coords="146,5,329,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="53,395,65,313,83,208,110,108,126,69,144,42,159,30,162,35,148,46,130,72,115,110,89,209,70,314,59,395"/>
+<area shape="rect" id="Node000004" href="$classComponent.html" title=" " alt="" coords="146,56,329,83"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="49,395,52,333,65,252,77,209,93,167,115,127,144,93,160,81,163,85,147,97,120,130,98,169,82,210,70,253,58,333,55,395"/>
+<area shape="rect" id="Node000006" href="$classComponent.html" title=" " alt="" coords="165,107,310,133"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="51,395,57,341,72,274,84,238,99,204,119,172,144,143,163,130,166,135,147,147,123,175,104,206,89,240,77,275,62,342,57,395"/>
+<area shape="rect" id="Node000008" href="$classComponent.html" title=" " alt="" coords="159,157,316,184"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="54,395,62,351,79,297,105,242,123,216,144,194,161,182,164,187,147,198,127,220,110,244,84,299,68,352,59,396"/>
+<area shape="rect" id="Node000010" href="$classComponent.html" title=" " alt="" coords="157,208,318,235"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="57,395,69,360,87,320,111,279,144,245,163,233,166,237,147,249,116,283,91,322,74,362,63,397"/>
+<area shape="rect" id="Node000012" href="$classComponent.html" title=" " alt="" coords="159,259,316,285"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="64,395,95,344,118,318,144,295,166,284,168,288,147,300,122,321,100,347,68,398"/>
+<area shape="rect" id="Node000014" href="$classComponent.html" title=" " alt="" coords="160,309,314,336"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="75,398,107,370,144,346,172,334,174,339,147,350,110,375,79,402"/>
+<area shape="rect" id="Node000016" href="$classComponent.html" title=" " alt="" coords="162,360,312,387"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="112,405,185,385,186,390,113,410"/>
+<area shape="rect" id="Node000018" href="$classComponent.html" title=" " alt="" coords="158,411,316,437"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="113,421,158,421,158,427,113,427"/>
+<area shape="rect" id="Node000020" href="$classComponent.html" title=" " alt="" coords="153,461,322,488"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="113,438,186,458,185,463,112,443"/>
+<area shape="rect" id="Node000022" href="$classComponent.html" title=" " alt="" coords="158,512,317,539"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="79,446,110,473,147,498,174,509,172,514,144,502,107,478,75,450"/>
+<area shape="rect" id="Node000024" href="$classComponent.html" title=" " alt="" coords="148,563,326,589"/>
+<area shape="poly" id="edge23_Node000001_Node000024" title=" " alt="" coords="68,450,100,501,122,527,147,548,168,560,166,564,144,553,118,530,95,504,64,453"/>
+<area shape="rect" id="Node000026" href="$classComponent.html" title=" " alt="" coords="148,613,326,640"/>
+<area shape="poly" id="edge25_Node000001_Node000026" title=" " alt="" coords="63,451,74,486,91,526,116,565,147,599,166,611,163,615,144,603,111,569,87,528,69,488,57,453"/>
+<area shape="rect" id="Node000028" href="$classComponent.html" title=" " alt="" coords="169,664,306,691"/>
+<area shape="poly" id="edge27_Node000001_Node000028" title=" " alt="" coords="59,452,68,496,84,549,110,604,127,628,147,650,170,664,167,668,144,654,123,632,105,606,79,551,62,497,54,453"/>
+<area shape="rect" id="Node000030" href="$classComponent.html" title=" " alt="" coords="158,715,316,741"/>
+<area shape="poly" id="edge29_Node000001_Node000030" title=" " alt="" coords="57,453,62,506,77,573,89,608,104,642,123,673,147,701,164,712,161,716,144,705,119,676,99,644,84,610,72,574,57,507,51,453"/>
+<area shape="rect" id="Node000032" href="$classComponent.html" title=" " alt="" coords="158,765,317,792"/>
+<area shape="poly" id="edge31_Node000001_Node000032" title=" " alt="" coords="55,453,58,515,70,595,82,638,98,679,120,718,147,751,163,763,160,767,144,755,115,721,93,681,77,639,65,596,52,515,49,453"/>
+<area shape="rect" id="Node000034" href="$classComponent.html" title="Classe de base CRTP pour les composants concrets." alt="" coords="159,816,316,843"/>
+<area shape="poly" id="edge33_Node000001_Node000034" title=" " alt="" coords="59,453,70,534,89,639,115,738,130,776,148,802,162,813,159,818,144,806,126,779,110,740,83,640,65,535,53,453"/>
+<area shape="rect" id="Node000003" href="$structGameEngine_1_1AIControlled.html" title=" " alt="" coords="377,5,553,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="345,16,377,16,377,21,345,21"/>
+<area shape="rect" id="Node000005" href="$structGameEngine_1_1Acceleration.html" title="Component representing force applied to an entity&#39;s velocity." alt="" coords="377,56,553,83"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="345,67,377,67,377,72,345,72"/>
+<area shape="rect" id="Node000007" href="$structGameEngine_1_1Audio.html" title=" " alt="" coords="396,107,534,133"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="325,117,396,117,396,123,325,123"/>
+<area shape="rect" id="Node000009" href="$structGameEngine_1_1Collider.html" title="Component defining collision boundaries and interaction rules." alt="" coords="391,157,539,184"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="331,168,390,168,390,173,331,173"/>
+<area shape="rect" id="Node000011" href="$structGameEngine_1_1Damage.html" title="Component representing the amount of damage an entity inflicts." alt="" coords="388,208,542,235"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="333,219,388,219,388,224,333,224"/>
+<area shape="rect" id="Node000013" href="$structGameEngine_1_1Domain.html" title="Component defining a rectangular boundary constraint for entity movement." alt="" coords="390,259,540,285"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="331,269,390,269,390,275,331,275"/>
+<area shape="rect" id="Node000015" href="$structGameEngine_1_1Gravity.html" title="Component representing gravitational force applied to an entity." alt="" coords="392,309,538,336"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="330,320,391,320,391,325,330,325"/>
+<area shape="rect" id="Node000017" href="$structGameEngine_1_1Health.html" title="Component representing an entity&#39;s health points and maximum capacity." alt="" coords="394,360,536,387"/>
+<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="328,371,393,371,393,376,328,376"/>
+<area shape="rect" id="Node000019" href="$structGameEngine_1_1Lifetime.html" title="Component for entities with limited lifespan." alt="" coords="390,411,540,437"/>
+<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="332,421,390,421,390,427,332,427"/>
+<area shape="rect" id="Node000021" href="$structGameEngine_1_1OnPickup.html" title="Component defining power&#45;up effects applied when entity is collected." alt="" coords="384,461,546,488"/>
+<area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="338,472,384,472,384,477,338,477"/>
+<area shape="rect" id="Node000023" href="$structGameEngine_1_1Position.html" title="Component representing an entity&#39;s 2D location in world space." alt="" coords="390,512,541,539"/>
+<area shape="poly" id="edge22_Node000022_Node000023" title=" " alt="" coords="332,523,389,523,389,528,332,528"/>
+<area shape="rect" id="Node000025" href="$structGameEngine_1_1Renderable.html" title="Component containing all data necessary for sprite rendering and animation." alt="" coords="380,563,550,589"/>
+<area shape="poly" id="edge24_Node000024_Node000025" title=" " alt="" coords="342,573,379,573,379,579,342,579"/>
+<area shape="rect" id="Node000027" href="$structGameEngine_1_1ScoreValue.html" title=" " alt="" coords="380,613,550,640"/>
+<area shape="poly" id="edge26_Node000026_Node000027" title=" " alt="" coords="342,624,379,624,379,629,342,629"/>
+<area shape="rect" id="Node000029" href="$structGameEngine_1_1Text.html" title=" " alt="" coords="400,664,530,691"/>
+<area shape="poly" id="edge28_Node000028_Node000029" title=" " alt="" coords="321,675,400,675,400,680,321,680"/>
+<area shape="rect" id="Node000031" href="$structGameEngine_1_1Velocity.html" title="Component representing an entity&#39;s movement speed with maximum constraints." alt="" coords="390,715,540,741"/>
+<area shape="poly" id="edge30_Node000030_Node000031" title=" " alt="" coords="332,725,390,725,390,731,332,731"/>
+<area shape="rect" id="Node000033" href="$structGameEngine_1_1Weapon.html" title=" " alt="" coords="390,765,541,792"/>
+<area shape="poly" id="edge32_Node000032_Node000033" title=" " alt="" coords="332,776,389,776,389,781,332,781"/>
+</map>
