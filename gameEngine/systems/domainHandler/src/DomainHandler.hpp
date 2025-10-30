@@ -4,6 +4,7 @@
 
 #include "../../../components/domain/src/Domain.hpp"
 #include "../../../components/position/src/Position.hpp"
+#include "../../../components/collider/src/Collider.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -51,7 +52,7 @@ class DomainHandler : public System<DomainHandler>
      */
     DomainHandler()
     {
-        requireComponents<GameEngine::Position, GameEngine::Domain>();
+        requireComponents<GameEngine::Position, GameEngine::Domain, GameEngine::Collider>();
     }
 
     /**
@@ -86,10 +87,10 @@ class DomainHandler : public System<DomainHandler>
     {
         updateCount++;
 
-        registry.each<Position, Domain>(
-            [dt, &registry](auto e, Position& pos, Domain& domain) {
-                if (pos.pos.x < domain.ax || pos.pos.x > domain.bx ||
-                    pos.pos.y < domain.ay || pos.pos.y > domain.by) {
+        registry.each<Position, Domain, Collider>(
+            [dt, &registry](auto e, Position& pos, Domain& domain, Collider& collider) {
+                if (pos.pos.x < domain.ax || pos.pos.x + collider.size.x > domain.bx ||
+                    pos.pos.y < domain.ay || pos.pos.y + collider.size.y > domain.by) {
                     registry.destroy(e);
                 }
             });
