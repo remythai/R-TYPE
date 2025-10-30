@@ -64,7 +64,7 @@ namespace GameEngine {
  *         for (int code : input.inputs) {
  *             if (code == KEY_LEFT) acc.x = -10.0f;
  *             if (code == KEY_RIGHT) acc.x = 10.0f;
- *             if (code == KEY_SPACE) /* fire weapon */
+ *             if (code == KEY_SPACE)
 ;
 *
 }
