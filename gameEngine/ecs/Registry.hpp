@@ -386,6 +386,7 @@ class Registry
             return 0;
         return componentPools[id]->size();
     }
+    int score = 0;
 
    private:
     GameEngine::GameClock
