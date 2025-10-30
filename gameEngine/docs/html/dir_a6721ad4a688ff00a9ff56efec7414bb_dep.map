@@ -1,4 +1,7 @@
 <map id="components/health/src" name="components/health/src">
 <area shape="rect" id="node1" href="dir_a6721ad4a688ff00a9ff56efec7414bb.html" title="src" alt="" coords="27,53,66,80"/>
+<area shape="rect" id="node2" href="dir_eafb92770fbc727220bdaa0b1292f771.html" title="ecs" alt="" coords="26,128,68,155"/>
+<area shape="poly" id="edge1" href="dir_000033_000012.html" alt="" coords="49,81,49,112,44,112,44,81"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000033_000012.html" title="1" alt="" coords="52,101,59,117"/>
 <area shape="rect" id="clust1" href="dir_1400034c277d5f5abfb62b4bd021b743.html" title="health" alt="" coords="16,16,77,91"/>
 </map>

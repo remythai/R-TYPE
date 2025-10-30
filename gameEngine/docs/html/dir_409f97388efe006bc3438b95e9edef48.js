@@ -6,7 +6,7 @@ var dir_409f97388efe006bc3438b95e9edef48 =
     [ "collider", "dir_1ff88d99f58100638d3dc98d112763e3.html", "dir_1ff88d99f58100638d3dc98d112763e3" ],
     [ "damage", "dir_c38972b1f2950f67621d164bceb32698.html", "dir_c38972b1f2950f67621d164bceb32698" ],
     [ "domain", "dir_1cd45358307b6f205726a39c50e33898.html", "dir_1cd45358307b6f205726a39c50e33898" ],
-    [ "dropOnDeath", "dir_96476495b74fea5076faa25c62208a05.html", "dir_96476495b74fea5076faa25c62208a05" ],
+    [ "gravity", "dir_1c3bc325184f126e07bf6049004046c0.html", "dir_1c3bc325184f126e07bf6049004046c0" ],
     [ "health", "dir_1400034c277d5f5abfb62b4bd021b743.html", "dir_1400034c277d5f5abfb62b4bd021b743" ],
     [ "inputControlled", "dir_e90d1c41c8cdf9ad6018804044d78e41.html", "dir_e90d1c41c8cdf9ad6018804044d78e41" ],
     [ "lifetime", "dir_c65a46b1b51094219d0c23f1483ec233.html", "dir_c65a46b1b51094219d0c23f1483ec233" ],

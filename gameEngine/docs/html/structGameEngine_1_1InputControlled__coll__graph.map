@@ -1,0 +1,7 @@
+<map id="GameEngine::InputControlled" name="GameEngine::InputControlled">
+<area shape="rect" id="Node000001" title="Component marking entities as controllable by player input." alt="" coords="9,155,202,181"/>
+<area shape="rect" id="Node000002" href="$classComponent.html" title=" " alt="" coords="5,80,206,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,122,108,154,103,154,103,122"/>
+<area shape="rect" id="Node000003" href="$classIComponent.html" title="Interface de base pour tous les composants ECS." alt="" coords="59,5,152,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="108,48,108,80,103,80,103,48"/>
+</map>

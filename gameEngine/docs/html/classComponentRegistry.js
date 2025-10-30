@@ -9,7 +9,7 @@ var classComponentRegistry =
     [ "instance", "classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce", null ],
     [ "idToName", "classComponentRegistry.html#a3c0b7d599095d782671118e88a8b7c69", null ],
     [ "INVALID_ID", "classComponentRegistry.html#a03508130a0b15db4d714be20a58b4526", null ],
-    [ "nameToID", "classComponentRegistry.html#a9d24c7cf736da3a726da80b7c78c0c3d", null ],
+    [ "nameToID", "classComponentRegistry.html#a540fb96a493026cd1c24e5f36dfe2e79", null ],
     [ "nextID", "classComponentRegistry.html#a5049c9b0055865beb6ef064f4038589d", null ],
-    [ "typeToID", "classComponentRegistry.html#a5fbc366c8bb01e0940d626c915f7c85a", null ]
+    [ "typeToID", "classComponentRegistry.html#a33faf367863e126d76f1796e9a95e062", null ]
 ];
