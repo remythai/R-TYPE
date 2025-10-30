@@ -13,6 +13,12 @@
 #include <thread>
 #include <vector>
 
+/**
+ * @brief Converts a float to a vector of 4 bytes
+ * 
+ * @param value The float value to convert
+ * @return std::vector<uint8_t> A vector containing the 4 bytes representing the float
+ */
 std::vector<uint8_t> floatToBytes(float value)
 {
     std::vector<uint8_t> bytes(4);
@@ -25,6 +31,16 @@ std::vector<uint8_t> floatToBytes(float value)
     return bytes;
 }
 
+/**
+ * @brief Creates a player entity in the ECS with appropriate components
+ * 
+ * Creates different player configurations based on the current game mode
+ * (flappyByte or RType). Adds components for input control, position,
+ * velocity, rendering, collision, health, and damage.
+ * 
+ * @param playerId The ID of the player (0-3)
+ * @return EntityManager::Entity The created player entity
+ */
 rtype::NetworkServer::NetworkServer(
     unsigned short port, std::string const& game)
     : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
@@ -41,6 +57,11 @@ rtype::NetworkServer::NetworkServer(
     initECS();
 }
 
+/**
+ * @brief Destructor for NetworkServer
+ * 
+ * Cleans up resources, stops the server, and clears client connections.
+ */
 rtype::NetworkServer::~NetworkServer()
 {
     _running = false;
@@ -58,6 +79,11 @@ rtype::NetworkServer::~NetworkServer()
     std::cout << "Server stopped.\n";
 }
 
+/**
+ * @brief Initializes the ECS with appropriate systems
+ * 
+ * Sets up the ECS registry with systems based on the current game mode.
+ */
 void rtype::NetworkServer::initECS()
 {
     if (this->_game == std::string("flappyByte")) {
@@ -81,12 +107,23 @@ void rtype::NetworkServer::initECS()
     };
 }
 
+/**
+ * @brief Updates the ECS with a given delta time
+ * 
+ * @param dt The delta time since the last update
+ */
 void rtype::NetworkServer::updateECS(float dt)
 {
     std::lock_guard<std::mutex> lock(_registryMutex);
     _registry->update(dt);
 }
 
+/**
+ * @brief Runs the network server
+ * 
+ * Starts the server, handles incoming packets, updates the ECS,
+ * checks for inactive players, and broadcasts snapshots.
+ */
 void rtype::NetworkServer::run()
 {
     _running = true;
@@ -165,6 +202,12 @@ void rtype::NetworkServer::run()
     _ioContext.run();
 }
 
+/**
+ * @brief Cleans up inactive players who have timed out
+ * 
+ * Checks each player slot for inactivity exceeding 30 seconds.
+ * Destroys the player's entity, clears the slot, and broadcasts a TIMEOUT packet.
+ */
 void rtype::NetworkServer::cleanInactivePlayers()
 {
     std::lock_guard<std::mutex> lock(_playerSlotsMutex);
@@ -222,6 +265,13 @@ void rtype::NetworkServer::cleanInactivePlayers()
     }
 }
 
+/**
+ * @brief Asynchronously receives incoming UDP packets
+ * 
+ * Sets up an asynchronous receive operation on the UDP socket.
+ * Upon receiving a packet, it extracts the packet type, ID, timestamp,
+ * and payload, then dispatches it to the appropriate handler.
+ */
 void rtype::NetworkServer::doReceive()
 {
     auto buffer = std::make_shared<std::vector<uint8_t>>(1024);
@@ -250,6 +300,12 @@ void rtype::NetworkServer::doReceive()
         });
 }
 
+/**
+ * @brief Converts a PacketType enum to its string representation
+ * 
+ * @param type The PacketType to convert
+ * @return std::string The string representation of the PacketType
+ */
 std::string rtype::NetworkServer::packetTypeToString(rtype::PacketType type)
 {
     switch (type) {
@@ -270,6 +326,14 @@ std::string rtype::NetworkServer::packetTypeToString(rtype::PacketType type)
     }
 }
 
+/**
+ * @brief Sends a PLAYER_ID_ASSIGNMENT packet to a client
+ * 
+ * Constructs and sends a packet assigning a player ID to the specified client endpoint.
+ * 
+ * @param clientEndpoint The endpoint of the client to send the packet to
+ * @param playerId The player ID to assign
+ */
 void rtype::NetworkServer::sendPlayerIdAssignment(
     const asio::ip::udp::endpoint& clientEndpoint, uint8_t playerId)
 {
@@ -290,6 +354,11 @@ void rtype::NetworkServer::sendPlayerIdAssignment(
               << ") to " << clientEndpoint << std::endl;
 }
 
+/**
+ * @brief Counts the number of active players connected to the server
+ * 
+ * @return int The count of active players
+ */
 int rtype::NetworkServer::countActivePlayers() const
 {
     int count = 0;
@@ -300,6 +369,11 @@ int rtype::NetworkServer::countActivePlayers() const
     return count;
 }
 
+/**
+ * @brief Broadcasts a message to all connected clients
+ * 
+ * @param message The message to broadcast
+ */
 void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
 {
     std::lock_guard<std::mutex> lock(_clientsMutex);
@@ -307,6 +381,14 @@ void rtype::NetworkServer::broadcast(const std::vector<uint8_t>& message)
         _socket.send_to(asio::buffer(message), endpoint);
 }
 
+/**
+ * @brief Serializes the current ECS state into a snapshot packet
+ * 
+ * Gathers the state of all entities with Renderable and Position components
+ * and constructs a snapshot packet to be sent to clients.
+ * 
+ * @return std::vector<uint8_t> The serialized snapshot packet
+ */
 std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
 {
     std::lock_guard<std::mutex> lock(_registryMutex);
@@ -354,6 +436,11 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
     return snapshot;
 }
 
+/**
+ * @brief Broadcasts the current ECS snapshot to all connected clients
+ * 
+ * Serializes the ECS state and sends the snapshot packet to each client.
+ */
 void rtype::NetworkServer::broadcastSnapshot()
 {
     auto snapshot = serializeSnapshot();
