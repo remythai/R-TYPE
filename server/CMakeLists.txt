@@ -46,7 +46,6 @@ endif()
 if(ENABLE_TESTS)
     message(STATUS "Tests are enabled")
 
-    # GOOGLE TEST
     FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/refs/heads/main.zip
@@ -86,7 +85,6 @@ else()
     message(STATUS "Tests are disabled (use -DENABLE_TESTS=ON to enable)")
 endif()
 
-# Pour lancer les tests :
 # cmake -B build -DENABLE_TESTS=ON .
 # cmake --build build
 # ctest --test-dir build
