@@ -16,11 +16,11 @@
 
 /**
  * @brief Creates a player entity in the ECS with appropriate components
- * 
+ *
  * Creates different player configurations based on the current game mode
  * (flappyByte or RType). Adds components for input control, position,
  * velocity, rendering, collision, health, and damage.
- * 
+ *
  * @param playerId The ID of the player (0-3)
  * @return EntityManager::Entity The created player entity
  */
@@ -102,11 +102,11 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 
 /**
  * @brief Creates enemy entities with random positioning
- * 
+ *
  * Creates different enemy configurations based on the current game mode.
  * For flappyByte, creates obstacle patterns with gaps.
  * For RType, creates a single enemy at a random vertical position.
- * 
+ *
  * @return EntityManager::Entity Returns 1 after enemy creation
  */
 EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
@@ -199,10 +199,10 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
 
 /**
  * @brief Destroys a player entity and broadcasts the death event
- * 
+ *
  * Removes the player entity from the ECS registry, clears the player slot,
  * and sends a KILLED packet to all connected clients.
- * 
+ *
  * @param playerId The ID of the player to destroy (0-3)
  */
 void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
@@ -245,10 +245,10 @@ void rtype::NetworkServer::destroyPlayerEntity(uint8_t playerId)
 
 /**
  * @brief Applies input actions to a player's entity
- * 
+ *
  * Updates the InputControlled component of the player's entity based on
  * the received key code and action (press/release).
- * 
+ *
  * @param playerId The ID of the player (0-3)
  * @param keyCode The key code of the input action
  * @param action The action type (1 for press, 0 for release)
