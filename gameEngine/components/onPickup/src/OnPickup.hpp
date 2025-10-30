@@ -62,16 +62,16 @@ namespace GameEngine {
  * void onCollision(Entity player, Entity pickup) {
  *     auto& onPickup = pickup.get<OnPickup>();
  *     auto& health = player.get<Health>();
- *     
+ *
  *     // Apply instant bonuses
  *     health.currentHp += onPickup.hpBonus;
  *     health.maxHp += onPickup.hpMaxBonus;
- *     
+ *
  *     // Register temporary buffs
  *     if (onPickup.duration > 0) {
  *         registerBuff(player, onPickup);
  *     }
- *     
+ *
  *     // Remove pickup entity
  *     registry.destroy(pickup);
  * }

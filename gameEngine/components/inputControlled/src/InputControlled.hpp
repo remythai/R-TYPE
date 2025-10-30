@@ -64,10 +64,13 @@ namespace GameEngine {
  *         for (int code : input.inputs) {
  *             if (code == KEY_LEFT) acc.x = -10.0f;
  *             if (code == KEY_RIGHT) acc.x = 10.0f;
- *             if (code == KEY_SPACE) /* fire weapon */;
- *         }
- *         input.inputs.clear();  // Process once per frame
- *     });
+ *             if (code == KEY_SPACE) /* fire weapon */
+;
+*
+}
+*input.inputs.clear();  // Process once per frame
+*
+});
  * ```
  *
  * @note
@@ -79,43 +82,43 @@ namespace GameEngine {
  * @see Velocity
  */
 struct InputControlled : public Component<InputControlled>
-{
-    /**
-     * @brief Vector storing input codes received this frame.
-     *
-     * Populated by input system, consumed by game logic.
-     * Typically cleared each frame after processing.
-     * Can store multiple inputs for combo detection.
-     */
-    std::vector<int> inputs;
+ {
+     /**
+      * @brief Vector storing input codes received this frame.
+      *
+      * Populated by input system, consumed by game logic.
+      * Typically cleared each frame after processing.
+      * Can store multiple inputs for combo detection.
+      */
+     std::vector<int> inputs;
 
-    /**
-     * @brief Flag indicating if entity has received input at least once.
-     *
-     * Used for:
-     * - Tutorial triggers ("player has started playing")
-     * - Lazy initialization of gameplay systems
-     * - Distinguishing between "no input yet" vs "no input this frame"
-     *
-     * Set to true on first input and never reset.
-     */
-    bool firstInput;
+     /**
+      * @brief Flag indicating if entity has received input at least once.
+      *
+      * Used for:
+      * - Tutorial triggers ("player has started playing")
+      * - Lazy initialization of gameplay systems
+      * - Distinguishing between "no input yet" vs "no input this frame"
+      *
+      * Set to true on first input and never reset.
+      */
+     bool firstInput;
 
-    /**
-     * @brief Constructs an InputControlled component with empty state.
-     *
-     * @post Component initialized with no inputs and firstInput = false.
-     */
-    InputControlled() : firstInput(false) {}
+     /**
+      * @brief Constructs an InputControlled component with empty state.
+      *
+      * @post Component initialized with no inputs and firstInput = false.
+      */
+     InputControlled() : firstInput(false) {}
 
-    /**
-     * @brief Component name for reflection and debugging.
-     */
-    static constexpr const char* Name = "InputControlled";
+     /**
+      * @brief Component name for reflection and debugging.
+      */
+     static constexpr const char* Name = "InputControlled";
 
-    /**
-     * @brief Component version for serialization compatibility.
-     */
-    static constexpr const char* Version = "1.0.0";
-};
-}  // namespace GameEngine
+     /**
+      * @brief Component version for serialization compatibility.
+      */
+     static constexpr const char* Version = "1.0.0";
+ };
+ }  // namespace GameEngine

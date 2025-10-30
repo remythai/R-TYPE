@@ -13,7 +13,7 @@
 
 /**
  * @brief Trims whitespace from the beginning and end of a string
- * 
+ *
  * @param str The string to trim
  * @return std::string The trimmed string
  */
@@ -28,7 +28,7 @@ static std::string trim(const std::string& str)
 
 /**
  * @brief Extracts a JSON value for a given key within a specified range
- * 
+ *
  * @param content The JSON content as a string
  * @param key The key to search for
  * @param start The starting position in the content
@@ -57,7 +57,7 @@ static std::string extractJSONValue(
 
 /**
  * @brief Parses a JSON string value for a given key
- * 
+ *
  * @param content The JSON content as a string
  * @param key The key to search for
  * @param start The starting position in the content
@@ -83,12 +83,13 @@ static std::string parseJSONString(
 
 /**
  * @brief Parses a JSON array of floats for a given key
- * 
+ *
  * @param content The JSON content as a string
  * @param key The key to search for
  * @param start The starting position in the content
  * @param end The ending position in the content
- * @return std::array<float, 4> Array containing the parsed float values (x, y, width, height)
+ * @return std::array<float, 4> Array containing the parsed float values (x, y,
+ * width, height)
  */
 static std::array<float, 4> parseJSONArray(
     const std::string& content, const std::string& key, size_t start,
@@ -120,10 +121,10 @@ static std::array<float, 4> parseJSONArray(
 
 /**
  * @brief Loads enemy spawn data from a JSON file
- * 
+ *
  * Parses a JSON file containing enemy entities and populates the spawn list.
  * Enemies are sorted by spawn time after loading.
- * 
+ *
  * @param filepath Path to the JSON file containing enemy data
  */
 void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
@@ -194,7 +195,7 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 
 /**
  * @brief Checks game time and spawns enemies when their spawn time is reached
- * 
+ *
  * Iterates through the spawn list and creates enemies whose spawn time
  * is less than or equal to the current game time.
  */
@@ -213,11 +214,13 @@ void rtype::NetworkServer::checkAndSpawnEnemies()
 
 /**
  * @brief Creates an enemy entity from spawn data
- * 
+ *
  * Instantiates an enemy entity with components based on its type.
- * Different enemy types have different velocities, health, and animation speeds.
- * 
- * @param data The enemy spawn data containing position, type, and visual properties
+ * Different enemy types have different velocities, health, and animation
+ * speeds.
+ *
+ * @param data The enemy spawn data containing position, type, and visual
+ * properties
  * @return EntityManager::Entity The created enemy entity
  */
 EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
