@@ -103,7 +103,8 @@ void rtype::NetworkServer::initECS()
     _registry->addSystem<GameEngine::ApplyScore>(3);
     GameEngine::Death& deathSystem = _registry->addSystem<GameEngine::Death>(4);
     _registry->addSystem<GameEngine::DomainHandler>(5);
-    _registry->addSystem<GameEngine::Animation>(6);
+    _registry->addSystem<GameEngine::SinusoidalAI>(6);
+    _registry->addSystem<GameEngine::Animation>(7);
 
     deathSystem.onPlayerDeath = [this](EntityManager::Entity e) {
         this->handlePlayerDeath(e);
