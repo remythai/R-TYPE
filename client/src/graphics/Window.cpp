@@ -12,6 +12,18 @@
 
 #include <iostream>
 
+/**
+ * @brief Constructs a Window with a given title, width, and height.
+ *
+ * @param title The window title.
+ * @param width Width of the window in pixels.
+ * @param height Height of the window in pixels.
+ *
+ * @details
+ * Initializes the SFML RenderWindow and sets a framerate limit of 60 FPS.
+ * Also initializes ImGui-SFML for GUI rendering. If ImGui initialization fails,
+ * an error message is printed.
+ */
 CLIENT::Window::Window(
     const std::string &title, unsigned int width, unsigned int height)
     : _window(sf::VideoMode(sf::Vector2u{width, height}), title),
@@ -26,16 +38,35 @@ CLIENT::Window::Window(
     }
 }
 
+/**
+ * @brief Destructor for the Window class.
+ *
+ * @details
+ * Shuts down ImGui-SFML and releases any resources associated with the window.
+ */
 CLIENT::Window::~Window()
 {
     ImGui::SFML::Shutdown();
 }
 
+/**
+ * @brief Checks if the window is open.
+ *
+ * @return True if the window is open, false otherwise.
+ */
 bool CLIENT::Window::isOpen() const
 {
     return _window.isOpen();
 }
 
+/**
+ * @brief Polls events from the window and processes input.
+ *
+ * @details
+ * Handles window close events, key input for player actions, and forwards
+ * events to ImGui and the keybind menu if it is open. Updates delta time
+ * for the current frame.
+ */
 void CLIENT::Window::pollEvents()
 {
     if (!_window.isOpen()) {
@@ -132,6 +163,9 @@ void CLIENT::Window::pollEvents()
     }
 }
 
+/**
+ * @brief Clears the window with a black color.
+ */
 void CLIENT::Window::clear()
 {
     if (_window.isOpen()) {
@@ -139,6 +173,12 @@ void CLIENT::Window::clear()
     }
 }
 
+/**
+ * @brief Displays the contents of the window.
+ *
+ * @details
+ * Renders ImGui contents and swaps the window buffers.
+ */
 void CLIENT::Window::display()
 {
     if (_window.isOpen()) {
@@ -147,21 +187,45 @@ void CLIENT::Window::display()
     }
 }
 
+/**
+ * @brief Retrieves the underlying SFML RenderWindow.
+ *
+ * @return Reference to the sf::RenderWindow.
+ */
 sf::RenderWindow &CLIENT::Window::getWindow()
 {
     return _window;
 }
 
+/**
+ * @brief Retrieves the list of pending actions for this frame.
+ *
+ * @return Reference to the vector of pending actions.
+ */
 const std::vector<std::string> &CLIENT::Window::getPendingActions() const
 {
     return _pendingActions;
 }
 
+/**
+ * @brief Retrieves the delta time of the current frame.
+ *
+ * @return Delta time in seconds.
+ */
 float CLIENT::Window::getDeltaTime() const
 {
     return _deltaTime;
 }
 
+/**
+ * @brief Sets the keybind manager and menu components for the window.
+ *
+ * @param manager Pointer to the KeybindManager.
+ * @param menu Pointer to the KeybindMenu.
+ *
+ * @details
+ * These components are used to handle input events and display the keybind menu.
+ */
 void CLIENT::Window::setKeybindComponents(
     KeybindManager *manager, KeybindMenu *menu)
 {
