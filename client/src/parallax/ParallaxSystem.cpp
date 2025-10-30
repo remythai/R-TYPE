@@ -9,12 +9,25 @@
 
 #include <iostream>
 
+/**
+ * @brief Constructs a ParallaxSystem.
+ *
+ * @param entityManager Pointer to the EntityManager, used to create and manage parallax entities.
+ * @param resourceManager Pointer to the ResourceManager, used to load textures for layers.
+ */
 CLIENT::ParallaxSystem::ParallaxSystem(
     EntityManager* entityManager, ResourceManager* resourceManager)
     : _entityManager(entityManager), _resourceManager(resourceManager)
 {
 }
 
+/**
+ * @brief Adds a parallax layer definition.
+ *
+ * @param texturePath Path to the texture for this layer.
+ * @param scrollSpeed Horizontal scroll speed of the layer.
+ * @param depth Depth value of the layer (affects rendering order).
+ */
 void CLIENT::ParallaxSystem::addLayer(
     const std::string& texturePath, float scrollSpeed, float depth)
 {
@@ -25,6 +38,9 @@ void CLIENT::ParallaxSystem::addLayer(
     _layers.push_back(layer);
 }
 
+/**
+ * @brief Instantiates all layers by creating the necessary parallax entities and sprites.
+ */
 void CLIENT::ParallaxSystem::createLayers()
 {
     for (auto& layer : _layers) {
@@ -32,6 +48,11 @@ void CLIENT::ParallaxSystem::createLayers()
     }
 }
 
+/**
+ * @brief Creates the individual tiles (sprites/entities) for a given parallax layer.
+ *
+ * @param layer Reference to the ParallaxLayer to populate.
+ */
 void CLIENT::ParallaxSystem::createTilesForLayer(ParallaxLayer& layer)
 {
     sf::Texture* texture = _resourceManager->getTexture(layer.texturePath);
@@ -67,6 +88,11 @@ void CLIENT::ParallaxSystem::createTilesForLayer(ParallaxLayer& layer)
     }
 }
 
+/**
+ * @brief Updates all parallax layers by moving their tiles and looping them as necessary.
+ *
+ * @param deltaTime Time elapsed since the last frame (in seconds).
+ */
 void CLIENT::ParallaxSystem::update(float deltaTime)
 {
     for (auto& layer : _layers) {
@@ -101,7 +127,12 @@ void CLIENT::ParallaxSystem::update(float deltaTime)
         }
     }
 }
+
+/**
+ * @brief Clears all layers and removes their references.
+ */
 void CLIENT::ParallaxSystem::clear()
 {
     _layers.clear();
 }
+
