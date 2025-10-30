@@ -10,6 +10,14 @@
 #include <cmath>
 #include <iostream>
 
+/**
+ * @brief Constructs the KeybindMenu.
+ *
+ * @param keybindManager Reference to the KeybindManager to manage keybinds.
+ *
+ * @details
+ * Initializes font, UI elements, and sets default states for the menu.
+ */
 CLIENT::KeybindMenu::KeybindMenu(KeybindManager& keybindManager)
     : _keybindManager(keybindManager),
       _colorBlindFilter(nullptr),
@@ -32,6 +40,12 @@ CLIENT::KeybindMenu::KeybindMenu(KeybindManager& keybindManager)
     initializeUI();
 }
 
+/**
+ * @brief Initializes all UI elements for the keybind menu.
+ *
+ * @details
+ * Sets up buttons, labels, texts, positions, colors, and sizes.
+ */
 void CLIENT::KeybindMenu::initializeUI()
 {
     _background.setSize(sf::Vector2f(800, 700));
@@ -118,6 +132,12 @@ void CLIENT::KeybindMenu::initializeUI()
     updateUI();
 }
 
+/**
+ * @brief Updates the keybind menu UI texts and buttons.
+ *
+ * @details
+ * Refreshes the action names, bound key texts, and color blind mode label.
+ */
 void CLIENT::KeybindMenu::updateUI()
 {
     _actionTexts.clear();
@@ -163,6 +183,9 @@ void CLIENT::KeybindMenu::updateUI()
     }
 }
 
+/**
+ * @brief Opens the keybind menu.
+ */
 void CLIENT::KeybindMenu::open()
 {
     _isOpen = true;
@@ -170,17 +193,33 @@ void CLIENT::KeybindMenu::open()
     updateUI();
 }
 
+/**
+ * @brief Closes the keybind menu.
+ */
 void CLIENT::KeybindMenu::close()
 {
     _isOpen = false;
     _waitingForKey.reset();
 }
 
+/**
+ * @brief Checks if the keybind menu is currently open.
+ *
+ * @return True if open, false otherwise.
+ */
 bool CLIENT::KeybindMenu::isOpen() const
 {
     return _isOpen;
 }
 
+/**
+ * @brief Handles input events for the keybind menu.
+ *
+ * @param event SFML event to process.
+ *
+ * @details
+ * Handles keyboard input for rebinding keys and mouse clicks on buttons.
+ */
 void CLIENT::KeybindMenu::handleEvent(const sf::Event& event)
 {
     if (!_isOpen)
@@ -214,6 +253,14 @@ void CLIENT::KeybindMenu::handleEvent(const sf::Event& event)
     }
 }
 
+/**
+ * @brief Handles mouse clicks for UI buttons.
+ *
+ * @param mousePos Position of the mouse click.
+ *
+ * @details
+ * Checks if the click intersects with any action key, save, reset, close, or color blind buttons.
+ */
 void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
 {
     auto actions = _keybindManager.getAllActions();
@@ -262,6 +309,13 @@ void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
     }
 }
 
+/**
+ * @brief Checks if a point is inside a rectangle.
+ *
+ * @param point Point to check.
+ * @param rect Rectangle to check against.
+ * @return True if point is inside the rectangle, false otherwise.
+ */
 bool CLIENT::KeybindMenu::isPointInRect(
     const sf::Vector2i& point, const sf::RectangleShape& rect) const
 {
@@ -270,6 +324,14 @@ bool CLIENT::KeybindMenu::isPointInRect(
         sf::Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
 }
 
+/**
+ * @brief Updates the menu state each frame.
+ *
+ * @param deltaTime Time elapsed since last frame in seconds.
+ *
+ * @details
+ * Handles blinking effect for waiting-for-key state.
+ */
 void CLIENT::KeybindMenu::update(float deltaTime)
 {
     if (!_isOpen)
@@ -278,6 +340,14 @@ void CLIENT::KeybindMenu::update(float deltaTime)
     _blinkTimer += deltaTime;
 }
 
+/**
+ * @brief Renders the keybind menu.
+ *
+ * @param target The SFML render target to draw onto.
+ *
+ * @details
+ * Draws all buttons, texts, and highlights waiting-for-key states.
+ */
 void CLIENT::KeybindMenu::render(sf::RenderTarget& target)
 {
     if (!_isOpen)
