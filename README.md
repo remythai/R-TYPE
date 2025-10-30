@@ -83,8 +83,7 @@ Make sure you have:
 - **CMake ≥ 3.20**
 - **C++17** (or higher)
 - **Asio** (or Boost.Asio)
-- **SFML** or **Raylib** (depending on your rendering engine)
-- **Conan** or **Vcpkg** (optional, for library management)
+- **SFML** (3.0.2)
 
 ### Compilation
 
