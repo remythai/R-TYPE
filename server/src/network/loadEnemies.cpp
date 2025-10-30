@@ -131,9 +131,8 @@ int rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 {
     std::ifstream file(filepath);
     if (!file.is_open()) {
-        std::cerr << "[SERVER] ERROR: Could not open enemy file: " << filepath
-                  << std::endl;
-        return 84;
+        throw NetworkServerError("Could not open enemy file : " + filepath);
+        return;
     }
 
     std::string content(
@@ -145,15 +144,15 @@ int rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 
     size_t entitiesPos = content.find("\"entities\"");
     if (entitiesPos == std::string::npos) {
-        std::cerr << "[SERVER] No 'entities' array found in JSON" << std::endl;
-        return 84;
+        throw NetworkServerError("No 'entities' array found in JSON");
+        return;
     }
 
     size_t arrayStart = content.find('[', entitiesPos);
     size_t arrayEnd = content.rfind(']');
     if (arrayStart == std::string::npos || arrayEnd == std::string::npos) {
-        std::cerr << "[SERVER] Invalid JSON format" << std::endl;
-        return 84;
+        throw NetworkServerError("Invalid JSON format");
+        return;
     }
 
     size_t pos = arrayStart + 1;

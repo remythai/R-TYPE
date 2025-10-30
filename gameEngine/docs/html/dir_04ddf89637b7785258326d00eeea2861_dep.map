@@ -1,4 +1,7 @@
 <map id="components/AIControlled/src" name="components/AIControlled/src">
 <area shape="rect" id="node1" href="dir_04ddf89637b7785258326d00eeea2861.html" title="src" alt="" coords="43,53,82,80"/>
+<area shape="rect" id="node2" href="dir_eafb92770fbc727220bdaa0b1292f771.html" title="ecs" alt="" coords="42,128,84,155"/>
+<area shape="poly" id="edge1" href="dir_000027_000012.html" alt="" coords="65,81,65,112,60,112,60,81"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000027_000012.html" title="1" alt="" coords="68,101,75,117"/>
 <area shape="rect" id="clust1" href="dir_e88969f3b5f51b6fca4d6e7a1d8bfbac.html" title="AIControlled" alt="" coords="16,16,109,91"/>
 </map>

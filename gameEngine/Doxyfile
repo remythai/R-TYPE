@@ -7,7 +7,7 @@ CREATE_SUBDIRS         = NO
 
 # Input Files / Directories
 INPUT                  = .
-FILE_PATTERNS          = *.hpp *.h *.cpp *.c
+FILE_PATTERNS          = *.hpp *.h *.cpp *.c *.dox
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */build/* */tests/*
 

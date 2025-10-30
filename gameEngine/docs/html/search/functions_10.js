@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['vec2_0',['vec2',['../structvec2.html#ae12a1a221eca3561809600a11b58eaa3',1,'vec2::vec2()'],['../structvec2.html#a9486933da4d4d819a8b99bae91066cb3',1,'vec2::vec2(float x, float y)']]],
-  ['velocity_1',['Velocity',['../structGameEngine_1_1Velocity.html#ab333271358b84487a9be25d4ad714e01',1,'GameEngine::Velocity']]],
-  ['view_2',['view',['../classRegistry.html#a864a9feb3c9cffc43296ae8bb1aa2e3a',1,'Registry']]]
+  ['update_0',['update',['../structGameEngine_1_1GameClock.html#a39969e09eba50f6b8ca8a7730fddb294',1,'GameEngine::GameClock::update()'],['../classRegistry.html#a72e3069524561173ad592a2f7869f018',1,'Registry::update()'],['../classISystem.html#aa731518becaa5b57f565c41793b3d1ff',1,'ISystem::update()'],['../classSystem.html#a86dc64110bceef4ec791d0e34ddc8c9f',1,'System::update()']]],
+  ['updatesystemavailability_1',['updateSystemAvailability',['../classRegistry.html#a45f5c5548ea374a04a46308b2e1c5455',1,'Registry']]]
 ];

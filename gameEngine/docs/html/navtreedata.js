@@ -25,6 +25,7 @@
 var NAVTREE =
 [
   [ "GameEngine ECS", "index.html", [
+    [ "SparseSet Game Engine - Documentation", "index.html", "index" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ]
     ] ],
@@ -33,7 +34,7 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
@@ -45,8 +46,10 @@ var NAVTREE =
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
-        [ "Typedefs", "globals_type.html", null ]
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ],
     [ "Examples", "examples.html", "examples" ]
@@ -56,7 +59,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AIControlled_8hpp.html",
-"dir_e88969f3b5f51b6fca4d6e7a1d8bfbac.html"
+"classGameEngine_1_1FPMotion.html#adeee4196198d928de33feb2182396c85",
+"structGameEngine_1_1Collider.html#aa488352bdce0b3e8e1093b06feea2ab9"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

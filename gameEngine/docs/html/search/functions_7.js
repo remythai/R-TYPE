@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['inputcontrolled_0',['InputControlled',['../structGameEngine_1_1InputControlled.html#a3bc95b3fc6dcaefd266be4c9ff64bde2',1,'GameEngine::InputControlled']]],
-  ['inputhandler_1',['InputHandler',['../classGameEngine_1_1InputHandler.html#a8cd3e233efd22862f9c395cf9715d953',1,'GameEngine::InputHandler']]],
-  ['instance_2',['instance',['../classComponentRegistry.html#a18cad5dda10f4bb28fb6933f5aa85fce',1,'ComponentRegistry']]]
+  ['has_0',['has',['../classRegistry.html#acac1f1c8a740cfeb2b33a32cfd6ad83f',1,'Registry']]],
+  ['health_1',['Health',['../structGameEngine_1_1Health.html#a516a1a3bf9aa2509d517536eb0977256',1,'GameEngine::Health']]]
 ];

@@ -161,7 +161,7 @@ void rtype::NetworkServer::handleClientPacket(
             break;
 
         default:
-            std::cout << "[Unknown packet]";
+            throw NetworkServerError("Unknown packet type received");
             break;
     }
 
