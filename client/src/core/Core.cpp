@@ -28,6 +28,21 @@ static const std::vector<struct InputMapping> INPUT_MAPPINGS = {
     {"MOVE_RIGHT", CLIENT::KeyCode::RIGHT},
     {"SHOOT", CLIENT::KeyCode::SHOOT}};
 
+/**
+ * @brief Constructs a Core client instance and initializes the game.
+ *
+ * @param argv Command line arguments passed to the program.
+ *
+ * @details
+ * The constructor performs the following steps:
+ * - Parses command line arguments for hostname (-h) and port (-p).
+ * - Prompts the user to enter a username; defaults to "Player" if empty.
+ * - Initializes the keybind manager and loads key bindings from "keybinds.cfg".
+ * - Initializes network communication and registers callbacks.
+ * - Loads necessary game resources.
+ *
+ * @throws CoreError If required command line arguments are missing or invalid.
+ */
 CLIENT::Core::Core(char** argv)
     : _port(0),
       _running(false),
@@ -50,6 +65,13 @@ CLIENT::Core::Core(char** argv)
     loadResources();
 }
 
+/**
+ * @brief Destructs the Core client instance, stopping network communication.
+ *
+ * @details
+ * - Stops the running flag.
+ * - Waits for the network thread to finish if it is joinable.
+ */
 CLIENT::Core::~Core()
 {
     _running = false;
@@ -57,6 +79,20 @@ CLIENT::Core::~Core()
         _networkThread.join();
 }
 
+/**
+ * @brief Parses command line arguments to set hostname and port.
+ *
+ * @param argv Command line arguments.
+ *
+ * @throws CoreError If required arguments (-h or -p) are missing or invalid.
+ *
+ * @details
+ * Recognized arguments:
+ * - `-h <hostname>`: Specifies the server hostname.
+ * - `-p <port>`: Specifies the server port.
+ *
+ * Any missing or invalid arguments will result in a CoreError exception.
+ */
 void CLIENT::Core::parseCommandLineArgs(char** argv)
 {
     for (int i = 1; argv[i]; ++i) {
@@ -76,6 +112,15 @@ void CLIENT::Core::parseCommandLineArgs(char** argv)
         throw CoreError("Missing -p or -h argument");
 }
 
+/**
+ * @brief Initializes network client, sets up callbacks, and sends join request.
+ *
+ * @details
+ * - Creates a NetworkClient instance with the hostname and port.
+ * - Registers callbacks to handle incoming player IDs, events, snapshots, timeouts, and kills.
+ * - Sends a join request to the server with the current username.
+ * - Starts receiving data from the server.
+ */
 void CLIENT::Core::initializeNetwork()
 {
     _networkClient = std::make_unique<NetworkClient>(_hostname, _port);
@@ -88,6 +133,19 @@ void CLIENT::Core::initializeNetwork()
     std::cout << "[Core] Waiting for player ID from server...\n";
 }
 
+/**
+ * @brief Sets up all network event callbacks for the client.
+ *
+ * @details
+ * The following callbacks are registered:
+ * - `setOnPlayerIdReceived`: Calls `handlePlayerIdReceived` when the server assigns a player ID.
+ * - `setOnPlayerEvent`: Calls `handlePlayerEvent` on player events.
+ * - `setOnSnapshot`: Calls `handleSnapshotReceived` when receiving game state snapshots.
+ * - `setOnTimeout`: Pushes a timeout message to `_incomingMessages`.
+ * - `setOnKilled`: Pushes a killed message to `_incomingMessages`.
+ *
+ * @note Uses mutex `_incomingMutex` to safely push messages to the queue.
+ */
 void CLIENT::Core::setupNetworkCallbacks()
 {
     _networkClient->setOnPlayerIdReceived(
@@ -112,6 +170,17 @@ void CLIENT::Core::setupNetworkCallbacks()
     });
 }
 
+/**
+ * @brief Handles the reception of the player's assigned ID from the server.
+ *
+ * @param playerId The player ID assigned by the server.
+ *
+ * @details
+ * Updates the internal `_myPlayerId` variable, prints a log message, 
+ * and pushes a "PLAYER_ID" message into the incoming message queue.
+ *
+ * @note Uses `_incomingMutex` to safely push messages to the queue.
+ */
 void CLIENT::Core::handlePlayerIdReceived(uint8_t playerId)
 {
     _myPlayerId = playerId;
@@ -122,6 +191,18 @@ void CLIENT::Core::handlePlayerIdReceived(uint8_t playerId)
     _incomingMessages.push("PLAYER_ID:" + std::to_string(playerId));
 }
 
+/**
+ * @brief Handles player join or leave events from the server.
+ *
+ * @param playerId The ID of the player who joined or left.
+ * @param eventType 0 for join, 1 for leave.
+ *
+ * @details
+ * Pushes either a "PLAYER_JOIN" or "PLAYER_LEAVE" message into the 
+ * incoming message queue based on the event type.
+ *
+ * @note Thread-safe via `_incomingMutex`.
+ */
 void CLIENT::Core::handlePlayerEvent(uint8_t playerId, uint8_t eventType)
 {
     std::lock_guard<std::mutex> lock(_incomingMutex);
@@ -132,6 +213,15 @@ void CLIENT::Core::handlePlayerEvent(uint8_t playerId, uint8_t eventType)
     }
 }
 
+/**
+ * @brief Handles the reception of a game state snapshot from the server.
+ *
+ * @param payload A vector of bytes representing the serialized snapshot.
+ *
+ * @details
+ * Stores the snapshot in `_pendingSnapshot` and sets `_hasNewSnapshot` 
+ * to true. Thread-safe via `_snapshotMutex`.
+ */
 void CLIENT::Core::handleSnapshotReceived(const std::vector<uint8_t>& payload)
 {
     std::lock_guard<std::mutex> lock(_snapshotMutex);
@@ -139,6 +229,15 @@ void CLIENT::Core::handleSnapshotReceived(const std::vector<uint8_t>& payload)
     _hasNewSnapshot = true;
 }
 
+/**
+ * @brief Loads all game resources including textures and background music.
+ *
+ * @details
+ * Calls the following functions internally:
+ * - `loadGameTextures()`
+ * - `loadParallaxTextures()`
+ * - `loadBackgroundMusic()`
+ */
 void CLIENT::Core::loadResources()
 {
     loadGameTextures();
@@ -147,42 +246,42 @@ void CLIENT::Core::loadResources()
     std::cout << "Resources loaded\n";
 }
 
+/**
+ * @brief Loads the main game textures into the ResourceManager.
+ */
 void CLIENT::Core::loadGameTextures()
 {
     auto& rm = ResourceManager::getInstance();
 
-    rm.loadTexture(
-        "assets/sprites/r-typesheet42.png", "assets/sprites/r-typesheet42.png");
-    rm.loadTexture(
-        "assets/sprites/playerProjectiles.png",
-        "assets/sprites/playerProjectiles.png");
-    rm.loadTexture(
-        "assets/sprites/r-typesheet5.png", "assets/sprites/r-typesheet5.png");
-    rm.loadTexture(
-        "assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
-    rm.loadTexture(
-        "assets/sprites/r-typesheet10.png", "assets/sprites/r-typesheet10.png");
-    rm.loadTexture(
-        "assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
-    rm.loadTexture(
-        "assets/sprites/r-typesheet30a.png",
-        "assets/sprites/r-typesheet30a.png");
+    rm.loadTexture("assets/sprites/r-typesheet42.png", "assets/sprites/r-typesheet42.png");
+    rm.loadTexture("assets/sprites/playerProjectiles.png", "assets/sprites/playerProjectiles.png");
+    rm.loadTexture("assets/sprites/r-typesheet5.png", "assets/sprites/r-typesheet5.png");
+    rm.loadTexture("assets/sprites/r-typesheet9.png", "assets/sprites/r-typesheet9.png");
+    rm.loadTexture("assets/sprites/r-typesheet10.png", "assets/sprites/r-typesheet10.png");
+    rm.loadTexture("assets/sprites/r-typesheet11.png", "assets/sprites/r-typesheet11.png");
+    rm.loadTexture("assets/sprites/r-typesheet30a.png", "assets/sprites/r-typesheet30a.png");
 }
 
+/**
+ * @brief Loads parallax background textures into the ResourceManager.
+ */
 void CLIENT::Core::loadParallaxTextures()
 {
     auto& rm = ResourceManager::getInstance();
 
-    rm.loadTexture(
-        "assets/sprites/parallax/1.png", "assets/sprites/parallax/1.png");
-    rm.loadTexture(
-        "assets/sprites/parallax/2.png", "assets/sprites/parallax/2.png");
-    rm.loadTexture(
-        "assets/sprites/parallax/3.png", "assets/sprites/parallax/3.png");
-    rm.loadTexture(
-        "assets/sprites/parallax/4.png", "assets/sprites/parallax/4.png");
+    rm.loadTexture("assets/sprites/parallax/1.png", "assets/sprites/parallax/1.png");
+    rm.loadTexture("assets/sprites/parallax/2.png", "assets/sprites/parallax/2.png");
+    rm.loadTexture("assets/sprites/parallax/3.png", "assets/sprites/parallax/3.png");
+    rm.loadTexture("assets/sprites/parallax/4.png", "assets/sprites/parallax/4.png");
 }
 
+/**
+ * @brief Loads and starts the background music.
+ *
+ * @details
+ * Opens the "backgroundmusic.wav" file, sets looping and volume, and
+ * starts playback. Logs an error if the music cannot be loaded.
+ */
 void CLIENT::Core::loadBackgroundMusic()
 {
     _backgroundMusic = std::make_unique<sf::Music>();
@@ -195,6 +294,9 @@ void CLIENT::Core::loadBackgroundMusic()
     }
 }
 
+/**
+ * @brief Starts the main game loop including graphics and network threads.
+ */
 void CLIENT::Core::run()
 {
     _running = true;
@@ -205,6 +307,9 @@ void CLIENT::Core::run()
         _networkThread.join();
 }
 
+/**
+ * @brief The main network thread loop for sending outgoing messages.
+ */
 void CLIENT::Core::networkLoop()
 {
     std::cout << "[Network Thread] Started\n";
@@ -217,6 +322,13 @@ void CLIENT::Core::networkLoop()
     std::cout << "[Network Thread] Stopped\n";
 }
 
+/**
+ * @brief Processes all outgoing messages queued for the server.
+ *
+ * @details
+ * Currently handles messages that start with "INPUT:" and sends them
+ * via `sendInputMessage()`.
+ */
 void CLIENT::Core::processOutgoingMessages()
 {
     std::lock_guard<std::mutex> lock(_outgoingMutex);
@@ -231,6 +343,15 @@ void CLIENT::Core::processOutgoingMessages()
     }
 }
 
+/**
+ * @brief Sends an input action message to the server.
+ *
+ * @param msg The message string in the format "INPUT:<keyCode>:<action>".
+ *
+ * @details
+ * Extracts the key code and action from the message and sends it using the
+ * `_networkClient`. Does nothing if the player ID has not been assigned yet.
+ */
 void CLIENT::Core::sendInputMessage(const std::string& msg)
 {
     if (_myPlayerId == 255) {
@@ -245,6 +366,17 @@ void CLIENT::Core::sendInputMessage(const std::string& msg)
     _networkClient->sendInput(_myPlayerId, keyCode, action);
 }
 
+/**
+ * @brief Reads a 4-byte float from a serialized payload.
+ *
+ * @param payload The byte vector containing the serialized float.
+ * @param offset The current read offset; will be incremented by 4.
+ * @return The deserialized float value, or 0.0f if out of bounds.
+ *
+ * @details
+ * Converts 4 consecutive bytes starting at offset into a float using
+ * big-endian format.
+ */
 float CLIENT::Core::readFloat(
     const std::vector<uint8_t>& payload, size_t& offset)
 {
@@ -262,6 +394,15 @@ float CLIENT::Core::readFloat(
     return result;
 }
 
+/**
+ * @brief Parses a game snapshot payload to update active entities.
+ *
+ * @param payload A byte vector representing the serialized game state snapshot.
+ *
+ * @details
+ * Iterates through the payload and calls `parseSnapshotEntity` for each entity.
+ * Deactivates entities that are not present in the current snapshot.
+ */
 void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
 {
     if (payload.empty())
@@ -278,6 +419,14 @@ void CLIENT::Core::parseSnapshot(const std::vector<uint8_t>& payload)
     _entityManager->deactivateEntitiesNotInSet(activeEntitiesInSnapshot);
 }
 
+/**
+ * @brief Parses a single entity from a snapshot payload.
+ *
+ * @param payload The snapshot byte vector.
+ * @param offset Reference to the current read position in the payload.
+ * @param activeEntities Set of currently active entity IDs to update.
+ * @return True if the entity was successfully parsed; false otherwise.
+ */
 bool CLIENT::Core::parseSnapshotEntity(
     const std::vector<uint8_t>& payload, size_t& offset,
     std::set<uint8_t>& activeEntities)
@@ -316,6 +465,18 @@ bool CLIENT::Core::parseSnapshotEntity(
     return true;
 }
 
+/**
+ * @brief Updates an existing entity or creates a new one if it does not exist.
+ *
+ * @param entityId The unique ID of the entity.
+ * @param x X-coordinate of the entity.
+ * @param y Y-coordinate of the entity.
+ * @param spritePath Path to the entity's sprite texture.
+ * @param rectPosX X-coordinate of the texture rect.
+ * @param rectPosY Y-coordinate of the texture rect.
+ * @param rectSizeX Width of the texture rect.
+ * @param rectSizeY Height of the texture rect.
+ */
 void CLIENT::Core::updateOrCreateEntity(
     uint8_t entityId, float x, float y, const std::string& spritePath,
     float rectPosX, float rectPosY, float rectSizeX, float rectSizeY)
@@ -342,6 +503,17 @@ void CLIENT::Core::updateOrCreateEntity(
     }
 }
 
+/**
+ * @brief Updates the position and interpolation data of an entity.
+ *
+ * @param entity Pointer to the entity to update.
+ * @param x Target X-coordinate.
+ * @param y Target Y-coordinate.
+ *
+ * @details
+ * If the entity has no sprite, sets the position directly.
+ * Otherwise, sets target position for interpolation over 0.1 seconds.
+ */
 void CLIENT::Core::updateEntityPosition(GameEntity* entity, float x, float y)
 {
     if (!entity->sprite.has_value() || entity->currentSpritePath.empty()) {
@@ -358,6 +530,18 @@ void CLIENT::Core::updateEntityPosition(GameEntity* entity, float x, float y)
     entity->active = true;
 }
 
+/**
+ * @brief Updates or assigns a sprite to an entity.
+ *
+ * @param entity Pointer to the entity.
+ * @param entityId Entity ID for logging purposes.
+ * @param spritePath Path to the sprite texture.
+ * @param needsNewSprite Whether a new sprite must be loaded.
+ * @param rectPosX X-coordinate of texture rect.
+ * @param rectPosY Y-coordinate of texture rect.
+ * @param rectSizeX Width of texture rect.
+ * @param rectSizeY Height of texture rect.
+ */
 void CLIENT::Core::updateEntitySprite(
     GameEntity* entity, uint8_t entityId, const std::string& spritePath,
     bool needsNewSprite, float rectPosX, float rectPosY, float rectSizeX,
@@ -378,6 +562,13 @@ void CLIENT::Core::updateEntitySprite(
     }
 }
 
+/**
+ * @brief Finds a texture from the ResourceManager for a given sprite path.
+ *
+ * @param spritePath Path to the texture.
+ * @param entityId Entity ID for logging.
+ * @return Pointer to the SFML texture, or nullptr if not found.
+ */
 sf::Texture* CLIENT::Core::findTexture(
     const std::string& spritePath, uint8_t entityId)
 {
@@ -400,6 +591,16 @@ sf::Texture* CLIENT::Core::findTexture(
     return texture;
 }
 
+/**
+ * @brief Applies a texture rect and transform to an entity's sprite.
+ *
+ * @param sprite Reference to the SFML sprite.
+ * @param rectPosX X-coordinate of the texture rect.
+ * @param rectPosY Y-coordinate of the texture rect.
+ * @param rectSizeX Width of the texture rect.
+ * @param rectSizeY Height of the texture rect.
+ * @param position Target position of the sprite.
+ */
 void CLIENT::Core::applySpriteTransform(
     sf::Sprite& sprite, float rectPosX, float rectPosY, float rectSizeX,
     float rectSizeY, const sf::Vector2f& position)
@@ -416,6 +617,11 @@ void CLIENT::Core::applySpriteTransform(
     sprite.setScale(sf::Vector2f(2.0f, 2.0f));
 }
 
+/**
+ * @brief Processes all queued incoming messages from the server.
+ *
+ * @param window Reference to the game window.
+ */
 void CLIENT::Core::processIncomingMessages(Window& window)
 {
     std::lock_guard<std::mutex> lock(_incomingMutex);
@@ -428,6 +634,12 @@ void CLIENT::Core::processIncomingMessages(Window& window)
     }
 }
 
+/**
+ * @brief Handles a single incoming message from the server.
+ *
+ * @param msg The message string.
+ * @param window Reference to the game window.
+ */
 void CLIENT::Core::handleIncomingMessage(const std::string& msg, Window& window)
 {
     if (msg.find("PLAYER_ID:") == 0) {
@@ -451,6 +663,12 @@ void CLIENT::Core::handleIncomingMessage(const std::string& msg, Window& window)
     }
 }
 
+/**
+ * @brief Handles a player leaving the game.
+ *
+ * @param msg Message string indicating the player leaving.
+ * @param window Reference to the game window.
+ */
 void CLIENT::Core::handlePlayerLeave(const std::string& msg, Window& window)
 {
     int playerId = std::stoi(msg.substr(13));
@@ -462,115 +680,345 @@ void CLIENT::Core::handlePlayerLeave(const std::string& msg, Window& window)
     }
 }
 
+/**
+
+ * @brief Sends an input action to the server.
+
+ *
+
+ * @param keyCode The key code of the input.
+
+ * @param action The action type (pressed or released).
+
+ *
+
+ * @details
+
+ * Constructs a message in the format "INPUT:<keyCode>:<action>" and
+
+ * pushes it to the outgoing messages queue.
+
+ */
+
 void CLIENT::Core::sendInput(KeyCode keyCode, InputAction action)
+
 {
+
     std::string inputMsg =
+
         "INPUT:" + std::to_string(static_cast<uint8_t>(keyCode)) + ":" +
+
         std::to_string(static_cast<uint8_t>(action));
 
+
+
     std::lock_guard<std::mutex> lock(_outgoingMutex);
+
     _outgoingMessages.push(inputMsg);
+
 }
 
+
+
+/**
+
+ * @brief Handles the change in key state and sends input to the server if necessary.
+
+ *
+
+ * @param action The action name (e.g., "MOVE_UP", "SHOOT").
+
+ * @param isPressed True if the key is pressed, false if released.
+
+ * @param keyStates Map storing the current state of each key.
+
+ */
+
 void CLIENT::Core::handleKeyStateChange(
+
     const std::string& action, bool isPressed,
+
     std::map<std::string, bool>& keyStates)
+
 {
+
     if (keyStates[action] == isPressed)
+
         return;
+
+
 
     keyStates[action] = isPressed;
 
+
+
     for (const auto& mapping : INPUT_MAPPINGS) {
+
         if (mapping.action == action) {
+
             InputAction inputAction =
+
                 isPressed ? InputAction::PRESSED : InputAction::RELEASED;
+
             sendInput(mapping.keyCode, inputAction);
+
             break;
+
         }
+
     }
+
 }
+
+
+
+/**
+
+ * @brief Processes pending input actions from the window.
+
+ *
+
+ * @param window Reference to the game window.
+
+ * @param keyStates Map storing the current state of each key.
+
+ *
+
+ * @details
+
+ * Updates key states based on the window's pending actions and sends the
+
+ * corresponding input messages to the server.
+
+ */
 
 void CLIENT::Core::processInputs(
+
     Window& window, std::map<std::string, bool>& keyStates)
+
 {
+
     const auto& actions = window.getPendingActions();
 
+
+
     for (const auto& action : actions) {
+
         handleKeyStateChange(action, true, keyStates);
+
     }
+
+
 
     for (const auto& mapping : INPUT_MAPPINGS) {
+
         bool isPressed =
+
             std::find(actions.begin(), actions.end(), mapping.action) !=
+
             actions.end();
+
         if (!isPressed) {
+
             handleKeyStateChange(mapping.action, false, keyStates);
+
         }
+
     }
+
 }
+
+
+
+/**
+
+ * @brief Handles a timeout event for a player.
+
+ *
+
+ * @param playerId ID of the player that timed out.
+
+ *
+
+ * @details
+
+ * Updates the game state and stops the client if the local player timed out.
+
+ */
 
 void CLIENT::Core::handleTimeoutEvent(uint8_t playerId)
+
 {
+
     std::cout << "[CLIENT] Player " << int(playerId) << " timed out\n";
 
+
+
     if (playerId == _myPlayerId) {
+
         std::cout << "[CLIENT] You have been disconnected due to timeout\n";
+
         _gameState = GameState::DISCONNECTED;
+
         _running = false;
+
     }
+
 }
+
+
+
+/**
+
+ * @brief Handles a player being eliminated.
+
+ *
+
+ * @param playerId ID of the eliminated player.
+
+ *
+
+ * @details
+
+ * Updates the game state and loads the defeat screen if the local player
+
+ * was eliminated.
+
+ */
 
 void CLIENT::Core::handleKilledEvent(uint8_t playerId)
+
 {
+
     std::cout << "[CLIENT] Player " << int(playerId) << " was eliminated\n";
 
+
+
     if (playerId == _myPlayerId) {
+
         std::cout << "[CLIENT] You have been defeated!\n";
+
         _gameState = GameState::DEFEATED;
+
         loadDefeatScreen();
+
     }
+
 }
 
+
+
+/**
+
+ * @brief Loads the defeat screen texture and prepares the sprite.
+
+ *
+
+ * @details
+
+ * Centers the defeat sprite on the window. If loading fails, logs an error.
+
+ */
+
 void CLIENT::Core::loadDefeatScreen()
+
 {
+
     if (_defeatTextureLoaded)
+
         return;
+
+
 
     auto& rm = ResourceManager::getInstance();
 
+
+
     rm.loadTexture("assets/sprites/defeat.jpg", "assets/sprites/defeat.jpg");
+
     sf::Texture* texture = rm.getTexture("assets/sprites/defeat.jpg");
 
+
+
     if (texture) {
+
         _defeatSprite = sf::Sprite(*texture);
 
+
+
         sf::Vector2u textureSize = texture->getSize();
+
         _defeatSprite->setOrigin(sf::Vector2f(
+
             static_cast<float>(textureSize.x) / 2.0f,
+
             static_cast<float>(textureSize.y) / 2.0f));
+
         _defeatSprite->setPosition(sf::Vector2f(
+
             static_cast<float>(WINDOW_WIDTH) / 2.0f,
+
             static_cast<float>(WINDOW_HEIGHT) / 2.0f));
 
+
+
         _defeatTextureLoaded = true;
+
         std::cout << "[CLIENT] Defeat screen loaded\n";
+
     } else {
+
         std::cerr << "[CLIENT] Failed to load defeat.png\n";
+
     }
+
 }
+
+
+
+/**
+
+ * @brief Renders the defeat screen or a fallback overlay if texture not loaded.
+
+ *
+
+ * @param target The render target to draw on.
+
+ */
 
 void CLIENT::Core::renderDefeatScreen(sf::RenderTarget& target)
+
 {
+
     if (_defeatTextureLoaded && _defeatSprite.has_value()) {
+
         target.draw(_defeatSprite.value());
+
     } else {
+
         sf::RectangleShape overlay(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+
         overlay.setFillColor(sf::Color(0, 0, 0, 200));
+
         target.draw(overlay);
+
     }
+
 }
 
+/**
+
+ * @brief Main graphics loop handling rendering and game updates.
+
+ *
+
+ * @details
+
+ * Handles input processing, snapshot updates, entity updates, parallax,
+
+ * keybind menu, colorblind filter, and rendering of the game and defeat screens.
+
+ */
 void CLIENT::Core::graphicsLoop()
 {
     Window window("R-Type Client", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -662,6 +1110,9 @@ void CLIENT::Core::graphicsLoop()
     _running = false;
 }
 
+/**
+ * @brief Initializes graphics components including entity manager and parallax system.
+ */
 void CLIENT::Core::initializeGraphicsComponents()
 {
     auto& rm = ResourceManager::getInstance();
@@ -680,6 +1131,9 @@ void CLIENT::Core::initializeGraphicsComponents()
     std::cout << "Parallax system initialized\n";
 }
 
+/**
+ * @brief Updates entities from the latest snapshot if available.
+ */
 void CLIENT::Core::updateFromSnapshot()
 {
     std::lock_guard<std::mutex> lock(_snapshotMutex);
@@ -689,6 +1143,13 @@ void CLIENT::Core::updateFromSnapshot()
     }
 }
 
+/**
+ * @brief Determines if entity cleanup should occur based on elapsed time.
+ *
+ * @param lastCleanup Last cleanup timestamp.
+ * @param interval Time interval in seconds between cleanups.
+ * @return True if cleanup should occur.
+ */
 bool CLIENT::Core::shouldCleanupEntities(
     const std::chrono::steady_clock::time_point& lastCleanup, float interval)
 {
@@ -698,6 +1159,12 @@ bool CLIENT::Core::shouldCleanupEntities(
     return timeSinceCleanup >= interval;
 }
 
+/**
+ * @brief Renders a frame to the window.
+ *
+ * @param window Reference to the game window.
+ * @param deltaTime Time elapsed since last frame in seconds.
+ */
 void CLIENT::Core::renderFrame(Window& window, float deltaTime)
 {
     window.clear();
@@ -706,6 +1173,9 @@ void CLIENT::Core::renderFrame(Window& window, float deltaTime)
     window.display();
 }
 
+/**
+ * @brief Launches the map editor in a separate window.
+ */
 void CLIENT::Core::launchMapEditor()
 {
     Window window("R-Type Map Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -746,6 +1216,15 @@ void CLIENT::Core::launchMapEditor()
     }
 }
 
+/**
+ * @brief Executes the R-Type client.
+ *
+ * @param argv Command-line arguments.
+ * @return 0 on success, 1 on failure.
+ *
+ * @details
+ * Initializes the Core object and runs the client. Catches and logs exceptions.
+ */
 int execute_rtypeClient(char** argv)
 {
     try {
