@@ -139,6 +139,8 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, 5.0f, 0.0f, 1920.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
             _registry->emplace<GameEngine::Damage>(entity, 1);
+            if (i == 0)
+                _registry->emplace<GameEngine::ScoreValue>(entity, 1);
         }
         for (size_t i = 1; i < 15 - randomNum; i++) {
             std::lock_guard<std::mutex> lock(_registryMutex);
@@ -192,6 +194,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             entity, 5.0f, 0.0f, 1920.0f, 1080.0);
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 1);
+        _registry->emplace<GameEngine::ScoreValue>(entity, 1);
     }
 
     return 1;
