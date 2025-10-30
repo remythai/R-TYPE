@@ -1,0 +1,22 @@
+<map id="rtype::NetworkServer::handleClientPacket" name="rtype::NetworkServer::handleClientPacket">
+<area shape="rect" id="Node000001" title="Dispatches incoming client packets to appropriate handlers." alt="" coords="5,109,166,154"/>
+<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a112083bc3f0a7ea93435653fcd59b086" title="Finds the player ID associated with a given endpoint." alt="" coords="427,5,607,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,106,162,81,213,60,263,47,314,37,411,27,412,32,315,42,264,52,215,65,165,86,122,111"/>
+<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a60a048fa593944bfd90a6727d8909c6a" title="Handles an INPUT packet from a client." alt="" coords="214,75,374,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="165,116,198,110,198,116,166,121"/>
+<area shape="rect" id="Node000005" href="$classrtype_1_1NetworkServer.html#a612253ba0d3caeeac99f4fe52a5a2b4a" title="Handles a JOIN packet from a client." alt="" coords="214,144,374,189"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="166,142,198,148,198,153,165,148"/>
+<area shape="rect" id="Node000010" href="$classrtype_1_1NetworkServer.html#a022c5d221a022804160b187fbb8fe036" title="Converts a PacketType enum to its string representation." alt="" coords="214,213,374,258"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="128,152,215,199,226,204,224,209,212,203,125,157"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="367,72,428,53,429,58,369,77"/>
+<area shape="rect" id="Node000004" href="$classrtype_1_1NetworkServer.html#a6624176a236d4b97711c1ebb90a86918" title="Applies input actions to a player&#39;s entity." alt="" coords="437,75,597,119"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="374,94,422,94,422,100,374,100"/>
+<area shape="rect" id="Node000006" href="$classrtype_1_1NetworkServer.html#ad358010634e573e4e1d553570b10f2b8" title="Counts the number of active players connected to the server." alt="" coords="437,144,597,189"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="374,164,422,164,422,169,374,169"/>
+<area shape="rect" id="Node000007" href="$classrtype_1_1NetworkServer.html#a6ebc16823bcf312a4e57cdd862cfebc2" title="Creates a player entity in the ECS with appropriate components." alt="" coords="437,213,597,258"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="369,187,429,206,428,211,367,192"/>
+<area shape="rect" id="Node000008" href="$classrtype_1_1NetworkServer.html#a023fe1b710c0f504eb9142f707fea4f7" title="Sends a PLAYER_ID_ASSIGNMENT packet to a client." alt="" coords="422,283,612,327"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="358,187,376,199,392,217,400,235,408,252,424,268,430,273,427,277,420,272,404,255,395,237,387,220,372,203,355,191"/>
+<area shape="rect" id="Node000009" href="$classrtype_1_1NetworkServer.html#a0b8fd52383e5b2fd3a529162fd2ea46a" title="Converts a value of type T to a vector of bytes." alt="" coords="660,283,821,327"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="613,302,645,302,645,308,613,308"/>
+</map>

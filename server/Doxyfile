@@ -1,13 +1,13 @@
 # Project Info
 PROJECT_NAME           = "Server implementation"
-PROJECT_BRIEF          = "Multithreaded for 2D/3D Games"
+PROJECT_BRIEF          = "Multithreaded server for game"
 PROJECT_NUMBER         = "1.0"
 OUTPUT_DIRECTORY       = docs
 CREATE_SUBDIRS         = NO
 
 # Input Files / Directories
 INPUT                  = .
-FILE_PATTERNS          = *.hpp *.h *.cpp *.c
+FILE_PATTERNS          = *.hpp *.h *.cpp *.c *.dox
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */build/* */tests/*
 
