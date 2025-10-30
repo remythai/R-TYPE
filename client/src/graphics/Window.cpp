@@ -224,7 +224,8 @@ float CLIENT::Window::getDeltaTime() const
  * @param menu Pointer to the KeybindMenu.
  *
  * @details
- * These components are used to handle input events and display the keybind menu.
+ * These components are used to handle input events and display the keybind
+ * menu.
  */
 void CLIENT::Window::setKeybindComponents(
     KeybindManager *manager, KeybindMenu *menu)

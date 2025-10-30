@@ -24,7 +24,8 @@ static void display_help(void)
 {
     std::cout << "USAGE: ./r-type_client [-editor] -p PORT -h HOSTNAME\n";
     std::cout << "Options:\n";
-    std::cout << "  -editor              Launch the map editor instead of the game\n";
+    std::cout
+        << "  -editor              Launch the map editor instead of the game\n";
     std::cout << "  -p PORT              Server port\n";
     std::cout << "  -h HOSTNAME          Server hostname\n";
 }
@@ -34,7 +35,8 @@ static void display_help(void)
  *
  * @param argc Argument count.
  * @param argv Argument vector.
- * @param[out] isEditor Set to true if -editor flag is provided, false otherwise.
+ * @param[out] isEditor Set to true if -editor flag is provided, false
+ * otherwise.
  * @return EPITECH_SUCCESS if arguments are valid, EPITECH_FAILURE otherwise.
  *
  * @details

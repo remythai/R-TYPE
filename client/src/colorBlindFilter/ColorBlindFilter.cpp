@@ -28,8 +28,8 @@
  * Transformation functions:
  * - `applyProtanopia(vec3 color)`: Applies a matrix transformation to simulate
  *   protanopia (red-green deficiency affecting red cones).
- * - `applyDeuteranopia(vec3 color)`: Applies a matrix transformation to simulate
- *   deuteranopia (red-green deficiency affecting green cones).
+ * - `applyDeuteranopia(vec3 color)`: Applies a matrix transformation to
+ * simulate deuteranopia (red-green deficiency affecting green cones).
  * - `applyTritanopia(vec3 color)`: Applies a matrix transformation to simulate
  *   tritanopia (blue-yellow deficiency affecting blue cones).
  *
@@ -98,22 +98,22 @@ void main() {
  *
  * The constructor performs the following actions:
  * - Initializes the current color blindness mode to @ref ColorBlindMode::NONE.
- * - Checks if shaders are supported on the current system using 
+ * - Checks if shaders are supported on the current system using
  *   `sf::Shader::isAvailable()`.
- * - If shaders are available, attempts to load the fragment shader from 
+ * - If shaders are available, attempts to load the fragment shader from
  *   memory using the shader source defined by @ref COLORBLIND_SHADER.
  * - If the shader loads successfully:
  *   - Sets the `_shaderLoaded` flag to `true`.
- *   - Initializes the shader uniform `"mode"` to `0` (corresponding to 
+ *   - Initializes the shader uniform `"mode"` to `0` (corresponding to
  *     `ColorBlindMode::NONE`).
  *   - Logs a success message to the standard output.
  * - If the shader fails to load or shaders are not supported:
  *   - Logs an appropriate error message to the standard error output.
  *
- * @note The shader used is a fragment shader intended to simulate or correct 
+ * @note The shader used is a fragment shader intended to simulate or correct
  * various types of color blindness depending on the mode selected.
  *
- * @warning If shaders are not supported or fail to load, the filter will not 
+ * @warning If shaders are not supported or fail to load, the filter will not
  * apply any color-blindness correction effects.
  *
  * @see ColorBlindMode
@@ -182,7 +182,8 @@ void CLIENT::ColorBlindFilter::updateShader()
 }
 
 /**
- * @brief Returns the SFML render states configured with the color blindness shader.
+ * @brief Returns the SFML render states configured with the color blindness
+ * shader.
  *
  * @return Pointer to an `sf::RenderStates` object containing the shader, or
  *         `nullptr` if the shader is not loaded or the current mode is NONE.
@@ -224,7 +225,7 @@ const sf::RenderStates* CLIENT::ColorBlindFilter::getRenderStates() const
  * This function is primarily used for logging and debugging purposes to
  * convert the enum value of the color blindness mode into a readable string.
  *
- * @note The returned string is localized (French for "Aucun" and "Inconnu") 
+ * @note The returned string is localized (French for "Aucun" and "Inconnu")
  *       for the NONE and unknown modes.
  *
  * @see ColorBlindMode
@@ -244,4 +245,3 @@ std::string CLIENT::ColorBlindFilter::getModeName(ColorBlindMode mode)
             return "Inconnu";
     }
 }
-

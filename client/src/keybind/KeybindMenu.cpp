@@ -259,7 +259,8 @@ void CLIENT::KeybindMenu::handleEvent(const sf::Event& event)
  * @param mousePos Position of the mouse click.
  *
  * @details
- * Checks if the click intersects with any action key, save, reset, close, or color blind buttons.
+ * Checks if the click intersects with any action key, save, reset, close, or
+ * color blind buttons.
  */
 void CLIENT::KeybindMenu::handleMouseClick(const sf::Vector2i& mousePos)
 {

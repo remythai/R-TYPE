@@ -76,7 +76,8 @@ void CLIENT::MapEditor::render(sf::RenderWindow& window)
  * @param window Render target.
  *
  * @details
- * Dynamically calculates visible grid lines based on the camera view and grid size.
+ * Dynamically calculates visible grid lines based on the camera view and grid
+ * size.
  */
 void CLIENT::MapEditor::renderGrid(sf::RenderWindow& window)
 {
@@ -210,7 +211,8 @@ void CLIENT::MapEditor::renderEntityFallback(
 }
 
 /**
- * @brief Renders a preview of the currently selected entity at the mouse position.
+ * @brief Renders a preview of the currently selected entity at the mouse
+ * position.
  *
  * @param window Render target.
  */
@@ -420,7 +422,8 @@ void CLIENT::MapEditor::handleMouseInput(sf::RenderWindow& window)
  *
  * @param window SFML window to map pixel coordinates to world coordinates.
  *
- * @details If snap-to-grid is enabled, the mouse position is rounded to the nearest grid point.
+ * @details If snap-to-grid is enabled, the mouse position is rounded to the
+ * nearest grid point.
  */
 void CLIENT::MapEditor::updateMousePosition(sf::RenderWindow& window)
 {
@@ -436,7 +439,8 @@ void CLIENT::MapEditor::updateMousePosition(sf::RenderWindow& window)
 /**
  * @brief Handles left mouse click for placing entities.
  *
- * @details Ensures a single placement per click using a static previous-state flag.
+ * @details Ensures a single placement per click using a static previous-state
+ * flag.
  */
 void CLIENT::MapEditor::handleLeftClick()
 {
@@ -454,7 +458,8 @@ void CLIENT::MapEditor::handleLeftClick()
 /**
  * @brief Handles right mouse click for deleting entities.
  *
- * @details Ensures a single deletion per click using a static previous-state flag.
+ * @details Ensures a single deletion per click using a static previous-state
+ * flag.
  */
 void CLIENT::MapEditor::handleRightClick()
 {
@@ -517,7 +522,8 @@ void CLIENT::MapEditor::deleteEntityAtMouse()
 }
 
 /**
- * @brief Retrieves the sprite path and texture rectangle for a given entity template.
+ * @brief Retrieves the sprite path and texture rectangle for a given entity
+ * template.
  *
  * @param type The entity template.
  * @param spritePath Output string for the sprite path.
@@ -652,7 +658,8 @@ void CLIENT::MapEditor::saveMap(const std::string& filename)
  *
  * @param filename Input filename.
  *
- * @details Clears existing entities and parses new entities from the file content.
+ * @details Clears existing entities and parses new entities from the file
+ * content.
  */
 void CLIENT::MapEditor::loadMap(const std::string& filename)
 {
@@ -803,7 +810,8 @@ std::string CLIENT::MapEditor::parseJSONString(
  * @param content JSON string content.
  * @param start Start position to search from.
  * @param end End position for the search.
- * @return sf::IntRect representing the rectangle, or default (32x32) if not found.
+ * @return sf::IntRect representing the rectangle, or default (32x32) if not
+ * found.
  */
 sf::IntRect CLIENT::MapEditor::parseJSONTextureRect(
     const std::string& content, size_t start, size_t end)
