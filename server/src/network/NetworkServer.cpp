@@ -42,10 +42,11 @@ std::vector<uint8_t> floatToBytes(float value)
  * @return EntityManager::Entity The created player entity
  */
 rtype::NetworkServer::NetworkServer(
-    unsigned short port, std::string const& game)
+    unsigned short port, std::string const& game, std::string const& mapPath)
     : _socket(_ioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
       _running(false),
       _game(game),
+      _mapPath(mapPath),
       _registry(std::make_unique<Registry>())
 {
     for (int i = 0; i < 4; ++i) {
@@ -129,8 +130,12 @@ void rtype::NetworkServer::run()
     _running = true;
     _lastSnapshot = std::chrono::steady_clock::now();
 
-    if (_game == "RType")
-        loadEnemiesFromJson("../client/map_level1.json");
+    if (_game == "RType" && !_mapPath.empty()) {
+        if (loadEnemiesFromJson(_mapPath) == 84) {
+            _running = false;
+            return;
+        }
+    }
 
     doReceive();
     std::cout << "UDP Server running..." << std::endl;

@@ -19,7 +19,7 @@ static void display_help(void)
 
 static int check_args(
     int argc, char **argv, unsigned short &port, std::string &hostname,
-    std::string &game)
+    std::string &game, std::string &mapPath)
 {
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
@@ -32,6 +32,10 @@ static int check_args(
         }
         if (strcmp(argv[i], "-g") == 0 && i + 1 < argc) {
             game = argv[i + 1];
+            i++;
+        }
+        if (strcmp(argv[i], "-m") == 0 && i + 1 < argc) {
+            mapPath = argv[i + 1];
             i++;
         }
     }
@@ -48,10 +52,11 @@ int main(int argc, char **argv)
     unsigned short port(0);
     std::string hostname;
     std::string game;
+    std::string mapPath;
 
-    if (check_args(argc, argv, port, hostname, game) == 84)
+    if (check_args(argc, argv, port, hostname, game, mapPath) == 84)
         return 84;
-    rtype::NetworkServer server(port, game);
+    rtype::NetworkServer server(port, game, mapPath);
     server.run();
     return 0;
 }

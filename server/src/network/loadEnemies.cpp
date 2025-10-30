@@ -126,13 +126,13 @@ static std::array<float, 4> parseJSONArray(
  * 
  * @param filepath Path to the JSON file containing enemy data
  */
-void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
+int rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 {
     std::ifstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "[SERVER] ERROR: Could not open enemy file: " << filepath
                   << std::endl;
-        return;
+        return 84;
     }
 
     std::string content(
@@ -145,14 +145,14 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
     size_t entitiesPos = content.find("\"entities\"");
     if (entitiesPos == std::string::npos) {
         std::cerr << "[SERVER] No 'entities' array found in JSON" << std::endl;
-        return;
+        return 84;
     }
 
     size_t arrayStart = content.find('[', entitiesPos);
     size_t arrayEnd = content.rfind(']');
     if (arrayStart == std::string::npos || arrayEnd == std::string::npos) {
         std::cerr << "[SERVER] Invalid JSON format" << std::endl;
-        return;
+        return 84;
     }
 
     size_t pos = arrayStart + 1;
@@ -190,6 +190,7 @@ void rtype::NetworkServer::loadEnemiesFromJson(const std::string& filepath)
 
     std::cout << "[SERVER] Loaded " << _enemySpawnList.size()
               << " enemies from " << filepath << std::endl;
+    return 0;
 }
 
 /**
