@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ main , dev]
+    branches: [ main , dev ]
   pull_request:
 
 permissions:
@@ -14,7 +14,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - name: Code checkout
+      - name: Code ch eckout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -271,7 +271,7 @@ jobs:
                 <a href="gameEngine/index.html" class="doc-link" id="gameEngine-link">
                   <div class="icon">🎮</div>
                   <h2>Game Engine ECS<span class="status" id="gameEngine-status">Loading...</span></h2>
-                  <p>Entity Component System for 2D/3D Games</p>
+                  <p>Entity Component System for 2DGames</p>
                 </a>
                 <a href="server/index.html" class="doc-link" id="server-link">
                   <div class="icon">🖥️</div>
