@@ -58,14 +58,14 @@ namespace GameEngine {
  * // Typical lifetime system implementation:
  * void LifetimeSystem::onUpdate(Registry& registry, float dt) {
  *     std::vector<Entity> toDestroy;
- *     
+ *
  *     registry.each<Lifetime>([&](auto e, Lifetime& lifetime) {
  *         lifetime.time -= dt;
  *         if (lifetime.time <= 0) {
  *             toDestroy.push_back(e);
  *         }
  *     });
- *     
+ *
  *     for (auto e : toDestroy) {
  *         registry.destroy(e);
  *     }
