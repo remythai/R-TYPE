@@ -1,5 +1,0 @@
-<map id="ComponentRegistry::getOrCreateID" name="ComponentRegistry::getOrCreateID">
-<area shape="rect" id="Node000001" title="Retrieves or creates a unique ID for the given component type T." alt="" coords="5,5,151,48"/>
-<area shape="rect" id="Node000002" href="$classComponentRegistry.html#ab1cc8a486cae16a19268264c69f9af80" title="Computes a new unique ID for a type T, or returns the existing one." alt="" coords="199,5,344,48"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,24,183,24,183,29,151,29"/>
-</map>

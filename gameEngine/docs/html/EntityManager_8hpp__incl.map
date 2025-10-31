@@ -1,7 +1,0 @@
-<map id="ecs/EntityManager.hpp" name="ecs/EntityManager.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,161,32"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="12,80,72,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,34,59,68,54,65,73,31"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="96,80,153,107"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="93,31,112,65,107,68,88,34"/>
-</map>

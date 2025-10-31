@@ -1,7 +1,0 @@
-<map id="Registry::destroy" name="Registry::destroy">
-<area shape="rect" id="Node000001" title="Destroys an entity and removes all its components." alt="" coords="248,47,369,73"/>
-<area shape="rect" id="Node000002" href="$classGameEngine_1_1Death.html#a081a250ee3a8d22b7dd2323dbaba0eb7" title=" " alt="" coords="29,5,176,48"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="232,50,176,41,177,36,233,45"/>
-<area shape="rect" id="Node000003" href="$classGameEngine_1_1DomainHandler.html#a2e491047939e77c803075c6c490d54ee" title="Updates the system, checking entity positions against their domain boundaries." alt="" coords="5,72,200,115"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="233,75,201,80,200,75,232,70"/>
-</map>

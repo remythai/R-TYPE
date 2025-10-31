@@ -1,7 +1,0 @@
-<map id="ecs/Types.hpp" name="ecs/Types.hpp">
-<area shape="rect" id="Node000001" title="Core type definitions used throughout the ECS (Entity Component System)." alt="" coords="19,5,125,32"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="5,80,59,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="67,34,49,68,44,65,63,31"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="83,80,144,107"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="82,31,101,65,96,68,77,34"/>
-</map>

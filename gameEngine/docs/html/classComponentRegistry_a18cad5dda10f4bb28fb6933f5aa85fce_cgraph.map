@@ -1,5 +1,0 @@
-<map id="ComponentRegistry::instance" name="ComponentRegistry::instance">
-<area shape="rect" id="Node000001" title="Provides access to the global ComponentRegistry instance." alt="" coords="5,5,151,48"/>
-<area shape="rect" id="Node000002" href="$classComponentRegistry.html#a3bbfefb19e284845afb80ce0a4dd739a" title="Private constructor for singleton pattern. Initializes internal containers with reserved capacity." alt="" coords="199,5,344,48"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,24,183,24,183,29,151,29"/>
-</map>

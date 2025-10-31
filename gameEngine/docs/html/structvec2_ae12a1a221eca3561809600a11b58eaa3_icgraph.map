@@ -1,7 +1,0 @@
-<map id="vec2::vec2" name="vec2::vec2">
-<area shape="rect" id="Node000001" title="Default constructor initializing to origin (0, 0)." alt="" coords="174,31,259,57"/>
-<area shape="rect" id="Node000002" href="$structvec2.html#a1c57b3fe8179737266104a37f2699569" title=" " alt="" coords="9,5,122,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,37,122,31,122,25,159,32"/>
-<area shape="rect" id="Node000003" href="$structvec2.html#a36fda2391f1f2c20e91aacd68242592b" title=" " alt="" coords="5,56,126,83"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="159,56,126,62,125,57,158,51"/>
-</map>
