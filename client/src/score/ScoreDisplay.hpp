@@ -15,13 +15,15 @@ namespace CLIENT {
 /**
  * @brief Handles the display of the game score on screen
  */
-class ScoreDisplay {
-public:
+class ScoreDisplay
+{
+   public:
     /**
      * @brief Construct a new Score Display object
      * @param fontPath Path to the font file to use
      */
-    explicit ScoreDisplay(const std::string& fontPath = "assets/fonts/arial.ttf");
+    explicit ScoreDisplay(
+        const std::string& fontPath = "assets/fonts/arial.ttf");
 
     /**
      * @brief Update the displayed score value
@@ -33,7 +35,10 @@ public:
      * @brief Get the current score value
      * @return int Current score
      */
-    int getScore() const { return _score; }
+    int getScore() const
+    {
+        return _score;
+    }
 
     /**
      * @brief Render the score display
@@ -60,12 +65,12 @@ public:
      */
     void setColor(const sf::Color& color);
 
-private:
+   private:
     sf::Font _font;
     sf::Text _scoreText;
     int _score;
     bool _fontLoaded;
 
     void updateText();
-    };
-}
+};
+}  // namespace CLIENT
