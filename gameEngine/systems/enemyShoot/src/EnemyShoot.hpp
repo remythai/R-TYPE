@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <functional>
 
-#include "../../../components/position/src/Position.hpp"
-#include "../../../components/velocity/src/Velocity.hpp"
 #include "../../../components/AIControlled/src/AIControlled.hpp"
 #include "../../../components/fireRate/src/FireRate.hpp"
+#include "../../../components/position/src/Position.hpp"
+#include "../../../components/velocity/src/Velocity.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -58,7 +58,9 @@ class EnemyShoot : public System<EnemyShoot>
      */
     EnemyShoot()
     {
-        requireComponents<GameEngine::FireRate, GameEngine::AIControlled, GameEngine::Velocity, GameEngine::Position>();
+        requireComponents<
+            GameEngine::FireRate, GameEngine::AIControlled,
+            GameEngine::Velocity, GameEngine::Position>();
     }
 
     /**
@@ -98,37 +100,39 @@ class EnemyShoot : public System<EnemyShoot>
     {
         updateCount++;
 
-        registry.each<FireRate, AIControlled, Velocity, Position>([this, &registry, dt](auto e, FireRate& fireRate, AIControlled& ai, Velocity& vel, Position& pos) {
-            std::vector<vec2> rectPos;
-            uint32_t shoot = -1;
-            fireRate.time += dt; 
-            if (fireRate.time < fireRate.fireRate) 
-                return;
-            shoot = registry.create();
-            rectPos.clear();
-            rectPos.push_back(vec2{0.0F, 0.0F});
-            rectPos.push_back(vec2{19.0F, 0.0F});
-            rectPos.push_back(vec2{38.0F, 0.0F});
-            registry.emplace<GameEngine::Renderable>(
-                shoot, 1920.0, 1080.0,
-                "assets/sprites/playerProjectiles.png", rectPos,
-                vec2{22.28f, 22.28f}, 50, true);
-            registry.emplace<GameEngine::Health>(shoot, 1, 1);
-            registry.emplace<GameEngine::Damage>(shoot, 1);
-            registry.emplace<GameEngine::Velocity>(
-                shoot, vel.speedMax + 200.0, -(vel.speedMax + 200.0));
-            registry.emplace<GameEngine::Acceleration>(
-                shoot, -(vel.speedMax + 200.0));
-            registry.emplace<GameEngine::Position>(
-                shoot, pos.pos.x, pos.pos.y);
-            registry.emplace<GameEngine::Collider>(
-                shoot, vec2(0.0, 0.0),
-                std::bitset<8>("00010000"),
-                std::bitset<8>("10000000"), vec2(44.56, 44.56));
-            registry.emplace<GameEngine::Domain>(
-                shoot, 5, 0, 1920.0, 1080.0);
-            fireRate.time = 0.0F;
-        });
+        registry.each<FireRate, AIControlled, Velocity, Position>(
+            [this, &registry, dt](
+                auto e, FireRate& fireRate, AIControlled& ai, Velocity& vel,
+                Position& pos) {
+                std::vector<vec2> rectPos;
+                uint32_t shoot = -1;
+                fireRate.time += dt;
+                if (fireRate.time < fireRate.fireRate)
+                    return;
+                shoot = registry.create();
+                rectPos.clear();
+                rectPos.push_back(vec2{0.0F, 0.0F});
+                rectPos.push_back(vec2{19.0F, 0.0F});
+                rectPos.push_back(vec2{38.0F, 0.0F});
+                registry.emplace<GameEngine::Renderable>(
+                    shoot, 1920.0, 1080.0,
+                    "assets/sprites/playerProjectiles.png", rectPos,
+                    vec2{22.28f, 22.28f}, 50, true);
+                registry.emplace<GameEngine::Health>(shoot, 1, 1);
+                registry.emplace<GameEngine::Damage>(shoot, 1);
+                registry.emplace<GameEngine::Velocity>(
+                    shoot, vel.speedMax + 200.0, -(vel.speedMax + 200.0));
+                registry.emplace<GameEngine::Acceleration>(
+                    shoot, -(vel.speedMax + 200.0));
+                registry.emplace<GameEngine::Position>(
+                    shoot, pos.pos.x, pos.pos.y);
+                registry.emplace<GameEngine::Collider>(
+                    shoot, vec2(0.0, 0.0), std::bitset<8>("00010000"),
+                    std::bitset<8>("10000000"), vec2(44.56, 44.56));
+                registry.emplace<GameEngine::Domain>(
+                    shoot, 5, 0, 1920.0, 1080.0);
+                fireRate.time = 0.0F;
+            });
     }
 
     /**
