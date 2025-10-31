@@ -53,6 +53,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 0);
         _registry->emplace<GameEngine::Gravity>(entity, 400.0f);
+        _registry->emplace<GameEngine::FireRate>(entity);
     } else {
         std::vector<vec2> rectPos;
         rectPos.push_back(
@@ -84,6 +85,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
             std::bitset<8>("10000000"), vec2(66.4, 34.4));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 1);
+        _registry->emplace<GameEngine::FireRate>(entity);
     }
 
     std::cout << "[SERVER] Created ECS entity " << entity << " for Player "
@@ -198,6 +200,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
         _registry->emplace<GameEngine::SinusoidalPattern>(
             entity, 150.0f, 0.003f, phaseOffset);
         _registry->emplace<GameEngine::ScoreValue>(entity, 1);
+        _registry->emplace<GameEngine::FireRate>(entity, 1);
     }
 
     return 1;

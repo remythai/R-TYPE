@@ -97,6 +97,7 @@ void rtype::NetworkServer::initECS()
         std::cout << "[SERVER] ECS initialized with RTYPE Systems\n";
         _registry->addSystem<GameEngine::InputHandler>(0);
         _registry->addSystem<GameEngine::Motion>(1);
+        _registry->addSystem<GameEngine::EnemyShoot>(2);
     }
 
     _registry->addSystem<GameEngine::Collision>(2);
