@@ -9,6 +9,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  pull-requests: write
 
 jobs:
   format:
@@ -47,14 +48,22 @@ jobs:
             echo "changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and push formatting changes
-        if: steps.format_check.outputs.changes == 'true'
+      - name: Commit and push formatting changes (PR only)
+        if: steps.format_check.outputs.changes == 'true' && github.event_name == 'pull_request'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A
           git commit -m "style: apply clang-format [skip ci]"
           git push
+
+      - name: Warn about formatting issues (push to protected branch)
+        if: steps.format_check.outputs.changes == 'true' && github.event_name == 'push'
+        run: |
+          echo "⚠️ Formatting changes detected but cannot push to protected branch"
+          echo "Please run clang-format locally and commit the changes"
+          git diff
+          exit 1
 
   build:
     runs-on: ubuntu-latest
