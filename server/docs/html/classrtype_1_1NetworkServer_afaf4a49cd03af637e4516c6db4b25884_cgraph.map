@@ -1,7 +1,0 @@
-<map id="rtype::NetworkServer::cleanInactivePlayers" name="rtype::NetworkServer::cleanInactivePlayers">
-<area shape="rect" id="Node000001" title="Cleans up inactive players who have timed out." alt="" coords="5,40,170,85"/>
-<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a307236d78543decaa97773b3dcc87f60" title="Broadcasts a message to all connected clients." alt="" coords="218,5,378,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="170,46,202,41,203,46,171,51"/>
-<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a0b8fd52383e5b2fd3a529162fd2ea46a" title="Converts a value of type T to a vector of bytes." alt="" coords="218,75,378,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="171,73,203,79,202,84,170,79"/>
-</map>

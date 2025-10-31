@@ -1,9 +1,0 @@
-<map id="rtype::NetworkServer::initECS" name="rtype::NetworkServer::initECS">
-<area shape="rect" id="Node000001" title="Initializes the ECS with appropriate systems." alt="" coords="5,40,166,85"/>
-<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a67e01372a7b84c0c252394916329f700" title=" " alt="" coords="214,40,374,85"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,60,198,60,198,65,166,65"/>
-<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a307236d78543decaa97773b3dcc87f60" title="Broadcasts a message to all connected clients." alt="" coords="422,5,582,50"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="374,46,406,41,407,46,375,52"/>
-<area shape="rect" id="Node000004" href="$classrtype_1_1NetworkServer.html#a0b8fd52383e5b2fd3a529162fd2ea46a" title="Converts a value of type T to a vector of bytes." alt="" coords="422,75,582,119"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="375,73,407,78,406,84,374,78"/>
-</map>

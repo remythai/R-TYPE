@@ -1,9 +1,0 @@
-<map id="rtype::NetworkServer::broadcastSnapshot" name="rtype::NetworkServer::broadcastSnapshot">
-<area shape="rect" id="Node000001" title="Broadcasts the current ECS snapshot to all connected clients." alt="" coords="5,28,166,72"/>
-<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#adf29c7e182238848447d6b05884105ae" title="Serializes the current ECS state into a snapshot packet." alt="" coords="214,28,374,72"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,47,198,47,198,52,166,52"/>
-<area shape="rect" id="Node000003" href="$NetworkServer_8cpp.html#a053b64d0725ca7fc6decff0d6d24f231" title="Converts a float to a vector of 4 bytes." alt="" coords="452,5,553,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="374,35,436,26,437,31,374,41"/>
-<area shape="rect" id="Node000004" href="$classrtype_1_1NetworkServer.html#a0b8fd52383e5b2fd3a529162fd2ea46a" title="Converts a value of type T to a vector of bytes." alt="" coords="422,57,582,102"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="374,58,407,63,406,68,374,64"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="rtype::NetworkServer::handleInputPacket" name="rtype::NetworkServer::handleInputPacket">
-<area shape="rect" id="Node000001" title="Handles an INPUT packet from a client." alt="" coords="5,40,166,85"/>
-<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#a6624176a236d4b97711c1ebb90a86918" title="Applies input actions to a player&#39;s entity." alt="" coords="224,5,384,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,47,208,40,208,45,166,52"/>
-<area shape="rect" id="Node000003" href="$classrtype_1_1NetworkServer.html#a112083bc3f0a7ea93435653fcd59b086" title="Finds the player ID associated with a given endpoint." alt="" coords="214,75,394,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="166,72,199,78,198,83,165,78"/>
-</map>
