@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ main , dev ]
+    branches: [ main, dev ]
   pull_request:
 
 permissions:
@@ -14,7 +14,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - name: Code ch eckout
+      - name: Code checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -28,54 +28,33 @@ jobs:
 
       - name: Apply clang-format
         run: |
-          # Format client
           if [ -d "client/src" ]; then
-            find client/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
-              -exec clang-format -i --style=file {} +
+            find client/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} +
           fi
-          
-          # Format server
           if [ -d "server/src" ]; then
-            find server/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
-              -exec clang-format -i --style=file {} +
+            find server/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} +
           fi
-          
-          # Format gameEngine (components and systems)
           if [ -d "gameEngine" ]; then
-            find gameEngine/components gameEngine/systems gameEngine/ecs \
-              \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
-              -exec clang-format -i --style=file {} + 2>/dev/null || true
+            find gameEngine/components gameEngine/systems gameEngine/ecs \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} + 2>/dev/null || true
           fi
 
       - name: Check for formatting changes
         id: format_check
         run: |
           if git diff --quiet; then
-            echo "No formatting changes needed"
             echo "changes=false" >> $GITHUB_OUTPUT
           else
-            echo "Formatting changes detected"
             echo "changes=true" >> $GITHUB_OUTPUT
-            git diff
           fi
 
       - name: Commit and push formatting changes
-        if: steps.format_check.outputs.changes == 'true' && github.event_name == 'push'
+        if: steps.format_check.outputs.changes == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A
           git commit -m "style: apply clang-format [skip ci]"
           git push origin HEAD:${{ github.ref_name }}
-
-      - name: Commit and push formatting changes on PR
-        if: steps.format_check.outputs.changes == 'true' && github.event_name == 'pull_request'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add -A
-          git commit -m "style: apply clang-format [skip ci]"
-          git push origin HEAD:${{ github.head_ref }}
 
   build:
     runs-on: ubuntu-latest
@@ -96,241 +75,69 @@ jobs:
             libvorbis-dev libopenal-dev libfreetype-dev \
             doxygen graphviz
 
-      - name: Client build
+      - name: Build client
         run: |
-          cd client
-          cmake -B .build
-          cd .build
-          make -j$(nproc)
+          cd client && cmake -B .build && cd .build && make -j$(nproc)
 
-      - name: Server build 
+      - name: Build server
         run: |
-          cd server
-          cmake -B .build
-          cd .build
-          make -j$(nproc)
+          cd server && cmake -B .build && cd .build && make -j$(nproc)
 
-      - name: Generate documentation
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Generate documentation (auto if missing)
         run: |
           mkdir -p docs_output
-          
-          echo "=== Starting documentation generation ==="
-          
-          # GameEngine documentation
-          if [ -f "gameEngine/Doxyfile" ]; then
-            echo "Generating GameEngine documentation..."
-            cd gameEngine
-            doxygen Doxyfile 2>&1 | tee doxygen.log
-            cd ..
-            if [ -d "gameEngine/docs/html" ]; then
-              mkdir -p docs_output/gameEngine
-              cp -r gameEngine/docs/html/* docs_output/gameEngine/
-              echo "✓ GameEngine documentation generated"
+
+          generate_docs() {
+            local module=$1
+            if [ -f "$module/Doxyfile" ]; then
+              echo "Generating documentation for $module..."
+              cd $module
+              doxygen Doxyfile 2>&1 | tee doxygen.log
+              cd ..
+              if [ -d "$module/docs/html" ]; then
+                mkdir -p docs_output/$module
+                cp -r $module/docs/html/* docs_output/$module/
+              else
+                echo "⚠ Warning: $module/docs/html not found"
+              fi
             else
-              echo "⚠ Warning: gameEngine/docs/html not found"
+              echo "⚠ No Doxyfile for $module — skipping"
             fi
-          else
-            echo "⚠ Warning: gameEngine/Doxyfile not found"
-          fi
-          
-          # Server documentation
-          if [ -f "server/Doxyfile" ]; then
-            echo "Generating Server documentation..."
-            cd server
-            doxygen Doxyfile 2>&1 | tee doxygen.log
-            cd ..
-            if [ -d "server/docs/html" ]; then
-              mkdir -p docs_output/server
-              cp -r server/docs/html/* docs_output/server/
-              echo "✓ Server documentation generated"
+          }
+
+          for module in client server gameEngine; do
+            if [ ! -d "docs_output/$module" ]; then
+              generate_docs "$module"
             else
-              echo "⚠ Warning: server/docs/html not found"
+              echo "✓ Existing documentation found for $module, skipping regeneration"
             fi
-          else
-            echo "⚠ Warning: server/Doxyfile not found"
-          fi
-          
-          # Client documentation
-          if [ -f "client/Doxyfile" ]; then
-            echo "Generating Client documentation..."
-            cd client
-            doxygen Doxyfile 2>&1 | tee doxygen.log
-            cd ..
-            if [ -d "client/docs/html" ]; then
-              mkdir -p docs_output/client
-              cp -r client/docs/html/* docs_output/client/
-              echo "✓ Client documentation generated"
-            else
-              echo "⚠ Warning: client/docs/html not found"
-            fi
-          else
-            echo "⚠ Warning: client/Doxyfile not found"
-          fi
-          
-          # Create .nojekyll to disable Jekyll processing
+          done
+
+          # Static index
           touch docs_output/.nojekyll
-          
-          # Create index page
-          cat > docs_output/index.html << 'EOF'
+          cat > docs_output/index.html <<'EOF'
           <!DOCTYPE html>
           <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>R-TYPE Documentation</title>
-            <style>
-              * { margin: 0; padding: 0; box-sizing: border-box; }
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-              }
-              .container {
-                max-width: 900px;
-                width: 100%;
-                background: white;
-                border-radius: 20px;
-                padding: 50px;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-              }
-              h1 {
-                color: #2d3748;
-                font-size: 2.5rem;
-                margin-bottom: 10px;
-                text-align: center;
-              }
-              .subtitle {
-                text-align: center;
-                color: #718096;
-                margin-bottom: 40px;
-                font-size: 1.1rem;
-              }
-              .team {
-                text-align: center;
-                color: #4a5568;
-                margin-bottom: 30px;
-                font-size: 0.95rem;
-              }
-              .doc-links {
-                display: grid;
-                gap: 20px;
-                margin-top: 30px;
-              }
-              .doc-link {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 30px;
-                border-radius: 15px;
-                text-decoration: none;
-                color: white;
-                transition: transform 0.3s, box-shadow 0.3s;
-                display: block;
-              }
-              .doc-link:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-              }
-              .doc-link.disabled {
-                opacity: 0.6;
-                pointer-events: none;
-              }
-              .doc-link h2 {
-                margin: 0 0 10px 0;
-                font-size: 1.5rem;
-              }
-              .doc-link p {
-                margin: 0;
-                opacity: 0.9;
-              }
-              .icon {
-                font-size: 2rem;
-                margin-bottom: 10px;
-              }
-              .status {
-                display: inline-block;
-                padding: 4px 12px;
-                border-radius: 12px;
-                font-size: 0.8rem;
-                margin-left: 10px;
-                background: rgba(255,255,255,0.2);
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>🚀 R-TYPE Documentation</h1>
-              <p class="subtitle">Technical Documentation & API Reference</p>
-              <div class="team">
-                By Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot
-              </div>
-              <div class="doc-links">
-                <a href="gameEngine/index.html" class="doc-link" id="gameEngine-link">
-                  <div class="icon">🎮</div>
-                  <h2>Game Engine ECS<span class="status" id="gameEngine-status">Loading...</span></h2>
-                  <p>Entity Component System for 2DGames</p>
-                </a>
-                <a href="server/index.html" class="doc-link" id="server-link">
-                  <div class="icon">🖥️</div>
-                  <h2>Server<span class="status" id="server-status">Loading...</span></h2>
-                  <p>Server-side architecture and network protocols</p>
-                </a>
-                <a href="client/index.html" class="doc-link" id="client-link">
-                  <div class="icon">💻</div>
-                  <h2>Client<span class="status" id="client-status">Loading...</span></h2>
-                  <p>Client-side rendering and game logic</p>
-                </a>
-              </div>
-            </div>
-            <script>
-              async function checkDoc(name) {
-                const link = document.getElementById(`${name}-link`);
-                const status = document.getElementById(`${name}-status`);
-                try {
-                  const response = await fetch(`${name}/index.html`, { method: 'HEAD' });
-                  if (response.ok) {
-                    status.textContent = '✓ Available';
-                    status.style.background = 'rgba(72, 187, 120, 0.3)';
-                  } else {
-                    throw new Error('Not found');
-                  }
-                } catch (e) {
-                  status.textContent = '⏳ Coming soon';
-                  status.style.background = 'rgba(255, 193, 7, 0.3)';
-                  link.classList.add('disabled');
-                }
-              }
-              
-              checkDoc('gameEngine');
-              checkDoc('server');
-              checkDoc('client');
-            </script>
-          </body>
-          </html>
+          <head><meta charset="UTF-8"><title>R-TYPE Docs</title></head>
+          <body><h1>R-TYPE Documentation</h1><ul>
+            <li><a href="client/index.html">Client</a></li>
+            <li><a href="server/index.html">Server</a></li>
+            <li><a href="gameEngine/index.html">GameEngine</a></li>
+          </ul></body></html>
           EOF
-          
-          echo "=== Documentation structure ==="
-          find docs_output -type f -name "index.html" | head -20
-          echo "=== Total files ==="
-          find docs_output -type f | wc -l
 
       - name: Upload artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs_output
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
