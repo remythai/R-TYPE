@@ -30,6 +30,8 @@ This guide provides comprehensive instructions for implementing Components and S
 ```cpp
 #pragma once
 
+#include "Component.hpp"
+
 namespace GameEngine {
 
 /**
@@ -38,7 +40,7 @@ namespace GameEngine {
  * Explain what aspect of entity state this represents
  * and typical use cases.
  */
-struct ComponentName {
+struct ComponentName : public Component<ComponentName> {
     // Data members only
     Type member1;
     Type member2;
@@ -46,6 +48,10 @@ struct ComponentName {
     // Constructor with default values
     ComponentName(Type val1 = default, Type val2 = default)
         : member1(val1), member2(val2) {}
+    
+    // Required static metadata
+    static constexpr const char* Name = "ComponentName";
+    static constexpr const char* Version = "1.0.0";
     
     // Optional: Simple utility methods (no complex logic)
     void reset() {
@@ -70,11 +76,14 @@ Before writing code, clearly define:
 
 Select the minimal set of data members needed:
 ```cpp
-struct Acceleration {
+struct Acceleration : public Component<Acceleration> {
     float x, y;  // Only the essential data
     
     Acceleration(float val_x = 0, float val_y = 0) 
         : x(val_x), y(val_y) {}
+    
+    static constexpr const char* Name = "Acceleration";
+    static constexpr const char* Version = "1.0.0";
 };
 ```
 
@@ -86,7 +95,7 @@ struct Acceleration {
 
 #### 3. File Organization
 
-**File Location**: `include/Components/ComponentName.hpp`
+**File Location**: `components/componentname/src/ComponentName.hpp`
 
 **Naming Convention**:
 - PascalCase for component names
@@ -105,63 +114,101 @@ Every component must include:
  * - Which systems typically use it
  * - Common usage patterns
  * - Any special considerations
+ * 
+ * @inherits Component<ComponentName> for ECS registration
+ * 
+ * @example
+ * ```cpp
+ * Entity entity = registry.create();
+ * registry.emplace<ComponentName>(entity, value1, value2);
+ * ```
  */
 ```
+
+#### 5. Required Metadata
+
+Every component **must** define these static members:
+
+```cpp
+static constexpr const char* Name = "ComponentName";
+static constexpr const char* Version = "1.0.0";
+```
+
+These enable:
+- Component identification in the registry
+- Serialization and deserialization
+- Version compatibility checking
+- Dynamic loading from shared libraries
 
 ### Design Patterns for Components
 
 #### Simple Data Component
 For basic properties:
 ```cpp
-struct Health {
+struct Health : public Component<Health> {
     int current;
     int maximum;
     
     Health(int max = 100) : current(max), maximum(max) {}
+    
+    static constexpr const char* Name = "Health";
+    static constexpr const char* Version = "1.0.0";
 };
 ```
 
 #### Stateful Component
 When component needs internal state tracking:
 ```cpp
-struct AnimationState {
+struct AnimationState : public Component<AnimationState> {
     int currentFrame;
     float elapsedTime;
     bool isPlaying;
     
     AnimationState() 
         : currentFrame(0), elapsedTime(0.0f), isPlaying(false) {}
+    
+    static constexpr const char* Name = "AnimationState";
+    static constexpr const char* Version = "1.0.0";
 };
 ```
 
 #### Configuration Component
 For entity behavior configuration:
 ```cpp
-struct MovementConfig {
+struct MovementConfig : public Component<MovementConfig> {
     float maxSpeed;
     float acceleration;
     float friction;
     
     MovementConfig(float speed = 100.0f, float accel = 50.0f, float fric = 0.9f)
         : maxSpeed(speed), acceleration(accel), friction(fric) {}
+    
+    static constexpr const char* Name = "MovementConfig";
+    static constexpr const char* Version = "1.0.0";
 };
 ```
 
 #### Tag Component
 For entity categorization (no data needed):
 ```cpp
-struct Player {};  // Empty struct used as a tag
-struct Enemy {};
-struct Projectile {};
+struct Player : public Component<Player> {
+    static constexpr const char* Name = "Player";
+    static constexpr const char* Version = "1.0.0";
+};
+
+struct Enemy : public Component<Enemy> {
+    static constexpr const char* Name = "Enemy";
+    static constexpr const char* Version = "1.0.0";
+};
 ```
 
 ### Common Component Types
 
-**Transform Components**: Position, rotation, scale
-**Physics Components**: Velocity, acceleration, mass, collision boxes
-**Rendering Components**: Sprite data, color, layer, visibility
-**Gameplay Components**: Health, damage, score, inventory
-**AI Components**: Behavior state, target, patrol points
+**Transform Components**: Position, rotation, scale  
+**Physics Components**: Velocity, acceleration, mass, collision boxes  
+**Rendering Components**: Sprite data, color, layer, visibility  
+**Gameplay Components**: Health, damage, score, inventory  
+**AI Components**: Behavior state, target, patrol points  
 **Audio Components**: Sound source, volume, pitch
 
 ---
@@ -185,8 +232,8 @@ Our engine uses the **CRTP (Curiously Recurring Template Pattern)** for systems:
 ```cpp
 #pragma once
 #include "System.hpp"
-#include "Components/RequiredComponent1.hpp"
-#include "Components/RequiredComponent2.hpp"
+#include "../../../components/component1/src/Component1.hpp"
+#include "../../../components/component2/src/Component2.hpp"
 
 namespace GameEngine {
 
@@ -198,11 +245,14 @@ namespace GameEngine {
  */
 class SystemName : public System<SystemName> {
 public:
+    /**
+     * @brief Constructs the system and declares component requirements.
+     */
     SystemName() {
         // Define required components
         requireComponents<Component1, Component2>();
         
-        // Set system name for debugging/profiling
+        // Optional: Set system name for debugging
         setName("SystemName");
         
         // Optional: Set execution priority
@@ -282,27 +332,9 @@ SystemName() {
 
 #### 4. Implement Update Logic
 
-The `onUpdate` method contains the core system logic. There are two primary approaches for iterating over entities:
+The `onUpdate` method contains the core system logic. Use the `each()` method for iterating over entities:
 
-**Approach 1: Using `view()` with manual iteration**
-```cpp
-void onUpdate(Registry& registry, float dt) {
-    // 1. Get view of all matching entities
-    auto view = registry.view<RequiredComponent1, RequiredComponent2>();
-    
-    // 2. Iterate over entities
-    for (auto entity : view) {
-        // 3. Access components
-        auto& comp1 = view.get<RequiredComponent1>(entity);
-        auto& comp2 = view.get<RequiredComponent2>(entity);
-        
-        // 4. Implement system logic
-        comp1.value += comp2.value * dt;
-    }
-}
-```
-
-**Approach 2: Using `each()` for cleaner syntax**
+**Standard Approach: Using `each()`**
 ```cpp
 void onUpdate(Registry& registry, float dt) {
     // each() automatically unpacks components into lambda parameters
@@ -315,33 +347,18 @@ void onUpdate(Registry& registry, float dt) {
 }
 ```
 
-**Key Differences:**
-
-| Aspect | `view()` + manual loop | `each()` method |
-|--------|------------------------|-----------------|
-| Syntax | More verbose | Cleaner, more concise |
-| Component access | Explicit `view.get<>()` | Automatic unpacking |
-| Entity access | Always available | Available as parameter |
-| Performance | Identical | Identical |
-| Flexibility | More control | Less boilerplate |
-
-**When to use `each()`:**
-- ✅ When you need all required components for each entity
-- ✅ For simple, straightforward logic
-- ✅ When readability is prioritized
-
-**When to use `view()`:**
-- ✅ When you need additional filtering logic
-- ✅ For complex multi-view interactions
-- ✅ When you need more control over iteration
-- ✅ For early loop termination based on conditions
+**Key Benefits of `each()`:**
+- Cleaner, more concise syntax
+- Automatic component unpacking
+- Direct access to entity ID
+- No manual `get<>()` calls needed
 
 #### 5. File Organization
 
-**File Location**: `include/Systems/SystemName.hpp` and `src/Systems/SystemName.cpp`
+**File Location**: `gameEngine/src/systems/systemname/SystemName.hpp`
 
 **Naming Convention**:
-- PascalCase with "System" suffix: `MovementSystem`, `RenderSystem`
+- PascalCase for class names: `MovementSystem`, `RenderSystem`
 - Action-based names describing what the system does
 - Clear, descriptive (prefer `CollisionDetectionSystem` over `CollisionSystem`)
 
@@ -349,30 +366,14 @@ void onUpdate(Registry& registry, float dt) {
 
 #### Transform Pattern: Modifying Component Data
 
-Most common pattern - read and modify components. Can use either iteration method:
+Most common pattern - read and modify components:
 
-**Using `view()`:**
 ```cpp
 void onUpdate(Registry& registry, float dt) {
-    auto view = registry.view<Transform, Velocity>();
-    
-    for (auto entity : view) {
-        auto& transform = view.get<Transform>(entity);
-        auto& velocity = view.get<Velocity>(entity);
-        
-        transform.x += velocity.x * dt;
-        transform.y += velocity.y * dt;
-    }
-}
-```
-
-**Using `each()` (recommended for simple cases):**
-```cpp
-void onUpdate(Registry& registry, float dt) {
-    registry.each<Transform, Velocity>(
-        [dt](Entity entity, auto& transform, auto& velocity) {
-            transform.x += velocity.x * dt;
-            transform.y += velocity.y * dt;
+    registry.each<Position, Velocity>(
+        [dt](Entity entity, auto& position, auto& velocity) {
+            position.pos.x += velocity.x * dt;
+            position.pos.y += velocity.y * dt;
         }
     );
 }
@@ -382,85 +383,134 @@ void onUpdate(Registry& registry, float dt) {
 
 When you need additional conditional logic beyond component requirements:
 
-**Using `view()` (better for filtering):**
-```cpp
-void onUpdate(Registry& registry, float dt) {
-    auto view = registry.view<Health>();
-    
-    for (auto entity : view) {
-        auto& health = view.get<Health>(entity);
-        
-        // Additional filtering
-        if (health.current <= 0) {
-            registry.destroyEntity(entity);
-        }
-    }
-}
-```
-
-**Using `each()` with conditional logic:**
 ```cpp
 void onUpdate(Registry& registry, float dt) {
     registry.each<Health>(
         [&registry](Entity entity, auto& health) {
             if (health.current <= 0) {
-                registry.destroyEntity(entity);
+                registry.destroy(entity);
             }
         }
     );
 }
 ```
 
-**Note:** For complex filtering, `view()` often provides better readability.
+#### Multi-Phase Pattern: Complex Processing
 
-#### Multi-View Pattern: Cross-Entity Interactions
+When logic requires multiple passes:
 
-When entities interact with each other:
 ```cpp
 void onUpdate(Registry& registry, float dt) {
-    auto projectiles = registry.view<Projectile, Transform>();
-    auto enemies = registry.view<Enemy, Transform, Health>();
+    // Phase 1: Deceleration
+    registry.each<Velocity>([dt](Entity e, auto& vel) {
+        vel.x *= 0.25f;  // 75% reduction
+        vel.y *= 0.25f;
+    });
     
-    // Check projectile-enemy collisions
-    for (auto proj : projectiles) {
-        auto& projTransform = projectiles.get<Transform>(proj);
-        
-        for (auto enemy : enemies) {
-            auto& enemyTransform = enemies.get<Transform>(enemy);
-            auto& enemyHealth = enemies.get<Health>(enemy);
-            
-            if (checkCollision(projTransform, enemyTransform)) {
-                enemyHealth.current -= 10;
-                registry.destroyEntity(proj);
-                break;
-            }
-        }
-    }
+    // Phase 2: Acceleration
+    registry.each<Velocity, Acceleration>([dt](Entity e, auto& vel, auto& acc) {
+        vel.x = std::clamp(vel.x + acc.x, -vel.speedMax, vel.speedMax);
+        vel.y = std::clamp(vel.y + acc.y, -vel.speedMax, vel.speedMax);
+    });
+    
+    // Phase 3: Position update
+    registry.each<Position, Velocity>([dt](Entity e, auto& pos, auto& vel) {
+        pos.pos.x += vel.x;
+        pos.pos.y += vel.y;
+    });
 }
 ```
 
 #### Deferred Modification Pattern: Safe Entity Destruction
 
 Avoid modifying entity structure during iteration:
+
 ```cpp
 void onUpdate(Registry& registry, float dt) {
-    auto view = registry.view<Health>();
-    
     // Collect entities to destroy
     std::vector<Entity> toDestroy;
     
-    for (auto entity : view) {
-        auto& health = view.get<Health>(entity);
+    registry.each<Health>([&toDestroy](Entity entity, auto& health) {
         if (health.current <= 0) {
             toDestroy.push_back(entity);
         }
-    }
+    });
     
     // Destroy after iteration completes
     for (auto entity : toDestroy) {
-        registry.destroyEntity(entity);
+        registry.destroy(entity);
     }
 }
+```
+
+### Complete System Example
+
+Here's a complete implementation of the Motion system from our engine:
+
+```cpp
+#pragma once
+
+#include <algorithm>
+#include "../../../components/position/src/Position.hpp"
+#include "../../../components/velocity/src/Velocity.hpp"
+#include "../../../components/acceleration/src/Acceleration.hpp"
+#include "../../../components/renderable/src/Renderable.hpp"
+#include "../../../components/collider/src/Collider.hpp"
+#include "../../../ecs/Registry.hpp"
+#include "../../../ecs/System.hpp"
+
+namespace GameEngine {
+
+/**
+ * @class Motion
+ * @brief System that simulates entity movement using physics principles.
+ *
+ * The Motion system implements a simplified physics engine that handles:
+ * 1. Deceleration: Velocity naturally dampens when acceleration is zero
+ * 2. Acceleration: Applies acceleration forces to velocity each frame
+ * 3. Speed clamping: Constrains velocity to maximum speed limits
+ * 4. Position updates: Translates entities based on current velocity
+ * 5. Boundary clamping: Keeps entities within screen boundaries
+ */
+class Motion : public System<Motion> {
+public:
+    Motion() {
+        requireComponents
+            Position, Velocity, Acceleration, 
+            Renderable, Collider>();
+        setName("Motion");
+        priority = 100;
+    }
+    
+    void onUpdate(Registry& registry, float dt) {
+        registry.each<Position, Velocity, Acceleration, Renderable, Collider>(
+            [dt](Entity e, auto& pos, auto& vel, auto& acc, 
+                 auto& render, auto& collider) {
+                // Phase 1: Deceleration (75% reduction)
+                vel.x = vel.x > 0 
+                    ? std::max(vel.x * 0.25f, 0.0f)
+                    : std::min(vel.x * 0.25f, 0.0f);
+                vel.y = vel.y > 0 
+                    ? std::max(vel.y * 0.25f, 0.0f)
+                    : std::min(vel.y * 0.25f, 0.0f);
+                
+                // Phase 2: Acceleration (apply forces and clamp)
+                vel.x = std::clamp(vel.x + acc.x, -vel.speedMax, vel.speedMax);
+                vel.y = std::clamp(vel.y + acc.y, -vel.speedMax, vel.speedMax);
+                
+                // Phase 3: Position update (translate and constrain)
+                pos.pos.x = std::clamp(
+                    pos.pos.x + vel.x, 0.0f,
+                    render.screenSizeX - collider.size.x);
+                pos.pos.y = std::clamp(
+                    pos.pos.y + vel.y, 0.0f,
+                    render.screenSizeY - collider.size.y);
+            }
+        );
+    }
+};
+
+} // namespace GameEngine
 ```
 
 ---
@@ -472,7 +522,7 @@ void onUpdate(Registry& registry, float dt) {
 Components are automatically registered when first used:
 ```cpp
 // In system constructor or elsewhere
-requireComponents<Transform>();  // Auto-registers Transform
+requireComponents<Transform>();  // Auto-registers Transform component
 ```
 
 The `ComponentRegistry` maintains a mapping between component types and IDs.
@@ -484,9 +534,9 @@ Systems are added to the Registry:
 // In main.cpp or game initialization
 Registry registry;
 
-registry.registerSystem<MovementSystem>();
-registry.registerSystem<RenderSystem>();
-registry.registerSystem<CollisionSystem>();
+registry.addSystem<MovementSystem>();
+registry.addSystem<RenderSystem>();
+registry.addSystem<CollisionSystem>();
 ```
 
 Systems execute in priority order each frame.
@@ -495,12 +545,12 @@ Systems execute in priority order each frame.
 
 ```cpp
 // Create entity
-Entity player = registry.createEntity();
+Entity player = registry.create();
 
-// Add components
-registry.addComponent<Transform>(player, 100.0f, 100.0f);
-registry.addComponent<Velocity>(player, 50.0f, 0.0f);
-registry.addComponent<Sprite>(player, "player.png", 1);
+// Add components using emplace
+registry.emplace<Position>(player, 100.0f, 100.0f);
+registry.emplace<Velocity>(player, 10.0f, 50.0f, 0.0f);
+registry.emplace<Sprite>(player, "player.png", 1);
 ```
 
 ### System Execution Flow
@@ -511,7 +561,7 @@ while (running) {
     float dt = calculateDeltaTime();
     
     // Update all systems in priority order
-    registry.updateSystems(dt);
+    registry.update(dt);
     
     // Systems automatically process matching entities
 }
@@ -528,23 +578,25 @@ while (running) {
 - ✅ Use value types (no pointers when avoidable)
 - ✅ Provide meaningful default values
 - ✅ Document expected value ranges
-- ✅ Use namespaces consistently
+- ✅ Always inherit from `Component<T>`
+- ✅ Always define `Name` and `Version` static members
 
 **DON'T:**
 - ❌ Add methods beyond simple utilities
 - ❌ Reference other components directly
 - ❌ Allocate dynamic memory in constructors
 - ❌ Make components larger than necessary
-- ❌ Use inheritance for components
+- ❌ Use inheritance for components (except `Component<T>`)
 
 ### System Design
 
 **DO:**
 - ✅ Keep systems stateless when possible
-- ✅ Use descriptive names
+- ✅ Use descriptive names with clear purpose
 - ✅ Document system execution order requirements
 - ✅ Profile performance-critical systems
-- ✅ Handle edge cases (empty views, null data)
+- ✅ Handle edge cases (empty views, invalid data)
+- ✅ Use `each()` for cleaner iteration code
 
 **DON'T:**
 - ❌ Create systems that do too much
@@ -559,16 +611,19 @@ while (running) {
 - Access components sequentially in hot loops
 - Minimize component size for better cache line utilization
 - Batch similar operations together
+- Use `each()` which optimizes for cache-friendly access
 
 **System Ordering:**
 - Systems reading data should run before those writing it
 - Physics before rendering
 - Input before gameplay logic
+- Use priority values to enforce ordering
 
 **Entity Management:**
 - Reuse entities when possible (object pooling)
 - Destroy entities in batches outside iteration
 - Minimize component add/remove operations per frame
+- Use the deferred modification pattern for safety
 
 ---
 
@@ -579,5 +634,9 @@ Implementing components and systems following these guidelines ensures:
 - **High performance** through cache-friendly design
 - **Maintainability** via clear separation of concerns
 - **Flexibility** for rapid feature development
+- **Type safety** through CRTP and compile-time checks
 
 Always prioritize clarity and simplicity in component/system design. Complex logic should be broken into multiple simple systems rather than creating monolithic systems.
+
+**Author**: Antton Ducos
+**Contact**: antton.ducos@epietch.eu

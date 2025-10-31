@@ -1,5 +1,0 @@
-<map id="rtype::NetworkServer::initECS" name="rtype::NetworkServer::initECS">
-<area shape="rect" id="Node000001" title="Initializes the ECS with appropriate systems." alt="" coords="214,5,374,50"/>
-<area shape="rect" id="Node000002" href="$classrtype_1_1NetworkServer.html#ad9cd895e5b840765222850a48ac7d564" title="Creates a player entity in the ECS with appropriate components." alt="" coords="5,5,166,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="198,30,166,30,166,25,198,25"/>
-</map>

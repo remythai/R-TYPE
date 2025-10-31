@@ -451,5 +451,7 @@ Potential protocol enhancements:
 For questions, bug reports, or protocol enhancement proposals, please refer to the project's developer documentation and contribution guidelines.
 
 **Protocol Version**: 2.0
-**Last Updated**: January 2025
+**Last Updated**: October 2025
 **Compatibility**: R-Type Server v2.x
+**Author**: Simon Maigrot
+**Contact**: simon.maigrot@epitech.eu
