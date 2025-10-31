@@ -8,8 +8,8 @@
 #include "EntityManager.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 /**
  * @brief Default constructor for GameEntity.
@@ -206,8 +206,7 @@ void CLIENT::EntityManager::update(float deltaTime)
         float distance = std::sqrt(dx * dx + dy * dy);
 
         if (entity.interpolationDuration > 0.0f &&
-            distance <= MAX_RECONCILIATION_DISTANCE)
-        {
+            distance <= MAX_RECONCILIATION_DISTANCE) {
             if (entity.interpolationTime < entity.interpolationDuration) {
                 entity.interpolationTime += deltaTime;
                 float alpha =
@@ -223,9 +222,7 @@ void CLIENT::EntityManager::update(float deltaTime)
             } else {
                 entity.position = entity.targetPosition;
             }
-        }
-        else if (distance > MAX_RECONCILIATION_DISTANCE)
-        {
+        } else if (distance > MAX_RECONCILIATION_DISTANCE) {
             entity.position = entity.targetPosition;
             entity.interpolationTime = entity.interpolationDuration;
         }

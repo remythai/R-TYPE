@@ -7,8 +7,8 @@
 
 #include <algorithm>
 #include <fstream>
-#include <sstream>
 #include <random>
+#include <sstream>
 
 #include "NetworkServer.hpp"
 
@@ -271,7 +271,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
     float phaseOffset = phaseDist(gen);
 
     _registry->emplace<GameEngine::SinusoidalPattern>(
-            entity, 150.0f, 0.003f, phaseOffset);
+        entity, 150.0f, 0.003f, phaseOffset);
 
     _registry->emplace<GameEngine::ScoreValue>(entity, 1);
 
