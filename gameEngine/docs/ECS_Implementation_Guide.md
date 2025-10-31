@@ -639,4 +639,4 @@ Implementing components and systems following these guidelines ensures:
 Always prioritize clarity and simplicity in component/system design. Complex logic should be broken into multiple simple systems rather than creating monolithic systems.
 
 **Author**: Antton Ducos
-**Contact**: antton.ducos@epietch.eu
+**Contact**: antton.ducos@epitech.eu
