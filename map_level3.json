@@ -1,0 +1,148 @@
+{
+  "entities": [
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 32,
+      "spawnTime": 4.38102,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 128,
+      "spawnTime": 4.78482,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 320,
+      "spawnTime": 5.54073,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 480,
+      "spawnTime": 6.2822,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 608,
+      "spawnTime": 6.83708,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 800,
+      "spawnTime": 7.7796,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 960,
+      "spawnTime": 8.92107,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 192,
+      "spawnTime": 12.3382,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 416,
+      "spawnTime": 13.4164,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 544,
+      "spawnTime": 14.2064,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 704,
+      "spawnTime": 15.2814,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 928,
+      "spawnTime": 16.2909,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 832,
+      "spawnTime": 16.7277,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 704,
+      "spawnTime": 17.147,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 288,
+      "spawnTime": 18.7443,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 96,
+      "spawnTime": 21.9566,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 448,
+      "spawnTime": 22.6627,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 672,
+      "spawnTime": 23.1994,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "entities": [
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 64,
+      "spawnTime": 6.75198,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 448,
+      "spawnTime": 11.9651,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 864,
+      "spawnTime": 17.2945,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 224,
+      "spawnTime": 23.0583,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    },
+    {
+      "type": 1,
+      "x": 1920,
+      "y": 736,
+      "spawnTime": 25.7633,
+      "spritePath": "assets/sprites/r-typesheet5.png",
+      "textureRect": [0, 0, 33, 36]
+    }
+  ]
+}

@@ -10,3 +10,7 @@ r-type_tests
 lib/
 config/
 *.cfg
+
+!map_level1.json
+!map_level2.json
+!map_level3.json
