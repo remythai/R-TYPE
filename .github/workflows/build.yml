@@ -113,17 +113,147 @@ jobs:
             fi
           done
 
-          # Static index
+          # Add .nojekyll
           touch docs_output/.nojekyll
-          cat > docs_output/index.html <<'EOF'
+
+          cat > docs_output/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en">
-          <head><meta charset="UTF-8"><title>R-TYPE Docs</title></head>
-          <body><h1>R-TYPE Documentation</h1><ul>
-            <li><a href="client/index.html">Client</a></li>
-            <li><a href="server/index.html">Server</a></li>
-            <li><a href="gameEngine/index.html">GameEngine</a></li>
-          </ul></body></html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>R-TYPE Documentation</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+              }
+              .container {
+                max-width: 900px;
+                width: 100%;
+                background: white;
+                border-radius: 20px;
+                padding: 50px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+              }
+              h1 {
+                color: #2d3748;
+                font-size: 2.5rem;
+                margin-bottom: 10px;
+                text-align: center;
+              }
+              .subtitle {
+                text-align: center;
+                color: #718096;
+                margin-bottom: 40px;
+                font-size: 1.1rem;
+              }
+              .team {
+                text-align: center;
+                color: #4a5568;
+                margin-bottom: 30px;
+                font-size: 0.95rem;
+              }
+              .doc-links {
+                display: grid;
+                gap: 20px;
+                margin-top: 30px;
+              }
+              .doc-link {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 30px;
+                border-radius: 15px;
+                text-decoration: none;
+                color: white;
+                transition: transform 0.3s, box-shadow 0.3s;
+                display: block;
+              }
+              .doc-link:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+              }
+              .doc-link.disabled {
+                opacity: 0.6;
+                pointer-events: none;
+              }
+              .doc-link h2 {
+                margin: 0 0 10px 0;
+                font-size: 1.5rem;
+              }
+              .doc-link p {
+                margin: 0;
+                opacity: 0.9;
+              }
+              .icon {
+                font-size: 2rem;
+                margin-bottom: 10px;
+              }
+              .status {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                margin-left: 10px;
+                background: rgba(255,255,255,0.2);
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🚀 R-TYPE Documentation</h1>
+              <p class="subtitle">Technical Documentation & API Reference</p>
+              <div class="team">
+                By Antton Ducos, Louka Ortega-Cand, Rémy Thai & Simon Maigrot
+              </div>
+              <div class="doc-links">
+                <a href="gameEngine/index.html" class="doc-link" id="gameEngine-link">
+                  <div class="icon">🎮</div>
+                  <h2>Game Engine ECS<span class="status" id="gameEngine-status">Loading...</span></h2>
+                  <p>Entity Component System for 2D Games</p>
+                </a>
+                <a href="server/index.html" class="doc-link" id="server-link">
+                  <div class="icon">🖥️</div>
+                  <h2>Server<span class="status" id="server-status">Loading...</span></h2>
+                  <p>Server-side architecture and network protocols</p>
+                </a>
+                <a href="client/index.html" class="doc-link" id="client-link">
+                  <div class="icon">💻</div>
+                  <h2>Client<span class="status" id="client-status">Loading...</span></h2>
+                  <p>Client-side rendering and game logic</p>
+                </a>
+              </div>
+            </div>
+            <script>
+              async function checkDoc(name) {
+                const link = document.getElementById(`${name}-link`);
+                const status = document.getElementById(`${name}-status`);
+                try {
+                  const response = await fetch(`${name}/index.html`, { method: 'HEAD' });
+                  if (response.ok) {
+                    status.textContent = '✓ Available';
+                    status.style.background = 'rgba(72, 187, 120, 0.3)';
+                  } else {
+                    throw new Error('Not found');
+                  }
+                } catch (e) {
+                  status.textContent = '⏳ Coming soon';
+                  status.style.background = 'rgba(255, 193, 7, 0.3)';
+                  link.classList.add('disabled');
+                }
+              }
+              
+              checkDoc('gameEngine');
+              checkDoc('server');
+              checkDoc('client');
+            </script>
+          </body>
+          </html>
           EOF
 
       - name: Upload artifact
