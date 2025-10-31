@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 /**
  * @brief Default constructor for GameEntity.
@@ -188,45 +189,54 @@ void CLIENT::EntityManager::cleanupInactiveEntities()
  */
 void CLIENT::EntityManager::update(float deltaTime)
 {
+    const float MAX_RECONCILIATION_DISTANCE = 100.0f;
+
     for (auto& [id, entity] : _entities) {
         if (!entity.active || !entity.sprite.has_value())
             continue;
 
-        if (entity.isParallax) {
+        if (entity.isParallax)
             continue;
-        }
 
         entity.position.x += entity.velocity.x * deltaTime;
         entity.position.y += entity.velocity.y * deltaTime;
 
-        if (entity.interpolationDuration > 0.0f &&
-            entity.interpolationTime < entity.interpolationDuration) {
-            entity.interpolationTime += deltaTime;
-            float alpha =
-                entity.interpolationTime / entity.interpolationDuration;
-            alpha = std::min(1.0f, std::max(0.0f, alpha));
+        float dx = entity.targetPosition.x - entity.position.x;
+        float dy = entity.targetPosition.y - entity.position.y;
+        float distance = std::sqrt(dx * dx + dy * dy);
 
-            entity.position.x =
-                entity.position.x +
-                (entity.targetPosition.x - entity.position.x) * alpha;
-            entity.position.y =
-                entity.position.y +
-                (entity.targetPosition.y - entity.position.y) * alpha;
-        } else if (
-            entity.interpolationDuration > 0.0f &&
-            entity.interpolationTime >= entity.interpolationDuration) {
+        if (entity.interpolationDuration > 0.0f &&
+            distance <= MAX_RECONCILIATION_DISTANCE)
+        {
+            if (entity.interpolationTime < entity.interpolationDuration) {
+                entity.interpolationTime += deltaTime;
+                float alpha =
+                    entity.interpolationTime / entity.interpolationDuration;
+                alpha = std::clamp(alpha, 0.0f, 1.0f);
+
+                entity.position.x =
+                    entity.position.x +
+                    (entity.targetPosition.x - entity.position.x) * alpha;
+                entity.position.y =
+                    entity.position.y +
+                    (entity.targetPosition.y - entity.position.y) * alpha;
+            } else {
+                entity.position = entity.targetPosition;
+            }
+        }
+        else if (distance > MAX_RECONCILIATION_DISTANCE)
+        {
             entity.position = entity.targetPosition;
+            entity.interpolationTime = entity.interpolationDuration;
         }
 
         if (entity.looping) {
             auto bounds = entity.sprite->getGlobalBounds();
 
-            if (entity.position.x + bounds.size.x < 0) {
+            if (entity.position.x + bounds.size.x < 0)
                 entity.position.x = WINDOW_WIDTH;
-            }
-            if (entity.position.y > WINDOW_HEIGHT) {
+            if (entity.position.y > WINDOW_HEIGHT)
                 entity.position.y = -bounds.size.y;
-            }
         }
 
         entity.sprite->setPosition(entity.position);
