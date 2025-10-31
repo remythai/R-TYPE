@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <random>
 
 #include "NetworkServer.hpp"
 
@@ -229,42 +230,11 @@ EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
     std::lock_guard<std::mutex> lock(_registryMutex);
     Registry::Entity entity = _registry->create();
 
-    float velocity = 3.0f;
-    float acceleration = -3.0f;
+    float velocity = 200.0f;
+    float acceleration = -1200.0f;
     int health = 1;
     int damage = 1;
     int animSpeed = 1000;
-
-    switch (data.type) {
-        case 1:
-            velocity = 3.0f;
-            acceleration = -3.0f;
-            health = 1;
-            animSpeed = 1000;
-            break;
-        case 2:
-            velocity = 4.0f;
-            acceleration = -4.0f;
-            health = 2;
-            animSpeed = 800;
-            break;
-        case 3:
-            velocity = 2.5f;
-            acceleration = -2.5f;
-            health = 1;
-            animSpeed = 1200;
-            break;
-        case 4:
-            velocity = 5.0f;
-            acceleration = -5.0f;
-            health = 3;
-            animSpeed = 600;
-            break;
-        default:
-            std::cout << "[SERVER] Warning: Unknown enemy type: " << data.type
-                      << std::endl;
-            break;
-    }
 
     _registry->emplace<GameEngine::AIControlled>(entity);
     _registry->emplace<GameEngine::Acceleration>(entity, acceleration, 0.0f);
@@ -293,6 +263,17 @@ EntityManager::Entity rtype::NetworkServer::createEnemyFromData(
 
     _registry->emplace<GameEngine::Health>(entity, health, health);
     _registry->emplace<GameEngine::Damage>(entity, damage);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_real_distribution<float> phaseDist(0.0f, 6.28318f);
+    float phaseOffset = phaseDist(gen);
+
+    _registry->emplace<GameEngine::SinusoidalPattern>(
+            entity, 150.0f, 0.003f, phaseOffset);
+
+    _registry->emplace<GameEngine::ScoreValue>(entity, 1);
 
     std::cout << "[SERVER] Spawned enemy type " << data.type << " at ("
               << data.x << ", " << data.y << ")" << " | time=" << data.spawnTime
