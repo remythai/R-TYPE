@@ -125,7 +125,8 @@ class Core
         std::set<uint8_t>& activeEntities);
     void updateOrCreateEntity(
         uint8_t entityId, float x, float y, const std::string& spritePath,
-        float rectPosX, float rectPosY, float rectSizeX, float rectSizeY, int score);
+        float rectPosX, float rectPosY, float rectSizeX, float rectSizeY,
+        int score);
     void updateEntityPosition(GameEntity* entity, float x, float y);
     void updateEntitySprite(
         GameEntity* entity, uint8_t entityId, const std::string& spritePath,

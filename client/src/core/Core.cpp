@@ -412,16 +412,13 @@ float CLIENT::Core::readFloat(
     return result;
 }
 
-int CLIENT::Core::readInt(
-    const std::vector<uint8_t>& payload, size_t& offset)
+int CLIENT::Core::readInt(const std::vector<uint8_t>& payload, size_t& offset)
 {
     if (offset + 4 > payload.size())
         return 0;
 
-    int value = (payload[offset] << 24) |
-                (payload[offset + 1] << 16) |
-                (payload[offset + 2] << 8) |
-                payload[offset + 3];
+    int value = (payload[offset] << 24) | (payload[offset + 1] << 16) |
+                (payload[offset + 2] << 8) | payload[offset + 3];
     offset += 4;
     return value;
 }
@@ -494,7 +491,8 @@ bool CLIENT::Core::parseSnapshotEntity(
 
     activeEntities.insert(entityId);
     updateOrCreateEntity(
-        entityId, x, y, spritePath, rectPosX, rectPosY, rectSizeX, rectSizeY, score);
+        entityId, x, y, spritePath, rectPosX, rectPosY, rectSizeX, rectSizeY,
+        score);
 
     return true;
 }
