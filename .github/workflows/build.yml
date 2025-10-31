@@ -83,7 +83,7 @@ jobs:
         run: |
           cd server && cmake -B .build && cd .build && make -j$(nproc)
 
-      - name: Generate documentation (auto if missing)
+      - name: Generate documentation
         run: |
           mkdir -p docs_output
 
@@ -105,12 +105,9 @@ jobs:
             fi
           }
 
+          # Générer pour tous les modules
           for module in client server gameEngine; do
-            if [ ! -d "docs_output/$module" ]; then
-              generate_docs "$module"
-            else
-              echo "✓ Existing documentation found for $module, skipping regeneration"
-            fi
+            generate_docs "$module"
           done
 
           # Add .nojekyll
