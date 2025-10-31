@@ -415,6 +415,9 @@ std::vector<uint8_t> rtype::NetworkServer::serializeSnapshot()
     auto tsBytes = toBytes<uint32_t>(timestamp);
     snapshot.insert(snapshot.end(), tsBytes.begin(), tsBytes.end());
 
+    auto scoreBytes = toBytes<int>(_registry->score);
+    snapshot.insert(snapshot.end(), scoreBytes.begin(), scoreBytes.end());
+
     _registry->each<GameEngine::Renderable, GameEngine::Position>(
         [&](EntityManager::Entity entity, GameEngine::Renderable& render,
             GameEngine::Position& pos) {

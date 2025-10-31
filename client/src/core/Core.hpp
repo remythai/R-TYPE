@@ -119,12 +119,13 @@ class Core
 
     void parseSnapshot(const std::vector<uint8_t>& payload);
     float readFloat(const std::vector<uint8_t>& payload, size_t& offset);
+    int readInt(const std::vector<uint8_t>& payload, size_t& offset);
     bool parseSnapshotEntity(
         const std::vector<uint8_t>& payload, size_t& offset,
         std::set<uint8_t>& activeEntities);
     void updateOrCreateEntity(
         uint8_t entityId, float x, float y, const std::string& spritePath,
-        float rectPosX, float rectPosY, float rectSizeX, float rectSizeY);
+        float rectPosX, float rectPosY, float rectSizeX, float rectSizeY, int score);
     void updateEntityPosition(GameEntity* entity, float x, float y);
     void updateEntitySprite(
         GameEntity* entity, uint8_t entityId, const std::string& spritePath,
