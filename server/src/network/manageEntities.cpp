@@ -31,33 +31,21 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 
     if (this->_game == std::string("flappyByte")) {
         std::vector<vec2> rectPos;
-        rectPos.push_back(
-            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{0.0f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{33.2f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{66.4f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{132.8f, static_cast<float>(int(17.2f * playerId) % 86)});
-        rectPos.push_back(
-            vec2{99.6f, static_cast<float>(int(17.2f * playerId) % 86)});
+        rectPos.push_back(vec2{0.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(vec2{16.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(vec2{32.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(vec2{48.0f, static_cast<float>(int(16.0f * playerId) % 112)});
         _registry->emplace<GameEngine::InputControlled>(entity);
         _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
         _registry->emplace<GameEngine::Position>(
             entity, 100.0f, 100.0f + playerId * 50.0f);
         _registry->emplace<GameEngine::Velocity>(entity, 500.0f);
         _registry->emplace<GameEngine::Renderable>(
-            entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png",
-            rectPos, vec2{33.2f, 17.2f}, 500, false);
+            entity, 1920.0f, 1080.0f, "assets/sprites/birds.png",
+            rectPos, vec2{16.0f, 16.0f}, 500, false);
         _registry->emplace<GameEngine::Collider>(
             entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
-            std::bitset<8>("10000000"), vec2(66.4, 34.4));
+            std::bitset<8>("10000000"), vec2(32.0, 32.0));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 0);
         _registry->emplace<GameEngine::Gravity>(entity, 400.0f);
@@ -137,8 +125,8 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, 1920.0f, 1080.0f, "assets/sprites/coloredpipes.png",
                 rectPos, vec2{32.0f, 34.0f}, 500, true);
             _registry->emplace<GameEngine::Collider>(
-                entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
-                std::bitset<8>("01000000"), vec2(48.0, 48.0));
+                entity, vec2(0.0, 0.0), std::bitset<8>("10000000"),
+                std::bitset<8>("01000000"), vec2(64.0, 68.0));
             _registry->emplace<GameEngine::Domain>(
                 entity, 5.0f, 0.0f, 1988.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
@@ -146,7 +134,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             if (i == 0)
                 _registry->emplace<GameEngine::ScoreValue>(entity, 1);
         }
-        for (size_t i = 1; i < 15 - randomNum; i++) {
+        for (size_t i = 1; i < 14 - randomNum; i++) {
             std::lock_guard<std::mutex> lock(_registryMutex);
             auto entity = _registry->create();
             _registry->emplace<GameEngine::AIControlled>(entity);
@@ -155,16 +143,16 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, 1900, 1080 - i * 68);
             _registry->emplace<GameEngine::Velocity>(entity, 200.0f);
             std::vector<vec2> rectPos;
-            if (i == 15 - randomNum - 1)
+            if (i == 14 - randomNum - 1)
                 rectPos.push_back(vec2{32.0F * float(pipe), 0.0F});
             else
                 rectPos.push_back(vec2{32.0F * float(pipe), 23.0F});
             _registry->emplace<GameEngine::Renderable>(
                 entity, 1920.0f, 1080.0f, "assets/sprites/coloredpipes.png",
-                rectPos, vec2{34.0f, 34.0f}, 500, true);
+                rectPos, vec2{32.0f, 34.0f}, 500, true);
             _registry->emplace<GameEngine::Collider>(
-                entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
-                std::bitset<8>("01000000"), vec2(48.0, 48.0));
+                entity, vec2(0.0, 0.0), std::bitset<8>("10000000"),
+                std::bitset<8>("01000000"), vec2(64.0, 68.0));
             _registry->emplace<GameEngine::Domain>(
                 entity, 5.0f, 0.0f, 1988.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
