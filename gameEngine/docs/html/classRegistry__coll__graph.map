@@ -1,7 +1,0 @@
-<map id="Registry" name="Registry">
-<area shape="rect" id="Node000001" title="Central class for managing entities, components, and systems." alt="" coords="138,104,208,131"/>
-<area shape="rect" id="Node000002" href="$structGameEngine_1_1GameClock.html" title="Fixed timestep simulation clock for consistent update timing." alt="" coords="5,5,179,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,42,165,102,161,105,110,46"/>
-<area shape="rect" id="Node000003" href="$classEntityManager.html" title="Handles creation and destruction of entities within the ECS framework." alt="" coords="203,5,309,32"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="246,47,223,82,195,106,192,102,219,78,242,44"/>
-</map>

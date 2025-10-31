@@ -1,9 +1,0 @@
-<map id="GameEngine::Renderable" name="GameEngine::Renderable">
-<area shape="rect" id="Node000001" title="Component containing all data necessary for sprite rendering and animation." alt="" coords="112,201,282,228"/>
-<area shape="rect" id="Node000002" href="$classComponent.html" title=" " alt="" coords="5,81,184,108"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,118,188,199,184,203,114,122"/>
-<area shape="rect" id="Node000003" href="$classIComponent.html" title="Interface de base pour tous les composants ECS." alt="" coords="48,5,141,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,47,97,81,92,81,92,47"/>
-<area shape="rect" id="Node000004" href="$structvec2.html" title="2D vector structure for position, velocity, and directional calculations." alt="" coords="207,81,256,108"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="226,124,203,202,198,200,221,122"/>
-</map>

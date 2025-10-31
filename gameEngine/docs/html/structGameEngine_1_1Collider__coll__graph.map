@@ -1,9 +1,0 @@
-<map id="GameEngine::Collider" name="GameEngine::Collider">
-<area shape="rect" id="Node000001" title="Component defining collision boundaries and interaction rules." alt="" coords="104,201,252,228"/>
-<area shape="rect" id="Node000002" href="$classComponent.html" title=" " alt="" coords="5,81,162,108"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,119,170,199,166,203,101,122"/>
-<area shape="rect" id="Node000003" href="$classIComponent.html" title="Interface de base pour tous les composants ECS." alt="" coords="37,5,130,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="86,47,86,81,81,81,81,47"/>
-<area shape="rect" id="Node000004" href="$structvec2.html" title="2D vector structure for position, velocity, and directional calculations." alt="" coords="186,81,235,108"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="205,124,184,202,179,200,200,122"/>
-</map>
