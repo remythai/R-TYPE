@@ -146,7 +146,7 @@ class InputHandler : public System<InputHandler>
         registry.each<InputControlled, Acceleration>(
             [dt, &registry](
                 auto e, InputControlled& inputs, Acceleration& acceleration) {
-                float accelerationValue = 5.0;
+                float accelerationValue = 2000.0;
                 GameEngine::Position playerPos;
                 uint32_t shoot = -1;
                 acceleration.x = 0;
@@ -186,9 +186,9 @@ class InputHandler : public System<InputHandler>
                             registry.emplace<GameEngine::Health>(shoot, 1, 1);
                             registry.emplace<GameEngine::Damage>(shoot, 1);
                             registry.emplace<GameEngine::Velocity>(
-                                shoot, 10.0, 10.0);
+                                shoot, 1000.0, 1000.0);
                             registry.emplace<GameEngine::Acceleration>(
-                                shoot, 10.0);
+                                shoot, 1000.0);
                             playerPos = registry.get<GameEngine::Position>(e);
                             registry.emplace<GameEngine::Position>(
                                 shoot, playerPos.pos.x, playerPos.pos.y);
