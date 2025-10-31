@@ -49,7 +49,8 @@ CLIENT::Core::Core(char** argv)
       _myPlayerId(255),
       _hasNewSnapshot(false),
       _gameState(GameState::PLAYING),
-      _defeatTextureLoaded(false)
+      _defeatTextureLoaded(false),
+      _pendingScore(0)
 {
     parseCommandLineArgs(argv);
 
@@ -159,8 +160,8 @@ void CLIENT::Core::setupNetworkCallbacks()
             handlePlayerEvent(playerId, eventType);
         });
 
-    _networkClient->setOnSnapshot([this](const std::vector<uint8_t>& payload) {
-        handleSnapshotReceived(payload);
+    _networkClient->setOnSnapshot([this](int score, const std::vector<uint8_t>& payload) {
+        handleSnapshotReceived(score, payload);
     });
     _networkClient->setOnTimeout([this](uint8_t playerId) {
         std::lock_guard<std::mutex> lock(_incomingMutex);
@@ -225,10 +226,11 @@ void CLIENT::Core::handlePlayerEvent(uint8_t playerId, uint8_t eventType)
  * Stores the snapshot in `_pendingSnapshot` and sets `_hasNewSnapshot`
  * to true. Thread-safe via `_snapshotMutex`.
  */
-void CLIENT::Core::handleSnapshotReceived(const std::vector<uint8_t>& payload)
+void CLIENT::Core::handleSnapshotReceived(int score, const std::vector<uint8_t>& payload)
 {
     std::lock_guard<std::mutex> lock(_snapshotMutex);
     _pendingSnapshot = payload;
+    _pendingScore = score;
     _hasNewSnapshot = true;
 }
 
@@ -1016,6 +1018,7 @@ void CLIENT::Core::graphicsLoop()
         if (_gameState == GameState::PLAYING) {
             _entityManager->render(renderTexture);
             _parallaxSystem->update(deltaTime);
+            _scoreDisplay->render(renderTexture);
             _keybindMenu->render(renderTexture);
         } else if (_gameState == GameState::DEFEATED) {
             _entityManager->render(renderTexture);
@@ -1070,6 +1073,10 @@ void CLIENT::Core::initializeGraphicsComponents()
     _parallaxSystem =
         std::make_unique<ParallaxSystem>(_entityManager.get(), &rm);
 
+    _scoreDisplay = std::make_unique<ScoreDisplay>("assets/fonts/BoldPixels.ttf");
+    _currentScore = 0;
+    _pendingScore = 0;
+
     _parallaxSystem->addLayer("assets/sprites/parallax/1.png", 10.0f, 0.1f);
     _parallaxSystem->addLayer("assets/sprites/parallax/2.png", 25.0f, 0.3f);
     _parallaxSystem->addLayer("assets/sprites/parallax/3.png", 50.0f, 0.6f);
@@ -1088,6 +1095,8 @@ void CLIENT::Core::updateFromSnapshot()
     std::lock_guard<std::mutex> lock(_snapshotMutex);
     if (_hasNewSnapshot) {
         parseSnapshot(_pendingSnapshot);
+        _currentScore = _pendingScore;
+        _scoreDisplay->setScore(_currentScore);
         _hasNewSnapshot = false;
     }
 }
