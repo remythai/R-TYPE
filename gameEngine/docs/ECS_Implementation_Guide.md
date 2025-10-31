@@ -637,3 +637,6 @@ Implementing components and systems following these guidelines ensures:
 - **Type safety** through CRTP and compile-time checks
 
 Always prioritize clarity and simplicity in component/system design. Complex logic should be broken into multiple simple systems rather than creating monolithic systems.
+
+**Author**: Antton Ducos
+**Contact**: antton.ducos@epietch.eu
