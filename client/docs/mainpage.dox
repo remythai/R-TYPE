@@ -1,0 +1,114 @@
+/**
+ * @mainpage R-Type Client - Documentation
+ *
+ * @version 1.0
+ * @author Louka Ortega-Cand
+ *
+ * @section intro_sec Introduction
+ *
+ * The **R-Type Client** is the frontend application of the R-Type multiplayer game.
+ * It is responsible for rendering the game world, handling player input, and
+ * communicating with the server to maintain synchronized gameplay across all
+ * connected players.
+ *
+ * The client is built in modern C++ and uses a custom **Entity-Component-System (ECS)**
+ * locally to manage visual entities and game logic efficiently while maintaining
+ * smooth real-time synchronization with the server.
+ *
+ * Repository layout:
+ *
+ * ```
+ * /client/        → core client logic (rendering, input handling, state interpolation)
+ * /ecs/           → entity-component system (used locally for game state)
+ * /components/    → shared component definitions (Position, Velocity, Renderable, etc.)
+ * /systems/       → client-side systems (RenderSystem, InputSystem, AnimationSystem, ...)
+ * /network/       → UDP/TCP communication (asynchronous I/O using ASIO)
+ * /rendering/     → graphics rendering pipeline and sprite management
+ * /audio/         → sound effects and music management
+ * /ui/            → user interface components (menus, HUD, lobby)
+ * /tools/         → helper utilities and deserialization tools
+ * /assets/        → game resources (sprites, sounds, fonts)
+ * /tests/         → client unit and integration tests
+ * /docs/          → documentation and architecture diagrams
+ * CMakeLists.txt
+ * Doxyfile
+ * ```
+ *
+ * ---
+ *
+ * @section goals_sec Goals & Design
+ *
+ * - **Responsive gameplay**: Provide smooth, low-latency player controls with
+ *   client-side prediction and server interpolation.
+ * - **Visual consistency**: Render all entities accurately based on server
+ *   snapshots with interpolation for fluid movement.
+ * - **Modular architecture**: Designed to easily integrate new visual effects,
+ *   UI elements, and gameplay features.
+ * - **Thread-safe communication**: Network updates and rendering logic operate
+ *   safely across separate threads using synchronization primitives.
+ *
+ * ---
+ *
+ * @section features_sec Key Features
+ *
+ * - Asynchronous networking using **ASIO** for server communication
+ * - Binary **snapshot deserialization** for fast state synchronization
+ * - **Client-side prediction** and input buffering for responsive controls
+ * - **Entity interpolation** for smooth visual transitions between server updates
+ * - Graphics rendering with **SFML** (or similar graphics library)
+ * - Audio system with spatial sound effects and background music
+ * - Intuitive UI with main menu, lobby system, and in-game HUD
+ * - Configurable client settings (resolution, controls, audio volume)
+ *
+ * ---
+ *
+ * @section usage_sec Quick example
+ *
+ * Example: starting the client
+ *
+ * \code{.cpp}
+ *   #include "Client.hpp"
+ *
+ *   int main() {
+ *       try {
+ *           Client client("127.0.0.1", 8080);
+ *           client.connect();
+ *           client.run(); // starts main game loop and rendering
+ *       } catch (const std::exception &e) {
+ *           std::cerr << "Client error: " << e.what() << std::endl;
+ *       }
+ *       return 0;
+ *   }
+ * \endcode
+ *
+ * ---
+ *
+ * @section arch_sec Architecture overview
+ *
+ * - **Client**: entry point; initializes networking, rendering, input handling, and ECS registry.
+ * - **NetworkManager**: handles incoming/outgoing UDP packets using ASIO for server sync.
+ * - **Registry (ECS)**: manages local entities, components, and systems safely across threads.
+ * - **System**: applies specific logic each frame (rendering, animation, input processing...).
+ * - **SnapshotDeserializer**: parses incoming game-state packets from the server.
+ * - **Renderer**: manages the graphics pipeline, sprite rendering, and visual effects.
+ * - **InputHandler**: captures and processes player keyboard/mouse input with buffering.
+ * - **AudioManager**: plays sound effects and music based on game events.
+ *
+ * ---
+ *
+ * @section docs_sec Additional documentation & guides
+ *
+ * - Browse generated module pages for API details on rendering and networking components.
+ * - See `/docs/architecture.md` for a high-level design overview.
+ * - Explore `/tests/` for concrete client behavior examples.
+ *
+ * ---
+ *
+ * @section author_sec Author & contact
+ *
+ * Developed by **Louka Ortega-Cand**
+ * Epitech Technology — 2nd year student
+ * Contact: louka.ortega-cand@epitech.eu
+ * License: MIT
+ *
+ */
