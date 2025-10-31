@@ -273,7 +273,7 @@ void CLIENT::Core::loadGameTextures()
         "assets/sprites/r-typesheet30a.png",
         "assets/sprites/r-typesheet30a.png");
     rm.loadTexture("assets/sprites/birds.png", "assets/sprites/birds.png");
-    rm.loadTexture("assets/sprites/pipe.png", "assets/sprites/pipe.png");
+    rm.loadTexture("assets/sprites/coloredpipes.png", "assets/sprites/coloredpipes.png");
 }
 
 /**

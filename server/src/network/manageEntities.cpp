@@ -118,6 +118,8 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
     if (this->_game == std::string("flappyByte")) {
         std::uniform_int_distribution<> distrib(2, 12);
         int randomNum = distrib(gen);
+        std::uniform_int_distribution<> distribPipe(0, 7);
+        int pipe = distribPipe(gen);
 
         for (size_t i = 0; i < randomNum; i++) {
             std::lock_guard<std::mutex> lock(_registryMutex);
@@ -127,12 +129,13 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             _registry->emplace<GameEngine::Position>(entity, 1900, i * 68);
             _registry->emplace<GameEngine::Velocity>(entity, 200.0f);
             std::vector<vec2> rectPos;
-            rectPos.push_back(vec2{0.0f, 0.0f});
-            rectPos.push_back(vec2{34.0f, 0.0f});
-            rectPos.push_back(vec2{68.0f, 0.0f});
+            if (i == randomNum - 1)
+                rectPos.push_back(vec2{32.0F * float(pipe), 46.0F});
+            else
+                rectPos.push_back(vec2{32.0F * float(pipe), 23.0F});
             _registry->emplace<GameEngine::Renderable>(
-                entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet30a.png",
-                rectPos, vec2{34.0f, 34.0f}, 500, true);
+                entity, 1920.0f, 1080.0f, "assets/sprites/coloredpipes.png",
+                rectPos, vec2{32.0f, 34.0f}, 500, true);
             _registry->emplace<GameEngine::Collider>(
                 entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
                 std::bitset<8>("01000000"), vec2(48.0, 48.0));
@@ -152,11 +155,12 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, 1900, 1080 - i * 68);
             _registry->emplace<GameEngine::Velocity>(entity, 200.0f);
             std::vector<vec2> rectPos;
-            rectPos.push_back(vec2{0.0f, 0.0f});
-            rectPos.push_back(vec2{34.0f, 0.0f});
-            rectPos.push_back(vec2{68.0f, 0.0f});
+            if (i == 15 - randomNum - 1)
+                rectPos.push_back(vec2{32.0F * float(pipe), 0.0F});
+            else
+                rectPos.push_back(vec2{32.0F * float(pipe), 23.0F});
             _registry->emplace<GameEngine::Renderable>(
-                entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet30a.png",
+                entity, 1920.0f, 1080.0f, "assets/sprites/coloredpipes.png",
                 rectPos, vec2{34.0f, 34.0f}, 500, true);
             _registry->emplace<GameEngine::Collider>(
                 entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
