@@ -189,11 +189,11 @@ void NetworkClient::handlePacket(
                 size_t offset = 0;
 
                 auto readInt = [&payload, &offset]() -> int {
-                    if (offset + 4 > payload.size()) return 0;
-                    int value = (payload[offset] << 24) |
-                                (payload[offset + 1] << 16) |
-                                (payload[offset + 2] << 8) |
-                                payload[offset + 3];
+                    if (offset + 4 > payload.size())
+                        return 0;
+                    int value =
+                        (payload[offset] << 24) | (payload[offset + 1] << 16) |
+                        (payload[offset + 2] << 8) | payload[offset + 3];
                     offset += 4;
                     return value;
                 };
@@ -201,9 +201,7 @@ void NetworkClient::handlePacket(
                 int score = readInt();
 
                 std::vector<uint8_t> entitiesPayload(
-                    payload.begin() + 4,
-                    payload.end()
-                );
+                    payload.begin() + 4, payload.end());
 
                 while (offset < payload.size()) {
                     if (offset + 1 > payload.size())
@@ -252,7 +250,8 @@ void NetworkClient::handlePacket(
                               << y << ")" << " sprite:" << spritePath
                               << " rectPos:(" << rectPosX << "," << rectPosY
                               << ")" << " rectSize:(" << rectSizeX << ","
-                              << rectSizeY << ")" << " score:" << score << "]" << std::endl;
+                              << rectSizeY << ")" << " score:" << score << "]"
+                              << std::endl;
                 }
 
                 if (_onSnapshot)
