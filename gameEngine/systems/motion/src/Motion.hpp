@@ -168,26 +168,24 @@ class Motion : public System<Motion>
             [dt](
                 auto e, Position& pos, Velocity& vel, Acceleration& acc,
                 Renderable& render, Collider& collider) {
-                // Phase 1: Deceleration (75% reduction)
-                vel.x = vel.x > 0
-                            ? std::max(float(vel.x - (vel.x * 0.25)), float(0))
-                            : std::min(float(vel.x - (vel.x * 0.25)), float(0));
-                vel.y = vel.y > 0
-                            ? std::max(float(vel.y - (vel.y * 0.25)), float(0))
-                            : std::min(float(vel.y - (vel.y * 0.25)), float(0));
+                // Phase 1: Acceleration (apply forces and clamp to speed limit)
+                vel.x = std::clamp(vel.x + (acc.x * dt), -vel.speedMax, vel.speedMax);
+                vel.y = std::clamp(vel.y + (acc.y * dt), -vel.speedMax, vel.speedMax);
 
-                // Phase 2: Acceleration (apply forces and clamp to speed limit)
-                vel.x = std::clamp(vel.x + acc.x, -vel.speedMax, vel.speedMax);
-                vel.y = std::clamp(vel.y + acc.y, -vel.speedMax, vel.speedMax);
-
-                // Phase 3: Position update (translate and constrain to screen
+                // Phase 2: Position update (translate and constrain to screen
                 // bounds)
                 pos.pos.x = std::clamp(
-                    pos.pos.x + vel.x, float(0),
+                    pos.pos.x + (vel.x * dt), float(0),
                     render.screenSizeX - collider.size.x);
                 pos.pos.y = std::clamp(
-                    pos.pos.y + vel.y, float(0),
+                    pos.pos.y + (vel.y * dt), float(0),
                     render.screenSizeY - collider.size.y);
+
+                // Phase 3: Deceleration (600 pixels reduction)
+                if (acc.decceleration) {
+                    vel.x = vel.x > 0 ? std::max(vel.x - (600.0F * dt), 0.0F) : std::min(vel.x + (600.0F * dt), 0.0F);
+                    vel.y = vel.y > 0 ? std::max(vel.y - (600.0F * dt), 0.0F) : std::min(vel.y + (600.0F * dt), 0.0F);
+                }
             });
     }
 
