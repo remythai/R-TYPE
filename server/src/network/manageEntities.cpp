@@ -173,7 +173,8 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
         std::lock_guard<std::mutex> lock(_registryMutex);
         auto entity = _registry->create();
         _registry->emplace<GameEngine::AIControlled>(entity);
-        _registry->emplace<GameEngine::Acceleration>(entity, -400.0f, 0.0f, false);
+        _registry->emplace<GameEngine::Acceleration>(
+            entity, -400.0f, 0.0f, false);
         _registry->emplace<GameEngine::Position>(entity, 1900, randomNum);
         _registry->emplace<GameEngine::Velocity>(entity, 400.0f);
         std::vector<vec2> rectPos;

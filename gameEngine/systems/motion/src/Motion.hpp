@@ -169,8 +169,10 @@ class Motion : public System<Motion>
                 auto e, Position& pos, Velocity& vel, Acceleration& acc,
                 Renderable& render, Collider& collider) {
                 // Phase 1: Acceleration (apply forces and clamp to speed limit)
-                vel.x = std::clamp(vel.x + (acc.x * dt), -vel.speedMax, vel.speedMax);
-                vel.y = std::clamp(vel.y + (acc.y * dt), -vel.speedMax, vel.speedMax);
+                vel.x = std::clamp(
+                    vel.x + (acc.x * dt), -vel.speedMax, vel.speedMax);
+                vel.y = std::clamp(
+                    vel.y + (acc.y * dt), -vel.speedMax, vel.speedMax);
 
                 // Phase 2: Position update (translate and constrain to screen
                 // bounds)
@@ -183,8 +185,10 @@ class Motion : public System<Motion>
 
                 // Phase 3: Deceleration (600 pixels reduction)
                 if (acc.decceleration) {
-                    vel.x = vel.x > 0 ? std::max(vel.x - (600.0F * dt), 0.0F) : std::min(vel.x + (600.0F * dt), 0.0F);
-                    vel.y = vel.y > 0 ? std::max(vel.y - (600.0F * dt), 0.0F) : std::min(vel.y + (600.0F * dt), 0.0F);
+                    vel.x = vel.x > 0 ? std::max(vel.x - (600.0F * dt), 0.0F)
+                                      : std::min(vel.x + (600.0F * dt), 0.0F);
+                    vel.y = vel.y > 0 ? std::max(vel.y - (600.0F * dt), 0.0F)
+                                      : std::min(vel.y + (600.0F * dt), 0.0F);
                 }
             });
     }

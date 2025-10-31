@@ -63,7 +63,10 @@ struct Acceleration : public Component<Acceleration>
      *
      * @post Component initialized with specified acceleration values.
      */
-    Acceleration(float val_x = 0, float val_y = 0, bool val_decc = true) : x(val_x), y(val_y), decceleration(val_decc) {}
+    Acceleration(float val_x = 0, float val_y = 0, bool val_decc = true)
+        : x(val_x), y(val_y), decceleration(val_decc)
+    {
+    }
 
     /**
      * @brief Component name for reflection and debugging.
