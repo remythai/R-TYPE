@@ -412,17 +412,6 @@ float CLIENT::Core::readFloat(
     return result;
 }
 
-int CLIENT::Core::readInt(const std::vector<uint8_t>& payload, size_t& offset)
-{
-    if (offset + 4 > payload.size())
-        return 0;
-
-    int value = (payload[offset] << 24) | (payload[offset + 1] << 16) |
-                (payload[offset + 2] << 8) | payload[offset + 3];
-    offset += 4;
-    return value;
-}
-
 /**
  * @brief Parses a game snapshot payload to update active entities.
  *
@@ -487,12 +476,9 @@ bool CLIENT::Core::parseSnapshotEntity(
     float rectSizeX = readFloat(payload, offset);
     float rectSizeY = readFloat(payload, offset);
 
-    int score = readInt(payload, offset);
-
     activeEntities.insert(entityId);
     updateOrCreateEntity(
-        entityId, x, y, spritePath, rectPosX, rectPosY, rectSizeX, rectSizeY,
-        score);
+        entityId, x, y, spritePath, rectPosX, rectPosY, rectSizeX, rectSizeY);
 
     return true;
 }
@@ -511,7 +497,7 @@ bool CLIENT::Core::parseSnapshotEntity(
  */
 void CLIENT::Core::updateOrCreateEntity(
     uint8_t entityId, float x, float y, const std::string& spritePath,
-    float rectPosX, float rectPosY, float rectSizeX, float rectSizeY, int score)
+    float rectPosX, float rectPosY, float rectSizeX, float rectSizeY)
 {
     GameEntity* entity = _entityManager->getEntity(entityId);
     bool needsNewSprite = false;
