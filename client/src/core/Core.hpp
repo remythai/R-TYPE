@@ -25,6 +25,7 @@
 #include "../mapEditor/MapEditor.hpp"
 #include "../network/NetworkClient.hpp"
 #include "../parallax/ParallaxSystem.hpp"
+#include "../score/ScoreDisplay.hpp"
 
 namespace CLIENT {
 
@@ -75,6 +76,10 @@ class Core
         DISCONNECTED
     };
 
+    std::unique_ptr<ScoreDisplay> _scoreDisplay;
+    int _pendingScore;
+    int _currentScore;
+
     void handleTimeoutEvent(uint8_t playerId);
     void handleKilledEvent(uint8_t playerId);
     void loadDefeatScreen();
@@ -99,7 +104,7 @@ class Core
 
     void handlePlayerIdReceived(uint8_t playerId);
     void handlePlayerEvent(uint8_t playerId, uint8_t eventType);
-    void handleSnapshotReceived(const std::vector<uint8_t>& payload);
+    void handleSnapshotReceived(int score, const std::vector<uint8_t>& payload);
 
     void networkLoop();
     void graphicsLoop();

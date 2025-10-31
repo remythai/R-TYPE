@@ -76,6 +76,8 @@ set(SOURCES
     src/mapEditor/MapEditor.cpp
 
     src/colorBlindFilter/ColorBlindFilter.cpp
+
+    src/score/ScoreDisplay.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

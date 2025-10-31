@@ -255,7 +255,7 @@ void NetworkClient::handlePacket(
                 }
 
                 if (_onSnapshot)
-                    _onSnapshot(entitiesPayload);
+                    _onSnapshot(score, entitiesPayload);
             }
             break;
 
@@ -318,7 +318,7 @@ void NetworkClient::handlePacket(
  * @param callback Function taking the raw payload of the snapshot.
  */
 void NetworkClient::setOnSnapshot(
-    std::function<void(const std::vector<uint8_t>&)> callback)
+    std::function<void(int score, const std::vector<uint8_t>&)> callback)
 {
     _onSnapshot = callback;
 }
