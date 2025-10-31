@@ -83,7 +83,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
         _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
         _registry->emplace<GameEngine::Position>(
             entity, 100.0f, 100.0f + playerId * 50.0f);
-        _registry->emplace<GameEngine::Velocity>(entity, 5.0f);
+        _registry->emplace<GameEngine::Velocity>(entity, 500.0f);
         _registry->emplace<GameEngine::Renderable>(
             entity, 1920.0f, 1080.0f, "assets/sprites/r-typesheet42.png",
             rectPos, vec2{33.2f, 17.2f}, 500, false);
@@ -137,7 +137,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
                 std::bitset<8>("01000000"), vec2(48.0, 48.0));
             _registry->emplace<GameEngine::Domain>(
-                entity, 5.0f, 0.0f, 1920.0f, 1080.0);
+                entity, 5.0f, 0.0f, 1988.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
             _registry->emplace<GameEngine::Damage>(entity, 1);
             if (i == 0)
@@ -162,7 +162,7 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
                 entity, vec2(-10.0, -10.0), std::bitset<8>("10000000"),
                 std::bitset<8>("01000000"), vec2(48.0, 48.0));
             _registry->emplace<GameEngine::Domain>(
-                entity, 5.0f, 0.0f, 1920.0f, 1080.0);
+                entity, 5.0f, 0.0f, 1988.0f, 1080.0);
             _registry->emplace<GameEngine::Health>(entity, 1, 1);
             _registry->emplace<GameEngine::Damage>(entity, 1);
         }
@@ -173,9 +173,9 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
         std::lock_guard<std::mutex> lock(_registryMutex);
         auto entity = _registry->create();
         _registry->emplace<GameEngine::AIControlled>(entity);
-        _registry->emplace<GameEngine::Acceleration>(entity, -3.0f, 0.0f);
+        _registry->emplace<GameEngine::Acceleration>(entity, -400.0f, 0.0f, false);
         _registry->emplace<GameEngine::Position>(entity, 1900, randomNum);
-        _registry->emplace<GameEngine::Velocity>(entity, 3.0f);
+        _registry->emplace<GameEngine::Velocity>(entity, 400.0f);
         std::vector<vec2> rectPos;
         rectPos.push_back(vec2{0.0f, 0.0f});
         rectPos.push_back(vec2{33.3f, 0.0f});
