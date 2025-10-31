@@ -12,49 +12,50 @@ permissions:
 
 jobs:
   format:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Code checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+  runs-on: ubuntu-latest
+  if: github.event_name == 'pull_request'
+  steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.head_ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install clang-format
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format
+    - name: Install clang-format
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format
 
-      - name: Apply clang-format
-        run: |
-          if [ -d "client/src" ]; then
-            find client/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} +
-          fi
-          if [ -d "server/src" ]; then
-            find server/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} +
-          fi
-          if [ -d "gameEngine" ]; then
-            find gameEngine/components gameEngine/systems gameEngine/ecs \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} + 2>/dev/null || true
-          fi
+    - name: Apply clang-format
+      run: |
+        if [ -d "client/src" ]; then
+          find client/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} +
+        fi
+        if [ -d "server/src" ]; then
+          find server/src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} +
+        fi
+        if [ -d "gameEngine" ]; then
+          find gameEngine/components gameEngine/systems gameEngine/ecs \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i --style=file {} + 2>/dev/null || true
+        fi
 
-      - name: Check for formatting changes
-        id: format_check
-        run: |
-          if git diff --quiet; then
-            echo "changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "changes=true" >> $GITHUB_OUTPUT
-          fi
+    - name: Check for formatting changes
+      id: format_check
+      run: |
+        if git diff --quiet; then
+          echo "changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "changes=true" >> $GITHUB_OUTPUT
+        fi
 
-      - name: Commit and push formatting changes
-        if: steps.format_check.outputs.changes == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add -A
-          git commit -m "style: apply clang-format [skip ci]"
-          git push origin HEAD:${{ github.ref_name }}
+    - name: Commit and push formatting changes
+      if: steps.format_check.outputs.changes == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add -A
+        git commit -m "style: apply clang-format [skip ci]"
+        git push origin HEAD:${{ github.head_ref }}
 
   build:
     runs-on: ubuntu-latest
