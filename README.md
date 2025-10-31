@@ -1,5 +1,7 @@
 # 🛸 R-Type — Online Multiplayer Game
 
+[![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://remythai.github.io/R-TYPE/)
+
 ## Project Overview
 
 **R-Type** is a multiplayer shoot 'em up game developed as part of the **Advanced C++ / Network Programming** module at **Epitech Technology**.
@@ -66,8 +68,16 @@ R-Type/
 ├── .github/              # CI/CD workflows
 ├── assets/               # Game sprites and resources
 ├── client/               # Client application
+│   ├── src/
+│   └── CMakeLists.txt
 ├── gameEngine/           # ECS game engine
+│   ├── src/
+│   ├── include/
+│   └── docs/
 ├── server/               # Server application
+│   ├── src/
+│   ├── docs/
+│   └── CMakeLists.txt
 ├── CMakeLists.txt        # Root build configuration
 └── README.md
 ```
@@ -99,8 +109,38 @@ R-Type/
 
 ---
 
+## 🔌 Network Protocol
+
+The game uses **UDP** with a compact binary packet structure:
+
+```
+[Type:1 byte][PacketID:2 bytes][Timestamp:4 bytes][Payload:variable]
+```
+
+### Example Packets
+
+**Client → Server:**
+| Type   | Name          | Description                          |
+|--------|---------------|--------------------------------------|
+| `0x01` | INPUT         | Player movement and shooting input   |
+| `0x02` | JOIN          | Connection request with username     |
+| `0x03` | PING          | Latency measurement                  |
+| `0x04` | DISCONNECT    | Player leaving notification          |
+
+**Server → Client:**
+| Type   | Name                 | Description                          |
+|--------|----------------------|--------------------------------------|
+| `0x08` | PLAYER_ID_ASSIGNMENT | Unique player ID assignment          |
+| `0x09` | PLAYER_LIST          | List of connected players            |
+| `0x10` | SNAPSHOT             | Full game state synchronization      |
+| `0x11` | ENTITY_EVENT         | Entity spawn/destroy events          |
+| `0x12` | PLAYER_EVENT         | Player-specific events (death, score)|
+
+For complete protocol specification, see [Network Protocol Documentation](server/docs/protocol.md).
+
+---
+
 ## 📚 Documentation
-- [![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://remythai.github.io/R-TYPE/)
 
 - **[API Documentation](https://remythai.github.io/R-TYPE/)** — Doxygen-generated API reference
 - **[Game Engine Guide](https://remythai.github.io/R-TYPE/gameEngine)** — How to implement game logic with our ECS
@@ -160,4 +200,3 @@ Use is restricted to learning and technical demonstration purposes.
 For questions, suggestions, or contributions, please open an issue on the GitHub repository.
 
 **Repository**: https://github.com/EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-7
-**Author**: Antton Ducos
