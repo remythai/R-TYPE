@@ -31,18 +31,22 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
 
     if (this->_game == std::string("flappyByte")) {
         std::vector<vec2> rectPos;
-        rectPos.push_back(vec2{0.0f, static_cast<float>(int(16.0f * playerId) % 112)});
-        rectPos.push_back(vec2{16.0f, static_cast<float>(int(16.0f * playerId) % 112)});
-        rectPos.push_back(vec2{32.0f, static_cast<float>(int(16.0f * playerId) % 112)});
-        rectPos.push_back(vec2{48.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(
+            vec2{0.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(
+            vec2{16.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(
+            vec2{32.0f, static_cast<float>(int(16.0f * playerId) % 112)});
+        rectPos.push_back(
+            vec2{48.0f, static_cast<float>(int(16.0f * playerId) % 112)});
         _registry->emplace<GameEngine::InputControlled>(entity);
         _registry->emplace<GameEngine::Acceleration>(entity, 0.0f, 0.0f);
         _registry->emplace<GameEngine::Position>(
             entity, 100.0f, 100.0f + playerId * 50.0f);
         _registry->emplace<GameEngine::Velocity>(entity, 500.0f);
         _registry->emplace<GameEngine::Renderable>(
-            entity, 1920.0f, 1080.0f, "assets/sprites/birds.png",
-            rectPos, vec2{16.0f, 16.0f}, 500, false);
+            entity, 1920.0f, 1080.0f, "assets/sprites/birds.png", rectPos,
+            vec2{16.0f, 16.0f}, 500, false);
         _registry->emplace<GameEngine::Collider>(
             entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
             std::bitset<8>("10000000"), vec2(32.0, 32.0));
