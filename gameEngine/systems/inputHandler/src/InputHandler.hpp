@@ -13,6 +13,7 @@
 #include "../../../components/position/src/Position.hpp"
 #include "../../../components/renderable/src/Renderable.hpp"
 #include "../../../components/velocity/src/Velocity.hpp"
+#include "../../../components/fireRate/src/FireRate.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -82,8 +83,7 @@ class InputHandler : public System<InputHandler>
     InputHandler()
     {
         requireComponents<
-            GameEngine::InputControlled, GameEngine::Acceleration,
-            GameEngine::Renderable>();
+            GameEngine::InputControlled, GameEngine::Acceleration, GameEngine::FireRate>();
     }
 
     /**
@@ -143,9 +143,10 @@ class InputHandler : public System<InputHandler>
     void onUpdate(Registry& registry, float dt)
     {
         updateCount++;
-        registry.each<InputControlled, Acceleration>(
+        registry.each<InputControlled, Acceleration, FireRate>(
             [dt, &registry](
-                auto e, InputControlled& inputs, Acceleration& acceleration) {
+                auto e, InputControlled& inputs, Acceleration& acceleration, FireRate& fireRate) {
+                fireRate.time += dt;
                 float accelerationValue = 2000.0;
                 GameEngine::Position playerPos;
                 uint32_t shoot = -1;
@@ -174,6 +175,8 @@ class InputHandler : public System<InputHandler>
                         case 4:
                             /// @brief Shoot: Create projectile with full
                             /// component setup
+                            if (fireRate.time < fireRate.fireRate) 
+                                break;
                             shoot = registry.create();
                             rectPos.clear();
                             rectPos.push_back(vec2{0.0F, 0.0F});
@@ -198,6 +201,7 @@ class InputHandler : public System<InputHandler>
                                 std::bitset<8>("00100000"), vec2(44.56, 44.56));
                             registry.emplace<GameEngine::Domain>(
                                 shoot, 0, 0, 1905.0, 1080.0);
+                            fireRate.time = 0.0F;
                             break;
                         default:
                             break;
