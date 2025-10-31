@@ -8,12 +8,12 @@
 #include "../../../components/collider/src/Collider.hpp"
 #include "../../../components/damage/src/Damage.hpp"
 #include "../../../components/domain/src/Domain.hpp"
+#include "../../../components/fireRate/src/FireRate.hpp"
 #include "../../../components/health/src/Health.hpp"
 #include "../../../components/inputControlled/src/InputControlled.hpp"
 #include "../../../components/position/src/Position.hpp"
 #include "../../../components/renderable/src/Renderable.hpp"
 #include "../../../components/velocity/src/Velocity.hpp"
-#include "../../../components/fireRate/src/FireRate.hpp"
 #include "../../../ecs/Registry.hpp"
 #include "../../../ecs/System.hpp"
 
@@ -83,7 +83,8 @@ class InputHandler : public System<InputHandler>
     InputHandler()
     {
         requireComponents<
-            GameEngine::InputControlled, GameEngine::Acceleration, GameEngine::FireRate>();
+            GameEngine::InputControlled, GameEngine::Acceleration,
+            GameEngine::FireRate>();
     }
 
     /**
@@ -145,7 +146,8 @@ class InputHandler : public System<InputHandler>
         updateCount++;
         registry.each<InputControlled, Acceleration, FireRate>(
             [dt, &registry](
-                auto e, InputControlled& inputs, Acceleration& acceleration, FireRate& fireRate) {
+                auto e, InputControlled& inputs, Acceleration& acceleration,
+                FireRate& fireRate) {
                 fireRate.time += dt;
                 float accelerationValue = 2000.0;
                 GameEngine::Position playerPos;
@@ -175,7 +177,7 @@ class InputHandler : public System<InputHandler>
                         case 4:
                             /// @brief Shoot: Create projectile with full
                             /// component setup
-                            if (fireRate.time < fireRate.fireRate) 
+                            if (fireRate.time < fireRate.fireRate)
                                 break;
                             shoot = registry.create();
                             rectPos.clear();
