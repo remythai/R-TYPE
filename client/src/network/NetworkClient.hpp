@@ -29,7 +29,8 @@ class NetworkClient
 
     void setOnPlayerIdReceived(std::function<void(uint8_t)> callback);
     void setOnPlayerEvent(std::function<void(uint8_t, uint8_t)> callback);
-    void setOnSnapshot(std::function<void(int score, const std::vector<uint8_t>&)> callback);
+    void setOnSnapshot(
+        std::function<void(int score, const std::vector<uint8_t>&)> callback);
 
     void setOnTimeout(std::function<void(uint8_t)> callback);
     void setOnKilled(std::function<void(uint8_t)> callback);

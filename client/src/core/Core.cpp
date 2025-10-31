@@ -160,9 +160,10 @@ void CLIENT::Core::setupNetworkCallbacks()
             handlePlayerEvent(playerId, eventType);
         });
 
-    _networkClient->setOnSnapshot([this](int score, const std::vector<uint8_t>& payload) {
-        handleSnapshotReceived(score, payload);
-    });
+    _networkClient->setOnSnapshot(
+        [this](int score, const std::vector<uint8_t>& payload) {
+            handleSnapshotReceived(score, payload);
+        });
     _networkClient->setOnTimeout([this](uint8_t playerId) {
         std::lock_guard<std::mutex> lock(_incomingMutex);
         _incomingMessages.push("TIMEOUT:" + std::to_string(playerId));
@@ -226,7 +227,8 @@ void CLIENT::Core::handlePlayerEvent(uint8_t playerId, uint8_t eventType)
  * Stores the snapshot in `_pendingSnapshot` and sets `_hasNewSnapshot`
  * to true. Thread-safe via `_snapshotMutex`.
  */
-void CLIENT::Core::handleSnapshotReceived(int score, const std::vector<uint8_t>& payload)
+void CLIENT::Core::handleSnapshotReceived(
+    int score, const std::vector<uint8_t>& payload)
 {
     std::lock_guard<std::mutex> lock(_snapshotMutex);
     _pendingSnapshot = payload;
@@ -1075,7 +1077,8 @@ void CLIENT::Core::initializeGraphicsComponents()
     _parallaxSystem =
         std::make_unique<ParallaxSystem>(_entityManager.get(), &rm);
 
-    _scoreDisplay = std::make_unique<ScoreDisplay>("assets/fonts/BoldPixels.ttf");
+    _scoreDisplay =
+        std::make_unique<ScoreDisplay>("assets/fonts/BoldPixels.ttf");
     _currentScore = 0;
     _pendingScore = 0;
 
