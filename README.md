@@ -12,7 +12,7 @@ This project recreates the classic R-Type experience with modern multiplayer cap
 - **Modular game engine** based on **ECS (Entity Component System)**
 - Support for **up to 4 simultaneous players**
 
-Players can connect to a server, control their ships, shoot enemies, and face waves of opponents in real-time cooperative gameplay.
+Players can connect to a server, choose a game, control their character, shoot enemies or avoid obstacles, and face waves of opponents or obstacles in real-time cooperative gameplay.
 
 ---
 
@@ -157,7 +157,7 @@ Unit tests can be enabled during build:
 
 ```bash
 cmake -DENABLE_TESTS=ON ..
-cmake --build .
+cmake --build .- **[Game Engine Guide](https://remythai.github.io/R-TYPE/gameEngine)** — How to implement game logic with our ECS
 ctest
 ```
 
