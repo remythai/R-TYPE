@@ -128,7 +128,7 @@ class EnemyShoot : public System<EnemyShoot>
                     shoot, pos.pos.x, pos.pos.y);
                 registry.emplace<GameEngine::Collider>(
                     shoot, vec2(0.0, 0.0), std::bitset<8>("00010000"),
-                    std::bitset<8>("10000000"), vec2(44.56, 44.56));
+                    std::bitset<8>("01000000"), vec2(44.56, 44.56));
                 registry.emplace<GameEngine::Domain>(
                     shoot, 5, 0, 1920.0, 1080.0);
                 fireRate.time = 0.0F;
