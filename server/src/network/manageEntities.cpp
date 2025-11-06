@@ -82,7 +82,7 @@ EntityManager::Entity rtype::NetworkServer::createPlayerEntity(uint8_t playerId)
             rectPos, vec2{33.2f, 17.2f}, 500, false);
         _registry->emplace<GameEngine::Collider>(
             entity, vec2(0.0, 0.0), std::bitset<8>("01000000"),
-            std::bitset<8>("10000000"), vec2(66.4, 34.4));
+            std::bitset<8>("10010000"), vec2(66.4, 34.4));
         _registry->emplace<GameEngine::Health>(entity, 1, 1);
         _registry->emplace<GameEngine::Damage>(entity, 1);
         _registry->emplace<GameEngine::FireRate>(entity);
@@ -123,9 +123,10 @@ EntityManager::Entity rtype::NetworkServer::createEnemyEntity()
             _registry->emplace<GameEngine::Position>(entity, 1900, i * 68);
             _registry->emplace<GameEngine::Velocity>(entity, 200.0f);
             std::vector<vec2> rectPos;
-            if (i == randomNum - 1)
+            if (i == randomNum - 1) {
                 rectPos.push_back(vec2{32.0F * float(pipe), 46.0F});
-            else
+                _registry->emplace<GameEngine::ScoreValue>(entity, 1);
+            } else
                 rectPos.push_back(vec2{32.0F * float(pipe), 23.0F});
             _registry->emplace<GameEngine::Renderable>(
                 entity, 1920.0f, 1080.0f, "assets/sprites/coloredpipes.png",
