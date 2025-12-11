@@ -1,11 +1,9 @@
-/**
- * @file main.cpp
- * @brief Entry point for the R-Type client application.
- *
- * This program launches either the R-Type game client or the map editor
- * depending on command-line arguments. It validates required parameters
- * such as server hostname and port.
- */
+/*
+** EPITECH PROJECT, 2025
+** r-type-mirror
+** File description:
+** main.cpp - VERSION AVEC MODE TEST
+*/
 
 #include <iostream>
 #include <string>
@@ -15,41 +13,38 @@
 
 /**
  * @brief Displays usage instructions for the program.
- *
- * @details
- * Prints the correct command-line syntax and the available options:
- * -editor, -p PORT, -h HOSTNAME
  */
 static void display_help(void)
 {
-    std::cout << "USAGE: ./r-type_client [-editor] -p PORT -h HOSTNAME\n";
+    std::cout << "USAGE: ./r-type_client [-test [-map FILE]] [-editor] -p PORT -h HOSTNAME\n";
     std::cout << "Options:\n";
-    std::cout
-        << "  -editor              Launch the map editor instead of the game\n";
+    std::cout << "  -test                Launch in standalone test mode (no server)\n";
+    std::cout << "  -map FILE            Map file to load in test mode (default: map_level1.json)\n";
+    std::cout << "  -editor              Launch the map editor instead of the game\n";
     std::cout << "  -p PORT              Server port\n";
     std::cout << "  -h HOSTNAME          Server hostname\n";
+    std::cout << "\nExamples:\n";
+    std::cout << "  ./r-type_client -test\n";
+    std::cout << "  ./r-type_client -test -map stress_10k.json\n";
+    std::cout << "  ./r-type_client -h 127.0.0.1 -p 8080\n";
+    std::cout << "  ./r-type_client -editor\n";
 }
 
 /**
  * @brief Checks command-line arguments for validity.
- *
- * @param argc Argument count.
- * @param argv Argument vector.
- * @param[out] isEditor Set to true if -editor flag is provided, false
- * otherwise.
- * @return EPITECH_SUCCESS if arguments are valid, EPITECH_FAILURE otherwise.
- *
- * @details
- * - Ensures that the required number of arguments is provided.
- * - Detects the optional -editor flag.
- * - Verifies that both server port (-p) and hostname (-h) are provided.
  */
-static int check_args(int argc, char **argv, bool &isEditor)
+static int check_args(int argc, char **argv, bool &isEditor, bool &isTest)
 {
     isEditor = false;
+    isTest = false;
     int requiredArgs = NB_ARGS;
 
+    // Vérifier les flags spéciaux en premier
     for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "-test") {
+            isTest = true;
+            return EPITECH_SUCCESS; // Mode test n'a pas besoin d'hostname/port
+        }
         if (std::string(argv[i]) == "-editor") {
             isEditor = true;
             requiredArgs++;
@@ -57,6 +52,7 @@ static int check_args(int argc, char **argv, bool &isEditor)
         }
     }
 
+    // Validation normale uniquement si pas en mode test
     if (argc < requiredArgs || argv[0] == nullptr) {
         display_help();
         return EPITECH_FAILURE;
@@ -81,26 +77,23 @@ static int check_args(int argc, char **argv, bool &isEditor)
 
 /**
  * @brief Program entry point.
- *
- * @param argc Number of command-line arguments.
- * @param argv Array of command-line arguments.
- * @return EPITECH_SUCCESS on successful execution, EPITECH_FAILURE otherwise.
- *
- * @details
- * - Validates command-line arguments using check_args().
- * - Launches the map editor if -editor flag is provided.
- * - Otherwise, executes the R-Type client using execute_rtypeClient().
- * - Catches and reports exceptions thrown during execution.
  */
 int main(int argc, char **argv)
 {
     bool isEditor = false;
+    bool isTest = false;
 
-    if (check_args(argc, argv, isEditor) == EPITECH_FAILURE)
+    if (check_args(argc, argv, isEditor, isTest) == EPITECH_FAILURE)
         return EPITECH_FAILURE;
 
     try {
-        if (isEditor) {
+        if (isTest) {
+            std::cout << "=================================================\n";
+            std::cout << "   R-TYPE CLIENT - STANDALONE TEST MODE\n";
+            std::cout << "=================================================\n";
+            CLIENT::Core core(argv, true); // true = test mode
+            core.run();
+        } else if (isEditor) {
             CLIENT::Core::launchMapEditor();
         } else {
             return execute_rtypeClient(argv);
@@ -111,4 +104,23 @@ int main(int argc, char **argv)
     }
 
     return EPITECH_SUCCESS;
+}
+
+/**
+ * @brief Executes the R-Type client in normal network mode.
+ */
+int execute_rtypeClient(char** argv)
+{
+    try {
+        CLIENT::Core core(argv, false); // false = mode normal avec réseau
+        core.run();
+    } catch (const CLIENT::Core::CoreError& error) {
+        std::cerr << "Core error: " << error.what() << std::endl;
+        return 1;
+    } catch (const std::exception& error) {
+        std::cerr << "Unexpected error: " << error.what() << std::endl;
+        return 1;
+    }
+
+    return 0;
 }

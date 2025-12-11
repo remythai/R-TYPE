@@ -43,27 +43,53 @@ static const std::vector<struct InputMapping> INPUT_MAPPINGS = {
  *
  * @throws CoreError If required command line arguments are missing or invalid.
  */
-CLIENT::Core::Core(char** argv)
+CLIENT::Core::Core(char** argv, bool testMode)
     : _port(0),
       _running(false),
       _myPlayerId(255),
       _hasNewSnapshot(false),
       _gameState(GameState::PLAYING),
       _defeatTextureLoaded(false),
-      _pendingScore(0)
+      _pendingScore(0),
+      _testMode(testMode),
+      _testGameTime(0.0f),
+      _nextEnemyToSpawn(0)
 {
-    parseCommandLineArgs(argv);
+    if (_testMode) {
+        std::cout << "[TEST MODE] Initializing standalone client\n";
 
-    std::cout << "Enter username: ";
-    std::getline(std::cin, _username);
-    if (_username.empty())
-        _username = "Player";
+        // Parser uniquement le mapPath pour le mode test
+        for (int i = 1; argv[i]; ++i) {
+            if (std::string(argv[i]) == "-map" && argv[i + 1]) {
+                _testMapPath = argv[++i];
+                break;
+            }
+        }
 
-    _keybindManager = std::make_unique<KeybindManager>();
-    _keybindManager->loadFromFile("keybinds.cfg");
+        if (_testMapPath.empty()) {
+            _testMapPath = "map_level1.json"; // Default
+        }
 
-    initializeNetwork();
-    loadResources();
+        _keybindManager = std::make_unique<KeybindManager>();
+        _keybindManager->loadFromFile("keybinds.cfg");
+
+        initializeTestMode(_testMapPath);
+        loadResources();
+    } else {
+        // Code existant pour le mode normal
+        parseCommandLineArgs(argv);
+
+        std::cout << "Enter username: ";
+        std::getline(std::cin, _username);
+        if (_username.empty())
+            _username = "Player";
+
+        _keybindManager = std::make_unique<KeybindManager>();
+        _keybindManager->loadFromFile("keybinds.cfg");
+
+        initializeNetwork();
+        loadResources();
+    }
 }
 
 /**
@@ -320,14 +346,404 @@ void CLIENT::Core::loadBackgroundMusic()
 /**
  * @brief Starts the main game loop including graphics and network threads.
  */
+static std::string trim(const std::string& str)
+{
+    size_t first = str.find_first_not_of(" \t\n\r");
+    if (first == std::string::npos)
+        return "";
+    size_t last = str.find_last_not_of(" \t\n\r");
+    return str.substr(first, last - first + 1);
+}
+
+static std::string extractJSONValue(
+    const std::string& content, const std::string& key, size_t start, size_t end)
+{
+    size_t keyPos = content.find("\"" + key + "\"", start);
+    if (keyPos >= end)
+        return "";
+
+    size_t colonPos = content.find(':', keyPos);
+    if (colonPos >= end)
+        return "";
+
+    size_t commaPos = content.find(',', colonPos);
+    size_t bracePos = content.find('}', colonPos);
+    size_t valueEnd = (commaPos < bracePos && commaPos < end) ? commaPos : bracePos;
+
+    return trim(content.substr(colonPos + 1, valueEnd - colonPos - 1));
+}
+
+static std::string parseJSONString(
+    const std::string& content, const std::string& key, size_t start, size_t end)
+{
+    size_t keyPos = content.find("\"" + key + "\"", start);
+    if (keyPos >= end)
+        return "";
+
+    size_t colonPos = content.find(':', keyPos);
+    size_t quoteStart = content.find('"', colonPos + 1);
+    size_t quoteEnd = content.find('"', quoteStart + 1);
+
+    return (quoteStart < end && quoteEnd < end)
+               ? content.substr(quoteStart + 1, quoteEnd - quoteStart - 1)
+               : "";
+}
+
+static std::array<float, 4> parseJSONArray(
+    const std::string& content, const std::string& key, size_t start, size_t end)
+{
+    std::array<float, 4> result = {0.0f, 0.0f, 33.0f, 36.0f};
+
+    size_t keyPos = content.find("\"" + key + "\"", start);
+    if (keyPos >= end)
+        return result;
+
+    size_t bracketStart = content.find('[', keyPos);
+    size_t bracketEnd = content.find(']', bracketStart);
+    if (bracketStart >= end || bracketEnd >= end)
+        return result;
+
+    std::string arrayStr =
+        content.substr(bracketStart + 1, bracketEnd - bracketStart - 1);
+    std::stringstream ss(arrayStr);
+    std::string item;
+    int index = 0;
+
+    while (std::getline(ss, item, ',') && index < 4) {
+        result[index++] = std::stof(trim(item));
+    }
+
+    return result;
+}
+
+// ===== NOUVELLE MÉTHODE: initializeTestMode =====
+void CLIENT::Core::initializeTestMode(const std::string& mapPath)
+{
+    std::cout << "[TEST MODE] Loading map: " << mapPath << "\n";
+
+    // Créer le registry ECS local
+    _testRegistry = std::make_unique<Registry>();
+
+    // Ajouter les systèmes (copie de l'architecture serveur)
+    _testRegistry->addSystem<GameEngine::Motion>(0);
+    _testRegistry->addSystem<GameEngine::Collision>(1);
+    // _testRegistry->addSystem<GameEngine::Animation>(2);
+    _testRegistry->addSystem<GameEngine::DomainHandler>(3);
+    _testRegistry->addSystem<GameEngine::SinusoidalAI>(4);
+
+    // Charger les ennemis depuis le JSON
+    loadTestEnemies(mapPath);
+
+    std::cout << "[TEST MODE] ECS initialized with " << _testSpawnList.size() 
+              << " enemies to spawn\n";
+}
+
+// ===== NOUVELLE MÉTHODE: loadTestEnemies =====
+void CLIENT::Core::loadTestEnemies(const std::string& filepath)
+{
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[TEST MODE] Could not open: " << filepath << "\n";
+        return;
+    }
+
+    std::string content((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+    file.close();
+
+    _testSpawnList.clear();
+
+    size_t entitiesPos = content.find("\"entities\"");
+    if (entitiesPos == std::string::npos) {
+        std::cerr << "[TEST MODE] No 'entities' array found\n";
+        return;
+    }
+
+    size_t arrayStart = content.find('[', entitiesPos);
+    size_t arrayEnd = content.rfind(']');
+    if (arrayStart == std::string::npos || arrayEnd == std::string::npos) {
+        std::cerr << "[TEST MODE] Invalid JSON format\n";
+        return;
+    }
+
+    size_t pos = arrayStart + 1;
+    while (pos < arrayEnd) {
+        size_t objStart = content.find('{', pos);
+        if (objStart >= arrayEnd) break;
+
+        size_t objEnd = content.find('}', objStart);
+        if (objEnd >= arrayEnd) break;
+
+        EnemySpawnData enemy;
+        enemy.type = std::stoi(extractJSONValue(content, "type", objStart, objEnd));
+        enemy.x = std::stof(extractJSONValue(content, "x", objStart, objEnd));
+        enemy.y = std::stof(extractJSONValue(content, "y", objStart, objEnd));
+        enemy.spawnTime = std::stof(extractJSONValue(content, "spawnTime", objStart, objEnd));
+        enemy.spritePath = parseJSONString(content, "spritePath", objStart, objEnd);
+        enemy.textureRect = parseJSONArray(content, "textureRect", objStart, objEnd);
+
+        _testSpawnList.push_back(enemy);
+        pos = objEnd + 1;
+    }
+
+    // Trier par spawnTime
+    std::sort(_testSpawnList.begin(), _testSpawnList.end(),
+        [](const EnemySpawnData& a, const EnemySpawnData& b) {
+            return a.spawnTime < b.spawnTime;
+        });
+
+    std::cout << "[TEST MODE] Loaded " << _testSpawnList.size() << " enemies from " 
+              << filepath << "\n";
+}
+
+// ===== NOUVELLE MÉTHODE: checkAndSpawnTestEnemies =====
+void CLIENT::Core::checkAndSpawnTestEnemies()
+{
+    while (_nextEnemyToSpawn < _testSpawnList.size()) {
+        const EnemySpawnData& enemy = _testSpawnList[_nextEnemyToSpawn];
+
+        if (_testGameTime >= enemy.spawnTime) {
+            createTestEnemy(enemy);
+            _nextEnemyToSpawn++;
+        } else {
+            break;
+        }
+    }
+}
+
+// ===== NOUVELLE MÉTHODE: createTestEnemy =====
+EntityManager::Entity CLIENT::Core::createTestEnemy(const EnemySpawnData& data)
+{
+    Registry::Entity entity = _testRegistry->create();
+
+    _testRegistry->emplace<GameEngine::AIControlled>(entity);
+    _testRegistry->emplace<GameEngine::Acceleration>(entity, -1200.0f, 0.0f);
+    _testRegistry->emplace<GameEngine::Position>(entity, data.x, data.y);
+    _testRegistry->emplace<GameEngine::Velocity>(entity, 200.0f);
+
+    // Configuration Renderable
+    std::vector<vec2> rectPos;
+    int frameCount = 8;
+    float frameWidth = data.textureRect[2];
+
+    for (int i = 0; i < frameCount; i++) {
+        rectPos.push_back(vec2{
+            data.textureRect[0] + i * frameWidth,
+            data.textureRect[1]
+        });
+    }
+
+    _testRegistry->emplace<GameEngine::Renderable>(
+        entity, 1920.0f, 1080.0f, data.spritePath, rectPos,
+        vec2{data.textureRect[2], data.textureRect[3]}, 1000, true);
+
+    _testRegistry->emplace<GameEngine::Collider>(
+        entity, vec2(0.0, 0.0), std::bitset<8>("10100000"),
+        std::bitset<8>("01000000"),
+        vec2(data.textureRect[2], data.textureRect[3]));
+
+    _testRegistry->emplace<GameEngine::Domain>(
+        entity, 5.0f, 0.0f, 1920.0f, 1080.0);
+
+    _testRegistry->emplace<GameEngine::Health>(entity, 1, 1);
+    _testRegistry->emplace<GameEngine::Damage>(entity, 1);
+
+    // Mouvement sinusoïdal avec phase aléatoire
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> phaseDist(0.0f, 6.28318f);
+    float phaseOffset = phaseDist(gen);
+
+    _testRegistry->emplace<GameEngine::SinusoidalPattern>(
+        entity, 150.0f, 0.003f, phaseOffset);
+
+    return static_cast<uint32_t>(entity);
+}
+
+// ===== NOUVELLE MÉTHODE: updateTestECS =====
+void CLIENT::Core::updateTestECS(float dt)
+{
+    _testRegistry->update(dt);
+}
+
+// ===== NOUVELLE MÉTHODE: syncTestEntitiesToClient =====
+void CLIENT::Core::syncTestEntitiesToClient()
+{
+    // Configuration du culling et des limites
+    const int MAX_RENDERED_ENTITIES = 500;  // Limite hard pour garder 60 FPS
+    int renderedCount = 0;
+    
+    _testRegistry->each<GameEngine::Position, GameEngine::Renderable>(
+        [&](auto id, GameEngine::Position& pos,
+            GameEngine::Renderable& render) {
+            
+            // CULLING SPATIAL STRICT - Uniquement ce qui est visible à l'écran
+            if (pos.pos.x < 0 || pos.pos.x > 1920 || 
+                pos.pos.y < 0 || pos.pos.y > 1080) {
+                return; // Hors écran, on skip
+            }
+            
+            // LIMITE LE NOMBRE D'ENTITÉS RENDUES - Évite l'explosion de draw calls
+            if (renderedCount >= MAX_RENDERED_ENTITIES) {
+                return;
+            }
+            renderedCount++;
+            
+            // Conversion de l'ID pour EntityManager
+            uint32_t entityId = static_cast<uint32_t>(id);
+            
+            // Récupérer ou créer l'entité côté client
+            GameEntity* clientEntity = _entityManager->getEntity(entityId);
+            if (!clientEntity) {
+                _entityManager->createSimpleEntity(entityId);
+                clientEntity = _entityManager->getEntity(entityId);
+            }
+            
+            if (clientEntity) {
+                // Mettre à jour la position
+                clientEntity->position = sf::Vector2f(pos.pos.x, pos.pos.y);
+                clientEntity->targetPosition = clientEntity->position;
+                clientEntity->active = true;
+                
+                // Mettre à jour le sprite si nécessaire
+                if (clientEntity->currentSpritePath != render.spriteSheetPath) {
+                    auto& rm = ResourceManager::getInstance();
+                    sf::Texture* texture = rm.getTexture(render.spriteSheetPath);
+                    
+                    if (texture) {
+                        clientEntity->sprite = sf::Sprite(*texture);
+                        clientEntity->currentSpritePath = render.spriteSheetPath;
+                        
+                        // Appliquer le texture rect actuel
+                        auto& currentRect = render.currentRectPos;
+                        auto& rectSize = render.rectSize;
+                        
+                        clientEntity->sprite->setTextureRect(sf::IntRect(
+                            sf::Vector2i(static_cast<int>(currentRect.x),
+                                       static_cast<int>(currentRect.y)),
+                            sf::Vector2i(static_cast<int>(rectSize.x),
+                                       static_cast<int>(rectSize.y))
+                        ));
+                        
+                        clientEntity->sprite->setScale(sf::Vector2f(2.0f, 2.0f));
+                    }
+                }
+                
+                // Mettre à jour la position du sprite
+                if (clientEntity->sprite.has_value()) {
+                    clientEntity->sprite->setPosition(clientEntity->position);
+                }
+            }
+        }
+    );
+    
+    // Debug optionnel - affiche quand on atteint la limite
+    static int framesSincePrint = 0;
+    if (renderedCount >= MAX_RENDERED_ENTITIES && framesSincePrint == 0) {
+        std::cout << "[CULLING] Limited to " << MAX_RENDERED_ENTITIES 
+                  << " rendered entities (more exist in ECS)\n";
+    }
+    framesSincePrint = (framesSincePrint + 1) % 60; // Print toutes les 60 frames
+}
+
+// ===== MODIFICATION DE LA MÉTHODE run() =====
+// Remplacer ton run() existant par:
 void CLIENT::Core::run()
 {
     _running = true;
-    _networkThread = std::thread(&Core::networkLoop, this);
-    graphicsLoop();
+
+    if (_testMode) {
+        // Mode test: pas de thread réseau
+        testModeLoop();
+    } else {
+        // Mode normal avec réseau
+        _networkThread = std::thread(&Core::networkLoop, this);
+        graphicsLoop();
+        _running = false;
+        if (_networkThread.joinable())
+            _networkThread.join();
+    }
+}
+
+// ===== NOUVELLE MÉTHODE: testModeLoop =====
+void CLIENT::Core::testModeLoop()
+{
+    Window window("R-Type Client [TEST MODE]", WINDOW_WIDTH, WINDOW_HEIGHT);
+    initializeGraphicsComponents();
+
+    _keybindMenu = std::make_unique<KeybindMenu>(*_keybindManager);
+    _colorBlindFilter = std::make_unique<ColorBlindFilter>();
+    window.setKeybindComponents(_keybindManager.get(), _keybindMenu.get());
+
+    sf::RenderTexture renderTexture;
+    if (!renderTexture.resize(sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT))) {
+        std::cerr << "Failed to resize render texture\n";
+        return;
+    }
+
+    std::cout << "[TEST MODE] Starting game loop\n";
+    std::cout << "[TEST MODE] Total enemies to spawn: " << _testSpawnList.size() << "\n";
+
+    // Compteur FPS
+    sf::Clock fpsClock;
+    int frameCount = 0;
+    float fpsUpdateTime = 0.0f;
+
+    while (window.isOpen() && _running) {
+        float deltaTime = window.getDeltaTime();
+
+        window.pollEvents();
+
+        // Update ECS local
+        _testGameTime += deltaTime;
+        checkAndSpawnTestEnemies();
+        updateTestECS(deltaTime);
+
+        // Synchroniser les entités ECS vers le client pour rendering
+        syncTestEntitiesToClient();
+
+        // Update graphique
+        _entityManager->update(deltaTime);
+        _parallaxSystem->update(deltaTime);
+
+        // Rendering
+        renderTexture.clear();
+        _entityManager->render(renderTexture);
+        _scoreDisplay->render(renderTexture);
+        _keybindMenu->render(renderTexture);
+        renderTexture.display();
+
+        window.clear();
+        sf::Sprite screenSprite(renderTexture.getTexture());
+
+        if (_colorBlindFilter->isActive()) {
+            const sf::RenderStates* states = _colorBlindFilter->getRenderStates();
+            if (states) {
+                window.getWindow().draw(screenSprite, *states);
+            } else {
+                window.getWindow().draw(screenSprite);
+            }
+        } else {
+            window.getWindow().draw(screenSprite);
+        }
+
+        window.display();
+
+        // Afficher FPS toutes les secondes
+        frameCount++;
+        fpsUpdateTime += deltaTime;
+        if (fpsUpdateTime >= 1.0f) {
+            size_t activeEntities = _entityManager->getActiveEntityCount();
+            std::cout << "[TEST MODE] FPS: " << frameCount 
+                      << " | Active entities: " << activeEntities
+                      << " | Game time: " << _testGameTime << "s\n";
+            frameCount = 0;
+            fpsUpdateTime = 0.0f;
+        }
+    }
+
     _running = false;
-    if (_networkThread.joinable())
-        _networkThread.join();
+    std::cout << "[TEST MODE] Test completed\n";
 }
 
 /**
@@ -1178,29 +1594,4 @@ void CLIENT::Core::launchMapEditor()
         editor.renderUI();
         window.display();
     }
-}
-
-/**
- * @brief Executes the R-Type client.
- *
- * @param argv Command-line arguments.
- * @return 0 on success, 1 on failure.
- *
- * @details
- * Initializes the Core object and runs the client. Catches and logs exceptions.
- */
-int execute_rtypeClient(char** argv)
-{
-    try {
-        CLIENT::Core core(argv);
-        core.run();
-    } catch (const CLIENT::Core::CoreError& error) {
-        std::cerr << "Core error: " << error.what() << std::endl;
-        return 1;
-    } catch (const std::exception& error) {
-        std::cerr << "Unexpected error: " << error.what() << std::endl;
-        return 1;
-    }
-
-    return 0;
 }

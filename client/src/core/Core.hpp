@@ -2,18 +2,21 @@
 ** EPITECH PROJECT, 2025
 ** RTypeClient
 ** File description:
-** Core.hpp
+** Core.hpp - VERSION AVEC MODE TEST
 */
 
 #pragma once
 
 #include <SFML/Audio.hpp>
+#include <array>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <random>
 #include <set>
 #include <string>
 #include <thread>
@@ -26,6 +29,23 @@
 #include "../network/NetworkClient.hpp"
 #include "../parallax/ParallaxSystem.hpp"
 #include "../score/ScoreDisplay.hpp"
+
+// Includes ECS pour le mode test
+#include "../../../gameEngine/ecs/Registry.hpp"
+#include "../../../gameEngine/components/AIControlled/src/AIControlled.hpp"
+#include "../../../gameEngine/components/acceleration/src/Acceleration.hpp"
+#include "../../../gameEngine/components/position/src/Position.hpp"
+#include "../../../gameEngine/components/velocity/src/Velocity.hpp"
+#include "../../../gameEngine/components/renderable/src/Renderable.hpp"
+#include "../../../gameEngine/components/collider/src/Collider.hpp"
+#include "../../../gameEngine/components/domain/src/Domain.hpp"
+#include "../../../gameEngine/components/health/src/Health.hpp"
+#include "../../../gameEngine/components/damage/src/Damage.hpp"
+#include "../../../gameEngine/systems/motion/src/Motion.hpp"
+#include "../../../gameEngine/systems/collision/src/Collision.hpp"
+#include "../../../gameEngine/systems/animation/src/Animation.hpp"
+#include "../../../gameEngine/systems/domainHandler/src/DomainHandler.hpp"
+#include "../../../gameEngine/systems/sinusoidalAI/src/SinusoidalAI.hpp"
 
 namespace CLIENT {
 
@@ -62,7 +82,7 @@ class Core
         }
     };
 
-    explicit Core(char** argv);
+    explicit Core(char** argv, bool testMode = false);
     ~Core();
 
     void run();
@@ -74,6 +94,17 @@ class Core
         PLAYING,
         DEFEATED,
         DISCONNECTED
+    };
+
+    // Structure pour les données d'ennemis (mode test)
+    struct EnemySpawnData
+    {
+        int type;
+        float x;
+        float y;
+        float spawnTime;
+        std::string spritePath;
+        std::array<float, 4> textureRect;
     };
 
     std::unique_ptr<ScoreDisplay> _scoreDisplay;
@@ -171,6 +202,23 @@ class Core
     std::unique_ptr<KeybindMenu> _keybindMenu;
 
     std::unique_ptr<ColorBlindFilter> _colorBlindFilter;
+
+    // ===== ATTRIBUTS MODE TEST =====
+    bool _testMode;
+    std::unique_ptr<Registry> _testRegistry;
+    float _testGameTime;
+    std::vector<EnemySpawnData> _testSpawnList;
+    size_t _nextEnemyToSpawn;
+    std::string _testMapPath;
+
+    // ===== MÉTHODES MODE TEST =====
+    void initializeTestMode(const std::string& mapPath);
+    void loadTestEnemies(const std::string& filepath);
+    void testModeLoop();
+    void updateTestECS(float dt);
+    void checkAndSpawnTestEnemies();
+    uint32_t createTestEnemy(const EnemySpawnData& data);
+    void syncTestEntitiesToClient();
 };
 
 }  // namespace CLIENT
