@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "../spriteBatcher/SpriteBatcher.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <map>
 #include <optional>

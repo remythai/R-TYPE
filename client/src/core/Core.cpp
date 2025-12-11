@@ -58,7 +58,6 @@ CLIENT::Core::Core(char** argv, bool testMode)
     if (_testMode) {
         std::cout << "[TEST MODE] Initializing standalone client\n";
 
-        // Parser uniquement le mapPath pour le mode test
         for (int i = 1; argv[i]; ++i) {
             if (std::string(argv[i]) == "-map" && argv[i + 1]) {
                 _testMapPath = argv[++i];
@@ -76,7 +75,6 @@ CLIENT::Core::Core(char** argv, bool testMode)
         initializeTestMode(_testMapPath);
         loadResources();
     } else {
-        // Code existant pour le mode normal
         parseCommandLineArgs(argv);
 
         std::cout << "Enter username: ";
@@ -416,29 +414,23 @@ static std::array<float, 4> parseJSONArray(
     return result;
 }
 
-// ===== NOUVELLE MÉTHODE: initializeTestMode =====
 void CLIENT::Core::initializeTestMode(const std::string& mapPath)
 {
     std::cout << "[TEST MODE] Loading map: " << mapPath << "\n";
 
-    // Créer le registry ECS local
     _testRegistry = std::make_unique<Registry>();
 
-    // Ajouter les systèmes (copie de l'architecture serveur)
     _testRegistry->addSystem<GameEngine::Motion>(0);
     _testRegistry->addSystem<GameEngine::Collision>(1);
-    // _testRegistry->addSystem<GameEngine::Animation>(2);
     _testRegistry->addSystem<GameEngine::DomainHandler>(3);
     _testRegistry->addSystem<GameEngine::SinusoidalAI>(4);
 
-    // Charger les ennemis depuis le JSON
     loadTestEnemies(mapPath);
 
     std::cout << "[TEST MODE] ECS initialized with " << _testSpawnList.size() 
               << " enemies to spawn\n";
 }
 
-// ===== NOUVELLE MÉTHODE: loadTestEnemies =====
 void CLIENT::Core::loadTestEnemies(const std::string& filepath)
 {
     std::ifstream file(filepath);
@@ -486,7 +478,6 @@ void CLIENT::Core::loadTestEnemies(const std::string& filepath)
         pos = objEnd + 1;
     }
 
-    // Trier par spawnTime
     std::sort(_testSpawnList.begin(), _testSpawnList.end(),
         [](const EnemySpawnData& a, const EnemySpawnData& b) {
             return a.spawnTime < b.spawnTime;
@@ -496,7 +487,6 @@ void CLIENT::Core::loadTestEnemies(const std::string& filepath)
               << filepath << "\n";
 }
 
-// ===== NOUVELLE MÉTHODE: checkAndSpawnTestEnemies =====
 void CLIENT::Core::checkAndSpawnTestEnemies()
 {
     while (_nextEnemyToSpawn < _testSpawnList.size()) {
@@ -511,7 +501,6 @@ void CLIENT::Core::checkAndSpawnTestEnemies()
     }
 }
 
-// ===== NOUVELLE MÉTHODE: createTestEnemy =====
 EntityManager::Entity CLIENT::Core::createTestEnemy(const EnemySpawnData& data)
 {
     Registry::Entity entity = _testRegistry->create();
@@ -521,7 +510,6 @@ EntityManager::Entity CLIENT::Core::createTestEnemy(const EnemySpawnData& data)
     _testRegistry->emplace<GameEngine::Position>(entity, data.x, data.y);
     _testRegistry->emplace<GameEngine::Velocity>(entity, 200.0f);
 
-    // Configuration Renderable
     std::vector<vec2> rectPos;
     int frameCount = 8;
     float frameWidth = data.textureRect[2];
@@ -548,7 +536,6 @@ EntityManager::Entity CLIENT::Core::createTestEnemy(const EnemySpawnData& data)
     _testRegistry->emplace<GameEngine::Health>(entity, 1, 1);
     _testRegistry->emplace<GameEngine::Damage>(entity, 1);
 
-    // Mouvement sinusoïdal avec phase aléatoire
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> phaseDist(0.0f, 6.28318f);
@@ -560,39 +547,30 @@ EntityManager::Entity CLIENT::Core::createTestEnemy(const EnemySpawnData& data)
     return static_cast<uint32_t>(entity);
 }
 
-// ===== NOUVELLE MÉTHODE: updateTestECS =====
 void CLIENT::Core::updateTestECS(float dt)
 {
     _testRegistry->update(dt);
 }
 
-// ===== NOUVELLE MÉTHODE: syncTestEntitiesToClient =====
 void CLIENT::Core::syncTestEntitiesToClient()
 {
-    // Configuration du culling et des limites
-    const int MAX_RENDERED_ENTITIES = 500;  // Limite hard pour garder 60 FPS
+    const int MAX_RENDERED_ENTITIES = 5000;
     int renderedCount = 0;
-    
+
     _testRegistry->each<GameEngine::Position, GameEngine::Renderable>(
-        [&](auto id, GameEngine::Position& pos,
-            GameEngine::Renderable& render) {
+        [&](auto id, GameEngine::Position& pos, GameEngine::Renderable& render) {
             
-            // CULLING SPATIAL STRICT - Uniquement ce qui est visible à l'écran
-            if (pos.pos.x < 0 || pos.pos.x > 1920 || 
-                pos.pos.y < 0 || pos.pos.y > 1080) {
-                return; // Hors écran, on skip
+            if (pos.pos.x < -200 || pos.pos.x > 2120 || 
+                pos.pos.y < -200 || pos.pos.y > 1280) {
+                return;
             }
             
-            // LIMITE LE NOMBRE D'ENTITÉS RENDUES - Évite l'explosion de draw calls
             if (renderedCount >= MAX_RENDERED_ENTITIES) {
                 return;
             }
-            renderedCount++;
             
-            // Conversion de l'ID pour EntityManager
             uint32_t entityId = static_cast<uint32_t>(id);
             
-            // Récupérer ou créer l'entité côté client
             GameEntity* clientEntity = _entityManager->getEntity(entityId);
             if (!clientEntity) {
                 _entityManager->createSimpleEntity(entityId);
@@ -600,63 +578,23 @@ void CLIENT::Core::syncTestEntitiesToClient()
             }
             
             if (clientEntity) {
-                // Mettre à jour la position
                 clientEntity->position = sf::Vector2f(pos.pos.x, pos.pos.y);
-                clientEntity->targetPosition = clientEntity->position;
                 clientEntity->active = true;
-                
-                // Mettre à jour le sprite si nécessaire
-                if (clientEntity->currentSpritePath != render.spriteSheetPath) {
-                    auto& rm = ResourceManager::getInstance();
-                    sf::Texture* texture = rm.getTexture(render.spriteSheetPath);
-                    
-                    if (texture) {
-                        clientEntity->sprite = sf::Sprite(*texture);
-                        clientEntity->currentSpritePath = render.spriteSheetPath;
-                        
-                        // Appliquer le texture rect actuel
-                        auto& currentRect = render.currentRectPos;
-                        auto& rectSize = render.rectSize;
-                        
-                        clientEntity->sprite->setTextureRect(sf::IntRect(
-                            sf::Vector2i(static_cast<int>(currentRect.x),
-                                       static_cast<int>(currentRect.y)),
-                            sf::Vector2i(static_cast<int>(rectSize.x),
-                                       static_cast<int>(rectSize.y))
-                        ));
-                        
-                        clientEntity->sprite->setScale(sf::Vector2f(2.0f, 2.0f));
-                    }
-                }
-                
-                // Mettre à jour la position du sprite
-                if (clientEntity->sprite.has_value()) {
-                    clientEntity->sprite->setPosition(clientEntity->position);
-                }
             }
+            
+            renderedCount++;
         }
     );
-    
-    // Debug optionnel - affiche quand on atteint la limite
-    static int framesSincePrint = 0;
-    if (renderedCount >= MAX_RENDERED_ENTITIES && framesSincePrint == 0) {
-        std::cout << "[CULLING] Limited to " << MAX_RENDERED_ENTITIES 
-                  << " rendered entities (more exist in ECS)\n";
-    }
-    framesSincePrint = (framesSincePrint + 1) % 60; // Print toutes les 60 frames
 }
 
-// ===== MODIFICATION DE LA MÉTHODE run() =====
-// Remplacer ton run() existant par:
+
 void CLIENT::Core::run()
 {
     _running = true;
 
     if (_testMode) {
-        // Mode test: pas de thread réseau
         testModeLoop();
     } else {
-        // Mode normal avec réseau
         _networkThread = std::thread(&Core::networkLoop, this);
         graphicsLoop();
         _running = false;
@@ -665,7 +603,6 @@ void CLIENT::Core::run()
     }
 }
 
-// ===== NOUVELLE MÉTHODE: testModeLoop =====
 void CLIENT::Core::testModeLoop()
 {
     Window window("R-Type Client [TEST MODE]", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -684,7 +621,6 @@ void CLIENT::Core::testModeLoop()
     std::cout << "[TEST MODE] Starting game loop\n";
     std::cout << "[TEST MODE] Total enemies to spawn: " << _testSpawnList.size() << "\n";
 
-    // Compteur FPS
     sf::Clock fpsClock;
     int frameCount = 0;
     float fpsUpdateTime = 0.0f;
@@ -694,19 +630,15 @@ void CLIENT::Core::testModeLoop()
 
         window.pollEvents();
 
-        // Update ECS local
         _testGameTime += deltaTime;
         checkAndSpawnTestEnemies();
         updateTestECS(deltaTime);
 
-        // Synchroniser les entités ECS vers le client pour rendering
         syncTestEntitiesToClient();
 
-        // Update graphique
         _entityManager->update(deltaTime);
         _parallaxSystem->update(deltaTime);
 
-        // Rendering
         renderTexture.clear();
         _entityManager->render(renderTexture);
         _scoreDisplay->render(renderTexture);
@@ -729,7 +661,6 @@ void CLIENT::Core::testModeLoop()
 
         window.display();
 
-        // Afficher FPS toutes les secondes
         frameCount++;
         fpsUpdateTime += deltaTime;
         if (fpsUpdateTime >= 1.0f) {

@@ -251,18 +251,40 @@ void CLIENT::EntityManager::update(float deltaTime)
  */
 void CLIENT::EntityManager::render(sf::RenderTarget& target)
 {
+    sf::VertexArray vertices(sf::PrimitiveType::Triangles);
+    
+    sf::Color colors[] = {
+        sf::Color::Red, sf::Color::Green, sf::Color::Blue, 
+        sf::Color::Yellow, sf::Color::Magenta, sf::Color::Cyan
+    };
+    
+    auto makeVertex = [](const sf::Vector2f& pos, const sf::Color& col) {
+        sf::Vertex v;
+        v.position = pos;
+        v.color = col;
+        return v;
+    };
+    
     for (auto& [id, entity] : _entities) {
-        if (entity.active && entity.sprite.has_value() && entity.isParallax) {
-            target.draw(*entity.sprite);
-        }
+        if (!entity.active) continue;
+        
+        float w = 32.0f, h = 32.0f;
+        sf::Color c = colors[id % 6];
+        sf::Vector2f p = entity.position;
+        
+        vertices.append(makeVertex(p, c));
+        vertices.append(makeVertex(p + sf::Vector2f(w, 0), c));
+        vertices.append(makeVertex(p + sf::Vector2f(0, h), c));
+        
+        vertices.append(makeVertex(p + sf::Vector2f(w, 0), c));
+        vertices.append(makeVertex(p + sf::Vector2f(w, h), c));
+        vertices.append(makeVertex(p + sf::Vector2f(0, h), c));
     }
-
-    for (auto& [id, entity] : _entities) {
-        if (entity.active && entity.sprite.has_value() && !entity.isParallax) {
-            target.draw(*entity.sprite);
-        }
-    }
+    
+    target.draw(vertices); 
 }
+
+
 
 /**
  * @brief Clears all entities from the manager.
