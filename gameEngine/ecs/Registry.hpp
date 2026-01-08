@@ -11,6 +11,7 @@
 #include "SparseSet.hpp"
 #include "System.hpp"
 #include "Types.hpp"
+#include "../logs.hpp"
 
 /**
  * @class Registry
@@ -81,8 +82,7 @@ class Registry
         pool.emplace(e, std::forward<Args>(args)...);
 
         if (wasEmpty) {
-            std::cout << "[Registry] First component of type added, updating "
-                         "system availability\n";
+            ECS_LOG("[Registry] First component of type added, updating system availability\n");
             availableComponents.set(id);
             updateSystemAvailability();
         }
@@ -315,9 +315,8 @@ class Registry
      */
     void updateSystemAvailability()
     {
-        std::cout << "[Registry] Updating system availability...\n";
-        std::cout << "  Available component types: "
-                  << availableComponents.count() << "\n";
+        ECS_LOG("[Registry] Updating system availability...");
+        ECS_LOG("  Available component types: " << availableComponents.count() << "\n");
 
         for (auto& system : systems) {
             const auto& required = system->getSignature();

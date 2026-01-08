@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.15)
 project(GameEngine_ECS VERSION 1.0.0 LANGUAGES CXX)
 
@@ -62,3 +61,37 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ecs_config.h.in")
 else()
     message(STATUS "Note: ecs_config.h.in not found, skipping configuration file")
 endif()
+
+# =======================
+# Google Benchmark (FetchContent)
+# =======================
+include(FetchContent)
+
+FetchContent_Declare(
+    benchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.9.4       # version stable au lieu de main
+)
+
+# Optionnel: désactiver les tests de Google Benchmark
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Disable benchmark tests" FORCE)
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing" FORCE)
+
+FetchContent_MakeAvailable(benchmark)
+
+# Exécutable de benchmark ECS
+add_executable(ecs_bench
+    tests/ecs_bench.cpp  # à créer
+)
+
+target_link_libraries(ecs_bench
+    PRIVATE
+        benchmark::benchmark
+        benchmark::benchmark_main
+        ecs_core           # + ajoute ici tes libs de systems/components si elles existent
+)
+
+target_compile_definitions(ecs_bench
+    PRIVATE
+        ECS_DISABLE_LOGS
+)

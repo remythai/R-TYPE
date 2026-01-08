@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(ENABLE_TESTS "Enable unit tests" OFF)
 
+add_subdirectory(gameEngine)
 add_subdirectory(client)
 add_subdirectory(server)
 
