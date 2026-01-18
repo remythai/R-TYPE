@@ -67,27 +67,27 @@ R-Type requires persistence for three distinct data categories:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              PERSISTENCE SOLUTIONS                       │
+│              PERSISTENCE SOLUTIONS                      │
 ├─────────────────────────────────────────────────────────┤
-│                                                          │
+│                                                         │
 │  STRUCTURED FORMATS:                                    │
 │  ├─ JSON (✓ Current choice)                             │
-│  ├─ XML                                                  │
+│  ├─ XML                                                 │
 │  ├─ YAML                                                │
 │  ├─ Protocol Buffers                                    │
 │  └─ MessagePack                                         │
-│                                                          │
+│                                                         │
 │  DATABASES:                                             │
 │  ├─ SQLite (Relational)                                 │
 │  ├─ MongoDB (Document)                                  │
 │  ├─ Redis (In-Memory)                                   │
 │  └─ LevelDB (Key-Value)                                 │
-│                                                          │
+│                                                         │
 │  BINARY FORMATS:                                        │
 │  ├─ Custom Binary                                       │
 │  ├─ Flatbuffers                                         │
 │  └─ Cap'n Proto                                         │
-│                                                          │
+│                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
